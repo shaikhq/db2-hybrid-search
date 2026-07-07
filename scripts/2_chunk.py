@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-4_chunk.py — split a Markdown file into chunks and write them to CSV.
+2_chunk.py — split a Markdown file into chunks and write them to CSV.
 
 Uses Docling's HybridChunker (structure- and token-aware), capped to the
 embedding model's token limit. The output is a simple two-column CSV:
@@ -8,9 +8,9 @@ embedding model's token limit. The output is a simple two-column CSV:
     chunk_id, chunk_text
 
 which you can open in a spreadsheet to see exactly what will be indexed, then
-hand to 5_ingest.py.
+hand to 4_ingest.sql.
 
-Usage:  python scripts/4_chunk.py document.md [chunks.csv]
+Usage:  python scripts/2_chunk.py document.md [chunks.csv]
         (default output: the .md path with a .chunks.csv extension)
 Config (optional, via .env): MAX_TOKENS, TOKENIZER_MODEL.
 """
@@ -25,7 +25,7 @@ from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTok
 from transformers import AutoTokenizer
 
 # Optional config from .env. The token budget should match the embedding model
-# you'll use in 5_ingest.py (default: all-MiniLM-L6-v2, 256 tokens).
+# you'll use in 4_ingest.sql (default: all-MiniLM-L6-v2, 256 tokens).
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 for _env in (os.path.join(_ROOT, ".env"), ".env"):
     if os.path.exists(_env):
@@ -41,7 +41,7 @@ MAX_TOKENS = int(os.environ.get("MAX_TOKENS", "256"))
 
 def main():
     if len(sys.argv) not in (2, 3):
-        sys.exit("Usage: python scripts/4_chunk.py document.md [chunks.csv]")
+        sys.exit("Usage: python scripts/2_chunk.py document.md [chunks.csv]")
     md_path = sys.argv[1]
     if not os.path.exists(md_path):
         sys.exit("Markdown not found: " + md_path)

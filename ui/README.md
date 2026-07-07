@@ -10,7 +10,7 @@ customers, developers) on a projector.
 ./ui/run.sh                 # http://127.0.0.1:8000  — static page + frozen fixtures
 ```
 
-The talk path needs **no Db2, no watsonx, no pip** — just Python's stdlib server
+The talk path needs **no Db2, no embedding server, no pip** — just Python's stdlib server
 reading `static/fixtures.json`. Robust on a conference laptop.
 
 ### Refreshing the data

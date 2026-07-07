@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
-# run_pipeline.sh — run the whole ingestion pipeline (steps 1-5) on one PDF.
+# run_pipeline.sh — run the whole ingestion pipeline (steps 1-4) on one PDF.
 #
 #   ./scripts/run_pipeline.sh path/to/document.pdf
 #
 # Runs, in order:
-#   1_cleanup.sh   (as db2inst1)   drop old table + index — clean slate
-#   2_setup.sh     (as db2inst1)   enable text search + register OpenSearch
-#   3_extract.py   (as you)        PDF       -> document.md
-#   4_chunk.py     (as you)        document.md -> document.chunks.csv
-#   5_ingest.py    (as you)        document.chunks.csv -> Db2
+#   1_extract.py   (as you)        PDF       -> document.md
+#   2_chunk.py     (as you)        document.md -> document.chunks.csv
+#   3_enable_text_search.sql    (as db2inst1)   enable text search + register OpenSearch
+#   4_ingest.sql   (as db2inst1)   cleanup + sample.chunks.csv -> Db2  (embedding server must be up)
 #
 # Run from the repo root as your normal user. The two shell steps are piped to
 # db2inst1 via sudo (so db2/db2ts are available); the Python steps use the
-# project's .venv. Search (step 6) is separate: ./scripts/search.sh "...".
+# project's .venv. Search (step 5) is separate: ./scripts/search.sh.
 
 set -euo pipefail
 
@@ -33,19 +32,19 @@ OWNER="${DB2_INSTANCE_OWNER:-db2inst1}"
 MD="${PDF%.*}.md"
 CSV="${PDF%.*}.chunks.csv"
 
-echo "### 1/5  cleanup  (as $OWNER)"
-sudo -iu "$OWNER" bash -ls < "$SCRIPTS/1_cleanup.sh"
+echo "### 1/4  extract  $PDF -> $MD"
+"$PY" "$SCRIPTS/1_extract.py" "$PDF"
 
-echo "### 2/5  setup    (as $OWNER)"
-sudo -iu "$OWNER" bash -ls < "$SCRIPTS/2_setup.sh"
+echo "### 2/4  chunk    $MD -> $CSV"
+"$PY" "$SCRIPTS/2_chunk.py" "$MD"
 
-echo "### 3/5  extract  $PDF -> $MD"
-"$PY" "$SCRIPTS/3_extract.py" "$PDF"
+echo "### 3/4  setup    (as $OWNER)"
+sudo -iu "$OWNER" bash -lc 'db2 -tv' < "$SCRIPTS/3_enable_text_search.sql"
 
-echo "### 4/5  chunk    $MD -> $CSV"
-"$PY" "$SCRIPTS/4_chunk.py" "$MD"
+echo "### 4/4  ingest   cleanup + sample.chunks.csv -> Db2  (as $OWNER)"
+# NOTE: 4_ingest.sql clears any old table/index, then reads the FIXED file
+# sample.chunks.csv. The local embedding server (scripts/serve_embeddings.sh)
+# must already be running, or the embedding step fails.
+sudo -iu "$OWNER" bash -lc "db2set DB2_VECTOR_INDEXING=YES -immediate; cd '$REPO' && db2 -tv" < "$SCRIPTS/4_ingest.sql"
 
-echo "### 5/5  ingest   $CSV -> Db2"
-"$PY" "$SCRIPTS/5_ingest.py" "$CSV"
-
-echo "### done — corpus is ready. Search it with:  ./scripts/search.sh \"your query\""
+echo "### done — corpus is ready. Search it with:  ./scripts/search.sh"

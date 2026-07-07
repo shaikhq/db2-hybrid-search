@@ -9,7 +9,7 @@ hybrid), plus a per-query table of where the first relevant result landed. Run i
 after any change to chunking, the embedding model, the fusion gates, or the
 weights, and judge the change by the numbers instead of by eyeballing one query.
 
-    ./scripts/eval.sh        # runs as the Db2 instance owner, local connection
+    DB2_HOST=local python scripts/eval.py    # as the Db2 instance owner, local connection
 
 The labels are loaded from the shared ui/queries.json so the eval and the demo
 UI use the SAME curated set. They're for the IBM Db2 12.1.5 LLM-integration
@@ -29,7 +29,7 @@ K = 5  # recall / top-k cutoff
 # (query, {relevant chunk_id, ...}).
 def _load_golden():
     here = os.path.dirname(os.path.abspath(__file__))
-    for path in (os.path.join(here, "queries.json"),                 # staged alongside (eval.sh)
+    for path in (os.path.join(here, "queries.json"),                 # staged alongside, if present
                  os.path.join(here, "..", "ui", "queries.json")):    # repo layout
         if os.path.exists(path):
             with open(path) as f:

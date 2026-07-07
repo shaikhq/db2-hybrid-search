@@ -1,10 +1,10 @@
 """
-hybrid_core.py — the hybrid-search engine, shared by 6_search.py (CLI) and
-eval.py (metrics). It has no command line of its own.
+hybrid_core.py — the hybrid-search engine, used by eval.py (metrics) and the
+live UI (ui/api.py). It has no command line of its own.
 
 Three retrieval legs, all in Db2:
   - lexical : Db2 Text Search keyword match, ranked by BM25 SCORE()
-  - vector  : Db2 VECTOR column vs the query embedded by watsonx (TO_EMBEDDING)
+  - vector  : Db2 VECTOR column vs the query embedded by the local model (TO_EMBEDDING)
   - hybrid  : a GATED, SCORE-NORMALIZED fusion of the two
 
 Why not plain RRF?  RRF fuses on rank only and throws away each leg's
@@ -73,6 +73,17 @@ W_VEC    = float(setting("HYBRID_W_VEC", "0.5"))    # weight of the vector leg
 VEC_GATE = float(setting("HYBRID_VEC_GATE", "0.30"))  # min top cosine similarity to trust vectors
 LEX_GATE = float(setting("HYBRID_LEX_GATE", "0.0"))   # min top BM25 score to trust keywords
 
+# bge-small is asymmetric: passages are embedded raw (as ingested), but QUERIES
+# are meant to carry a retrieval instruction. Applying it only to the query side
+# markedly improves ranking. Set EMBED_QUERY_PREFIX='' to disable.
+QUERY_PREFIX = setting("EMBED_QUERY_PREFIX",
+                       "Represent this sentence for searching relevant passages: ")
+
+
+def embed_query(query):
+    """The text handed to TO_EMBEDDING for a query (adds bge's instruction)."""
+    return QUERY_PREFIX + query
+
 
 def keywords(query):
     """CONTAINS is implicit-AND, so OR the words: any term can match, ranked by
@@ -129,7 +140,7 @@ def vector(conn, query, limit=POOL):
         ORDER BY VECTOR_DISTANCE(c.embedding, q.qv, COSINE)
         FETCH APPROX FIRST {int(limit)} ROWS ONLY
     """
-    return _rows(conn, sql, [query])
+    return _rows(conn, sql, [embed_query(query)])
 
 
 def _normalized(gate):
@@ -167,7 +178,7 @@ def hybrid(conn, query, limit=10):
         FETCH FIRST {int(limit)} ROWS ONLY
     """
     kw = keywords(query)
-    return _rows(conn, sql, [query, kw, kw])
+    return _rows(conn, sql, [embed_query(query), kw, kw])
 
 
 def hybrid_explain(conn, query, limit=10):
@@ -201,9 +212,10 @@ def hybrid_explain(conn, query, limit=10):
         FETCH FIRST {int(limit)} ROWS ONLY
     """
     kw = keywords(query)
-    _log_sql(sql, [query, kw, kw])
+    params = [embed_query(query), kw, kw]
+    _log_sql(sql, params)
     stmt = ibm_db.prepare(conn, sql)
-    for i, value in enumerate([query, kw, kw], start=1):
+    for i, value in enumerate(params, start=1):
         ibm_db.bind_param(stmt, i, value)
     ibm_db.execute(stmt)
     out, row = [], ibm_db.fetch_tuple(stmt)
