@@ -255,6 +255,7 @@ docs/      Db2 and OpenSearch setup notes, images
 
 ## Docs
 
+- [docs/setup-and-run.md](docs/setup-and-run.md) — full end-to-end setup & run runbook (with real-VM gotchas).
 - [docs/db2-setup.md](docs/db2-setup.md) — install and prepare Db2 12.1.5.
 - [docs/opensearch-setup.md](docs/opensearch-setup.md) — install OpenSearch and wire it to Db2 Text Search.
 - [docs/eval-results.md](docs/eval-results.md) — search-quality evaluation results from `./scripts/eval.sh`.
