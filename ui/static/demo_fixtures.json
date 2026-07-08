@@ -2003,7 +2003,7 @@
     },
     "g1": {
       "id": "g1",
-      "query": "influence new and expanded",
+      "query": "influence expanded edition",
       "query_type": "keyword",
       "query_class": "known_item",
       "scenario": "",
@@ -2018,7 +2018,7 @@
             "author": "Robert B. Cialdini",
             "rank": 1,
             "chunk_id": 1,
-            "score": 0.8199,
+            "score": 0.7703,
             "score_type": "bm25",
             "is_gold": true
           },
@@ -2033,43 +2033,43 @@
               "author": "Robert B. Cialdini",
               "rank": 1,
               "chunk_id": 1,
-              "score": 0.8199,
+              "score": 0.7703,
               "score_type": "bm25",
               "is_gold": true
             },
             {
-              "title": "Influence",
-              "author": "Robert B. Cialdini",
-              "rank": 2,
-              "chunk_id": 50,
-              "score": 0.7119,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
               "title": "One Simple Idea, Revised and Expanded Edition",
               "author": "Stephen Key",
-              "rank": 3,
+              "rank": 2,
               "chunk_id": 26,
-              "score": 0.6909,
+              "score": 0.7509,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "How to Win Friends & Influence People",
-              "author": "Dale Carnegie",
+              "title": "Influence",
+              "author": "Robert B. Cialdini",
+              "rank": 3,
+              "chunk_id": 50,
+              "score": 0.6967,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition",
+              "author": "David Thomas; Andrew Hunt",
               "rank": 4,
-              "chunk_id": 16,
-              "score": 0.6234,
+              "chunk_id": 72,
+              "score": 0.6704,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "The New York Times Digest",
-              "author": "The New York Times",
+              "title": "The Elements of Style (Recorded Books Edition)",
+              "author": "William Strunk Jr.; E. B. White",
               "rank": 5,
-              "chunk_id": 62,
-              "score": 0.5876,
+              "chunk_id": 52,
+              "score": 0.6083,
               "score_type": "bm25",
               "is_gold": false
             }
@@ -2082,7 +2082,7 @@
             "author": "Robert B. Cialdini",
             "rank": 2,
             "chunk_id": 1,
-            "score": 0.6215,
+            "score": 0.631,
             "score_type": "cosine",
             "is_gold": true
           },
@@ -2097,7 +2097,7 @@
               "author": "Robert B. Cialdini",
               "rank": 1,
               "chunk_id": 50,
-              "score": 0.7131,
+              "score": 0.7344,
               "score_type": "cosine",
               "is_gold": false
             },
@@ -2106,7 +2106,7 @@
               "author": "Robert B. Cialdini",
               "rank": 2,
               "chunk_id": 1,
-              "score": 0.6215,
+              "score": 0.631,
               "score_type": "cosine",
               "is_gold": true
             },
@@ -2115,25 +2115,25 @@
               "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
               "rank": 3,
               "chunk_id": 74,
-              "score": 0.5715,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Failing Forward",
-              "author": "John C. Maxwell",
-              "rank": 4,
-              "chunk_id": 70,
-              "score": 0.5577,
+              "score": 0.6188,
               "score_type": "cosine",
               "is_gold": false
             },
             {
               "title": "The Five Elements of Effective Thinking",
               "author": "Edward B. Burger; Michael Starbird",
-              "rank": 5,
+              "rank": 4,
               "chunk_id": 42,
-              "score": 0.5553,
+              "score": 0.5963,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "The Elements of Style (Recorded Books Edition)",
+              "author": "William Strunk Jr.; E. B. White",
+              "rank": 5,
+              "chunk_id": 52,
+              "score": 0.5864,
               "score_type": "cosine",
               "is_gold": false
             }
@@ -2146,7 +2146,7 @@
             "author": "Robert B. Cialdini",
             "rank": 2,
             "chunk_id": 1,
-            "score": 0.8843,
+            "score": 0.8733,
             "score_type": "fused",
             "is_gold": true,
             "found_by": [
@@ -2165,7 +2165,7 @@
               "author": "Robert B. Cialdini",
               "rank": 1,
               "chunk_id": 50,
-              "score": 0.9868,
+              "score": 0.9904,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -2178,7 +2178,7 @@
               "author": "Robert B. Cialdini",
               "rank": 2,
               "chunk_id": 1,
-              "score": 0.8843,
+              "score": 0.8733,
               "score_type": "fused",
               "is_gold": true,
               "found_by": [
@@ -2187,37 +2187,37 @@
               ]
             },
             {
+              "title": "The Elements of Style (Recorded Books Edition)",
+              "author": "William Strunk Jr.; E. B. White",
+              "rank": 3,
+              "chunk_id": 52,
+              "score": 0.7976,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition",
+              "author": "David Thomas; Andrew Hunt",
+              "rank": 4,
+              "chunk_id": 72,
+              "score": 0.7919,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
               "title": "How to Win Friends & Influence People",
               "author": "Dale Carnegie",
-              "rank": 3,
-              "chunk_id": 16,
-              "score": 0.7616,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Getting Things Done",
-              "author": "David Allen",
-              "rank": 4,
-              "chunk_id": 40,
-              "score": 0.7529,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "The 7 Habits of Highly Effective People",
-              "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
               "rank": 5,
-              "chunk_id": 74,
-              "score": 0.7433,
+              "chunk_id": 16,
+              "score": 0.7908,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -2232,7 +2232,7 @@
     },
     "g5": {
       "id": "g5",
-      "query": "brian tracy 21 secrets of self made millionaires",
+      "query": "21 secrets of self-made millionaires",
       "query_type": "keyword",
       "query_class": "known_item",
       "scenario": "",
@@ -2247,7 +2247,7 @@
             "author": "Brian Tracy",
             "rank": 1,
             "chunk_id": 5,
-            "score": 0.9235,
+            "score": 0.8967,
             "score_type": "bm25",
             "is_gold": true
           },
@@ -2262,43 +2262,43 @@
               "author": "Brian Tracy",
               "rank": 1,
               "chunk_id": 5,
-              "score": 0.9235,
+              "score": 0.8967,
               "score_type": "bm25",
               "is_gold": true
             },
             {
-              "title": "The Miracle of Self Discipline",
-              "author": "Brian Tracy",
+              "title": "Discipline Is Destiny",
+              "author": "Ryan Holiday",
               "rank": 2,
-              "chunk_id": 28,
-              "score": 0.8281,
+              "chunk_id": 84,
+              "score": 0.7278,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "Speak to Win",
-              "author": "Brian Tracy",
+              "title": "Made to Stick",
+              "author": "Chip Heath; Dan Heath",
               "rank": 3,
-              "chunk_id": 9,
-              "score": 0.7913,
+              "chunk_id": 11,
+              "score": 0.6734,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "Take Charge of Your Life",
-              "author": "Brian Tracy",
+              "title": "The Energy Bus",
+              "author": "Jon Gordon",
               "rank": 4,
-              "chunk_id": 92,
-              "score": 0.7902,
+              "chunk_id": 25,
+              "score": 0.6246,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
+              "title": "Peak",
+              "author": "Anders Ericsson; Robert Pool",
               "rank": 5,
-              "chunk_id": 27,
-              "score": 0.7798,
+              "chunk_id": 65,
+              "score": 0.6199,
               "score_type": "bm25",
               "is_gold": false
             }
@@ -2311,7 +2311,7 @@
             "author": "Brian Tracy",
             "rank": 1,
             "chunk_id": 5,
-            "score": 0.8405,
+            "score": 0.7572,
             "score_type": "cosine",
             "is_gold": true
           },
@@ -2326,43 +2326,43 @@
               "author": "Brian Tracy",
               "rank": 1,
               "chunk_id": 5,
-              "score": 0.8405,
+              "score": 0.7572,
               "score_type": "cosine",
               "is_gold": true
             },
             {
+              "title": "The Millionaire Next Door",
+              "author": "Thomas J. Stanley Ph.D.; William D. Danko Ph.D.",
+              "rank": 2,
+              "chunk_id": 54,
+              "score": 0.6199,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "One Simple Idea, Revised and Expanded Edition",
+              "author": "Stephen Key",
+              "rank": 3,
+              "chunk_id": 26,
+              "score": 0.6065,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
               "title": "The Miracle of Self Discipline",
               "author": "Brian Tracy",
-              "rank": 2,
-              "chunk_id": 28,
-              "score": 0.7296,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
-              "rank": 3,
-              "chunk_id": 27,
-              "score": 0.7029,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Take Charge of Your Life",
-              "author": "Brian Tracy",
               "rank": 4,
-              "chunk_id": 92,
-              "score": 0.664,
+              "chunk_id": 28,
+              "score": 0.6037,
               "score_type": "cosine",
               "is_gold": false
             },
             {
-              "title": "Speak to Win",
-              "author": "Brian Tracy",
+              "title": "The Psychology of Money",
+              "author": "Morgan Housel",
               "rank": 5,
-              "chunk_id": 9,
-              "score": 0.6494,
+              "chunk_id": 75,
+              "score": 0.5887,
               "score_type": "cosine",
               "is_gold": false
             }
@@ -2407,7 +2407,7 @@
               "author": "Brian Tracy",
               "rank": 2,
               "chunk_id": 28,
-              "score": 0.8709,
+              "score": 0.7848,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -2416,11 +2416,11 @@
               ]
             },
             {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
+              "title": "One Simple Idea, Revised and Expanded Edition",
+              "author": "Stephen Key",
               "rank": 3,
-              "chunk_id": 27,
-              "score": 0.8371,
+              "chunk_id": 26,
+              "score": 0.7833,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -2429,11 +2429,11 @@
               ]
             },
             {
-              "title": "Take Charge of Your Life",
-              "author": "Brian Tracy",
+              "title": "The Millionaire Next Door",
+              "author": "Thomas J. Stanley Ph.D.; William D. Danko Ph.D.",
               "rank": 4,
-              "chunk_id": 92,
-              "score": 0.7965,
+              "chunk_id": 54,
+              "score": 0.7523,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -2442,11 +2442,11 @@
               ]
             },
             {
-              "title": "Speak to Win",
-              "author": "Brian Tracy",
+              "title": "The Willpower Instinct",
+              "author": "Kelly McGonigal",
               "rank": 5,
-              "chunk_id": 9,
-              "score": 0.7811,
+              "chunk_id": 2,
+              "score": 0.7468,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -3148,7 +3148,7 @@
     },
     "g18": {
       "id": "g18",
-      "query": "unstuff your life declutter book",
+      "query": "unstuff your life",
       "query_type": "keyword",
       "query_class": "known_item",
       "scenario": "",
@@ -3183,38 +3183,38 @@
               "is_gold": true
             },
             {
-              "title": "Eat to Live",
-              "author": "Joel Fuhrman M.D.",
-              "rank": 2,
-              "chunk_id": 49,
-              "score": 0.6645,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
               "title": "Take Charge of Your Life",
               "author": "Brian Tracy",
-              "rank": 3,
+              "rank": 2,
               "chunk_id": 92,
               "score": 0.6628,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "Discipline Is Destiny",
-              "author": "Ryan Holiday",
-              "rank": 4,
-              "chunk_id": 84,
-              "score": 0.648,
+              "title": "The Power of Less",
+              "author": "Leo Babauta",
+              "rank": 3,
+              "chunk_id": 6,
+              "score": 0.6387,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "$100M Offers",
-              "author": "Alex Hormozi",
+              "title": "The Steal Like an Artist Audio Trilogy",
+              "author": "Austin Kleon",
+              "rank": 4,
+              "chunk_id": 86,
+              "score": 0.6192,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "The 3 Secrets to Effective Time Investment",
+              "author": "Elizabeth Grace Saunders",
               "rank": 5,
-              "chunk_id": 78,
-              "score": 0.6437,
+              "chunk_id": 10,
+              "score": 0.6146,
               "score_type": "bm25",
               "is_gold": false
             }
@@ -3227,7 +3227,7 @@
             "author": "Andrew J. Mellen",
             "rank": 1,
             "chunk_id": 18,
-            "score": 0.7147,
+            "score": 0.7559,
             "score_type": "cosine",
             "is_gold": true
           },
@@ -3242,43 +3242,43 @@
               "author": "Andrew J. Mellen",
               "rank": 1,
               "chunk_id": 18,
-              "score": 0.7147,
+              "score": 0.7559,
               "score_type": "cosine",
               "is_gold": true
             },
             {
+              "title": "Eat That Frog!",
+              "author": "Brian Tracy",
+              "rank": 2,
+              "chunk_id": 23,
+              "score": 0.5755,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "The Power of Less",
+              "author": "Leo Babauta",
+              "rank": 3,
+              "chunk_id": 6,
+              "score": 0.5578,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Take Charge of Your Life",
+              "author": "Brian Tracy",
+              "rank": 4,
+              "chunk_id": 92,
+              "score": 0.5555,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
               "title": "The Productivity Project",
               "author": "Chris Bailey",
-              "rank": 2,
-              "chunk_id": 8,
-              "score": 0.599,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Slow Productivity",
-              "author": "Cal Newport",
-              "rank": 3,
-              "chunk_id": 91,
-              "score": 0.5988,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Eat to Live",
-              "author": "Joel Fuhrman M.D.",
-              "rank": 4,
-              "chunk_id": 49,
-              "score": 0.5827,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Crucial Conversations",
-              "author": "Kerry Patterson",
               "rank": 5,
-              "chunk_id": 4,
-              "score": 0.582,
+              "chunk_id": 8,
+              "score": 0.5508,
               "score_type": "cosine",
               "is_gold": false
             }
@@ -3319,37 +3319,11 @@
               ]
             },
             {
-              "title": "Eat to Live",
-              "author": "Joel Fuhrman M.D.",
+              "title": "Take Charge of Your Life",
+              "author": "Brian Tracy",
               "rank": 2,
-              "chunk_id": 49,
-              "score": 0.8169,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "The 3 Secrets to Effective Time Investment",
-              "author": "Elizabeth Grace Saunders",
-              "rank": 3,
-              "chunk_id": 10,
-              "score": 0.8054,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Crucial Conversations",
-              "author": "Kerry Patterson",
-              "rank": 4,
-              "chunk_id": 4,
-              "score": 0.7935,
+              "chunk_id": 92,
+              "score": 0.7444,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -3360,9 +3334,35 @@
             {
               "title": "The Power of Less",
               "author": "Leo Babauta",
-              "rank": 5,
+              "rank": 3,
               "chunk_id": 6,
-              "score": 0.776,
+              "score": 0.7441,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Eat to Live",
+              "author": "Joel Fuhrman M.D.",
+              "rank": 4,
+              "chunk_id": 49,
+              "score": 0.718,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "The 3 Secrets to Effective Time Investment",
+              "author": "Elizabeth Grace Saunders",
+              "rank": 5,
+              "chunk_id": 10,
+              "score": 0.7095,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -3377,7 +3377,7 @@
     },
     "g21": {
       "id": "g21",
-      "query": "dave ramsey total money makeover",
+      "query": "the total money makeover",
       "query_type": "keyword",
       "query_class": "known_item",
       "scenario": "",
@@ -3392,7 +3392,7 @@
             "author": "Dave Ramsey",
             "rank": 1,
             "chunk_id": 21,
-            "score": 0.9235,
+            "score": 0.8621,
             "score_type": "bm25",
             "is_gold": true
           },
@@ -3407,7 +3407,7 @@
               "author": "Dave Ramsey",
               "rank": 1,
               "chunk_id": 21,
-              "score": 0.9235,
+              "score": 0.8621,
               "score_type": "bm25",
               "is_gold": true
             },
@@ -3416,16 +3416,34 @@
               "author": "Morgan Housel",
               "rank": 2,
               "chunk_id": 75,
-              "score": 0.7193,
+              "score": 0.7323,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition",
-              "author": "David Thomas; Andrew Hunt",
+              "title": "The New York Times Digest",
+              "author": "The New York Times",
               "rank": 3,
-              "chunk_id": 72,
-              "score": 0.5906,
+              "chunk_id": 62,
+              "score": 0.1722,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "The Power of Less",
+              "author": "Leo Babauta",
+              "rank": 4,
+              "chunk_id": 6,
+              "score": 0.1682,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "The Wall Street Journal Digest",
+              "author": "The Wall Street Journal",
+              "rank": 5,
+              "chunk_id": 55,
+              "score": 0.1644,
               "score_type": "bm25",
               "is_gold": false
             }
@@ -3438,7 +3456,7 @@
             "author": "Dave Ramsey",
             "rank": 1,
             "chunk_id": 21,
-            "score": 0.869,
+            "score": 0.7842,
             "score_type": "cosine",
             "is_gold": true
           },
@@ -3453,25 +3471,25 @@
               "author": "Dave Ramsey",
               "rank": 1,
               "chunk_id": 21,
-              "score": 0.869,
+              "score": 0.7842,
               "score_type": "cosine",
               "is_gold": true
             },
             {
-              "title": "21 Success Secrets of Self-Made Millionaires",
-              "author": "Brian Tracy",
+              "title": "The Psychology of Money",
+              "author": "Morgan Housel",
               "rank": 2,
-              "chunk_id": 5,
-              "score": 0.6056,
+              "chunk_id": 75,
+              "score": 0.6077,
               "score_type": "cosine",
               "is_gold": false
             },
             {
-              "title": "The Psychology of Money",
-              "author": "Morgan Housel",
+              "title": "21 Success Secrets of Self-Made Millionaires",
+              "author": "Brian Tracy",
               "rank": 3,
-              "chunk_id": 75,
-              "score": 0.5669,
+              "chunk_id": 5,
+              "score": 0.5974,
               "score_type": "cosine",
               "is_gold": false
             },
@@ -3480,16 +3498,16 @@
               "author": "Thomas J. Stanley Ph.D.; William D. Danko Ph.D.",
               "rank": 4,
               "chunk_id": 54,
-              "score": 0.5658,
+              "score": 0.5653,
               "score_type": "cosine",
               "is_gold": false
             },
             {
-              "title": "The Miracle of Self Discipline",
+              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
               "author": "Brian Tracy",
               "rank": 5,
-              "chunk_id": 28,
-              "score": 0.5486,
+              "chunk_id": 27,
+              "score": 0.5637,
               "score_type": "cosine",
               "is_gold": false
             }
@@ -3534,7 +3552,7 @@
               "author": "Morgan Housel",
               "rank": 2,
               "chunk_id": 75,
-              "score": 0.665,
+              "score": 0.7824,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -3547,7 +3565,7 @@
               "author": "Brian Tracy",
               "rank": 3,
               "chunk_id": 5,
-              "score": 0.6272,
+              "score": 0.6855,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -3555,11 +3573,11 @@
               ]
             },
             {
-              "title": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition",
-              "author": "David Thomas; Andrew Hunt",
+              "title": "The Millionaire Next Door",
+              "author": "Thomas J. Stanley Ph.D.; William D. Danko Ph.D.",
               "rank": 4,
-              "chunk_id": 72,
-              "score": 0.6213,
+              "chunk_id": 54,
+              "score": 0.6643,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -3568,14 +3586,244 @@
               ]
             },
             {
-              "title": "The Millionaire Next Door",
-              "author": "Thomas J. Stanley Ph.D.; William D. Danko Ph.D.",
+              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
+              "author": "Brian Tracy",
               "rank": 5,
-              "chunk_id": 54,
-              "score": 0.586,
+              "chunk_id": 27,
+              "score": 0.6608,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
+                "bm25",
+                "vector"
+              ]
+            }
+          ],
+          "fusion_note": "found by keyword + semantic"
+        }
+      }
+    },
+    "g23": {
+      "id": "g23",
+      "query": "eat that frog",
+      "query_type": "keyword",
+      "query_class": "known_item",
+      "scenario": "",
+      "gold_ids": [
+        23
+      ],
+      "strategies": {
+        "lexical": {
+          "verdict": "found",
+          "shown": {
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "rank": 1,
+            "chunk_id": 23,
+            "score": 0.8223,
+            "score_type": "bm25",
+            "is_gold": true
+          },
+          "gold_rank": 1,
+          "k": 5,
+          "gold_ids": [
+            23
+          ],
+          "results": [
+            {
+              "title": "Eat That Frog!",
+              "author": "Brian Tracy",
+              "rank": 1,
+              "chunk_id": 23,
+              "score": 0.8223,
+              "score_type": "bm25",
+              "is_gold": true
+            },
+            {
+              "title": "Eat to Live",
+              "author": "Joel Fuhrman M.D.",
+              "rank": 2,
+              "chunk_id": 49,
+              "score": 0.724,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "How to Be Heard",
+              "author": "Julian Treasure",
+              "rank": 3,
+              "chunk_id": 58,
+              "score": 0.4643,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "Essentialism",
+              "author": "Greg McKeown",
+              "rank": 4,
+              "chunk_id": 39,
+              "score": 0.4612,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "Moonwalking with Einstein",
+              "author": "Joshua Foer",
+              "rank": 5,
+              "chunk_id": 44,
+              "score": 0.4612,
+              "score_type": "bm25",
+              "is_gold": false
+            }
+          ]
+        },
+        "vector": {
+          "verdict": "found",
+          "shown": {
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "rank": 1,
+            "chunk_id": 23,
+            "score": 0.7308,
+            "score_type": "cosine",
+            "is_gold": true
+          },
+          "gold_rank": 1,
+          "k": 5,
+          "gold_ids": [
+            23
+          ],
+          "results": [
+            {
+              "title": "Eat That Frog!",
+              "author": "Brian Tracy",
+              "rank": 1,
+              "chunk_id": 23,
+              "score": 0.7308,
+              "score_type": "cosine",
+              "is_gold": true
+            },
+            {
+              "title": "Eat to Live",
+              "author": "Joel Fuhrman M.D.",
+              "rank": 2,
+              "chunk_id": 49,
+              "score": 0.5828,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Think and Grow Rich",
+              "author": "Napoleon Hill",
+              "rank": 3,
+              "chunk_id": 37,
+              "score": 0.5407,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Bigger Leaner Stronger",
+              "author": "Michael Matthews",
+              "rank": 4,
+              "chunk_id": 31,
+              "score": 0.5331,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "The Energy Bus",
+              "author": "Jon Gordon",
+              "rank": 5,
+              "chunk_id": 25,
+              "score": 0.5327,
+              "score_type": "cosine",
+              "is_gold": false
+            }
+          ]
+        },
+        "hybrid": {
+          "verdict": "found",
+          "shown": {
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "rank": 1,
+            "chunk_id": 23,
+            "score": 1.0,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ]
+          },
+          "gold_rank": 1,
+          "k": 5,
+          "gold_ids": [
+            23
+          ],
+          "results": [
+            {
+              "title": "Eat That Frog!",
+              "author": "Brian Tracy",
+              "rank": 1,
+              "chunk_id": 23,
+              "score": 1.0,
+              "score_type": "fused",
+              "is_gold": true,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Eat to Live",
+              "author": "Joel Fuhrman M.D.",
+              "rank": 2,
+              "chunk_id": 49,
+              "score": 0.8058,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "The Energy Bus",
+              "author": "Jon Gordon",
+              "rank": 3,
+              "chunk_id": 25,
+              "score": 0.7057,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Fat Chance",
+              "author": "Robert H. Lustig",
+              "rank": 4,
+              "chunk_id": 22,
+              "score": 0.7025,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Moonwalking with Einstein",
+              "author": "Joshua Foer",
+              "rank": 5,
+              "chunk_id": 44,
+              "score": 0.6669,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
                 "vector"
               ]
             }
@@ -3586,7 +3834,7 @@
     },
     "g25": {
       "id": "g25",
-      "query": "the energy bus jon gordon",
+      "query": "the energy bus",
       "query_type": "keyword",
       "query_class": "known_item",
       "scenario": "",
@@ -3601,7 +3849,7 @@
             "author": "Jon Gordon",
             "rank": 1,
             "chunk_id": 25,
-            "score": 0.9173,
+            "score": 0.8493,
             "score_type": "bm25",
             "is_gold": true
           },
@@ -3616,7 +3864,7 @@
               "author": "Jon Gordon",
               "rank": 1,
               "chunk_id": 25,
-              "score": 0.9173,
+              "score": 0.8493,
               "score_type": "bm25",
               "is_gold": true
             },
@@ -3665,7 +3913,7 @@
             "author": "Jon Gordon",
             "rank": 1,
             "chunk_id": 25,
-            "score": 0.8658,
+            "score": 0.7963,
             "score_type": "cosine",
             "is_gold": true
           },
@@ -3680,43 +3928,43 @@
               "author": "Jon Gordon",
               "rank": 1,
               "chunk_id": 25,
-              "score": 0.8658,
+              "score": 0.7963,
               "score_type": "cosine",
               "is_gold": true
             },
             {
-              "title": "Winning",
-              "author": "Jack Welch; Suzy Welch",
-              "rank": 2,
-              "chunk_id": 51,
-              "score": 0.5644,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Deep Work",
-              "author": "Cal Newport",
-              "rank": 3,
-              "chunk_id": 15,
-              "score": 0.5488,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
               "title": "The Power of Habit",
               "author": "Charles Duhigg",
-              "rank": 4,
+              "rank": 2,
               "chunk_id": 17,
-              "score": 0.5458,
+              "score": 0.5236,
               "score_type": "cosine",
               "is_gold": false
             },
             {
-              "title": "Slow Productivity",
-              "author": "Cal Newport",
+              "title": "The Willpower Instinct",
+              "author": "Kelly McGonigal",
+              "rank": 3,
+              "chunk_id": 2,
+              "score": 0.506,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Supercommunicators",
+              "author": "Charles Duhigg",
+              "rank": 4,
+              "chunk_id": 90,
+              "score": 0.5042,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "The Diary of a CEO",
+              "author": "Steven Bartlett",
               "rank": 5,
-              "chunk_id": 91,
-              "score": 0.537,
+              "chunk_id": 88,
+              "score": 0.5032,
               "score_type": "cosine",
               "is_gold": false
             }
@@ -3757,24 +4005,11 @@
               ]
             },
             {
-              "title": "Winning",
-              "author": "Jack Welch; Suzy Welch",
-              "rank": 2,
-              "chunk_id": 51,
-              "score": 0.6014,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
               "title": "The Power of Habit",
               "author": "Charles Duhigg",
-              "rank": 3,
+              "rank": 2,
               "chunk_id": 17,
-              "score": 0.5838,
+              "score": 0.6096,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -3783,23 +4018,37 @@
               ]
             },
             {
-              "title": "Deep Work",
-              "author": "Cal Newport",
-              "rank": 4,
-              "chunk_id": 15,
-              "score": 0.5705,
+              "title": "The Willpower Instinct",
+              "author": "Kelly McGonigal",
+              "rank": 3,
+              "chunk_id": 2,
+              "score": 0.5911,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
+                "bm25",
                 "vector"
               ]
             },
             {
-              "title": "Slow Productivity",
-              "author": "Cal Newport",
+              "title": "The Diary of a CEO",
+              "author": "Steven Bartlett",
+              "rank": 4,
+              "chunk_id": 88,
+              "score": 0.584,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "The Power of Less",
+              "author": "Leo Babauta",
               "rank": 5,
-              "chunk_id": 91,
-              "score": 0.5705,
+              "chunk_id": 6,
+              "score": 0.5793,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -4043,7 +4292,7 @@
     },
     "g32": {
       "id": "g32",
-      "query": "martin lings biography of the prophet muhammad",
+      "query": "muhammad, by martin lings",
       "query_type": "keyword",
       "query_class": "known_item",
       "scenario": "",
@@ -4058,7 +4307,7 @@
             "author": "Martin Lings",
             "rank": 1,
             "chunk_id": 32,
-            "score": 0.9005,
+            "score": 0.8681,
             "score_type": "bm25",
             "is_gold": true
           },
@@ -4073,25 +4322,25 @@
               "author": "Martin Lings",
               "rank": 1,
               "chunk_id": 32,
-              "score": 0.9005,
+              "score": 0.8681,
               "score_type": "bm25",
               "is_gold": true
             },
             {
-              "title": "Steve Jobs",
-              "author": "Walter Isaacson",
+              "title": "Clean Architecture",
+              "author": "Robert C. Martin",
               "rank": 2,
-              "chunk_id": 33,
-              "score": 0.7232,
+              "chunk_id": 77,
+              "score": 0.6332,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "Clean Architecture",
-              "author": "Robert C. Martin",
+              "title": "Your First Listen",
+              "author": "test",
               "rank": 3,
-              "chunk_id": 77,
-              "score": 0.6328,
+              "chunk_id": 45,
+              "score": 0.0039,
               "score_type": "bm25",
               "is_gold": false
             },
@@ -4100,16 +4349,16 @@
               "author": "Leo Babauta",
               "rank": 4,
               "chunk_id": 6,
-              "score": 0.3099,
+              "score": 0.0039,
               "score_type": "bm25",
               "is_gold": false
             },
             {
-              "title": "The 7 Habits of Highly Effective People",
-              "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+              "title": "21 Success Secrets of Self-Made Millionaires",
+              "author": "Brian Tracy",
               "rank": 5,
-              "chunk_id": 74,
-              "score": 0.3074,
+              "chunk_id": 5,
+              "score": 0.0038,
               "score_type": "bm25",
               "is_gold": false
             }
@@ -4122,7 +4371,7 @@
             "author": "Martin Lings",
             "rank": 1,
             "chunk_id": 32,
-            "score": 0.812,
+            "score": 0.8325,
             "score_type": "cosine",
             "is_gold": true
           },
@@ -4137,43 +4386,43 @@
               "author": "Martin Lings",
               "rank": 1,
               "chunk_id": 32,
-              "score": 0.812,
+              "score": 0.8325,
               "score_type": "cosine",
               "is_gold": true
             },
             {
-              "title": "Steve Jobs",
-              "author": "Walter Isaacson",
-              "rank": 2,
-              "chunk_id": 33,
-              "score": 0.5786,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
               "title": "The Psychology of Money",
               "author": "Morgan Housel",
-              "rank": 3,
+              "rank": 2,
               "chunk_id": 75,
-              "score": 0.5495,
+              "score": 0.5668,
               "score_type": "cosine",
               "is_gold": false
             },
             {
-              "title": "Benjamin Franklin: An American Life",
+              "title": "Crucial Conversations",
+              "author": "Kerry Patterson",
+              "rank": 3,
+              "chunk_id": 4,
+              "score": 0.5406,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Steve Jobs",
               "author": "Walter Isaacson",
               "rank": 4,
-              "chunk_id": 41,
-              "score": 0.5434,
+              "chunk_id": 33,
+              "score": 0.5291,
               "score_type": "cosine",
               "is_gold": false
             },
             {
-              "title": "Extreme Ownership",
-              "author": "Jocko Willink; Leif Babin",
+              "title": "Thinking, Fast and Slow",
+              "author": "Daniel Kahneman",
               "rank": 5,
-              "chunk_id": 46,
-              "score": 0.5394,
+              "chunk_id": 36,
+              "score": 0.5291,
               "score_type": "cosine",
               "is_gold": false
             }
@@ -4214,24 +4463,11 @@
               ]
             },
             {
-              "title": "Steve Jobs",
-              "author": "Walter Isaacson",
-              "rank": 2,
-              "chunk_id": 33,
-              "score": 0.7216,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
               "title": "The Psychology of Money",
               "author": "Morgan Housel",
-              "rank": 3,
+              "rank": 2,
               "chunk_id": 75,
-              "score": 0.6432,
+              "score": 0.6131,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -4240,11 +4476,24 @@
               ]
             },
             {
-              "title": "Benjamin Franklin: An American Life",
+              "title": "Crucial Conversations",
+              "author": "Kerry Patterson",
+              "rank": 3,
+              "chunk_id": 4,
+              "score": 0.5848,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Steve Jobs",
               "author": "Walter Isaacson",
               "rank": 4,
-              "chunk_id": 41,
-              "score": 0.6175,
+              "chunk_id": 33,
+              "score": 0.5724,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -4253,11 +4502,11 @@
               ]
             },
             {
-              "title": "The Business of Expertise",
-              "author": "David C. Baker",
+              "title": "Thinking, Fast and Slow",
+              "author": "Daniel Kahneman",
               "rank": 5,
-              "chunk_id": 60,
-              "score": 0.6131,
+              "chunk_id": 36,
+              "score": 0.5723,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -4451,235 +4700,6 @@
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
-                "vector"
-              ]
-            }
-          ],
-          "fusion_note": "found by keyword + semantic"
-        }
-      }
-    },
-    "g36": {
-      "id": "g36",
-      "query": "kahneman thinking fast and slow",
-      "query_type": "keyword",
-      "query_class": "known_item",
-      "scenario": "",
-      "gold_ids": [
-        36
-      ],
-      "strategies": {
-        "lexical": {
-          "verdict": "found",
-          "shown": {
-            "title": "Thinking, Fast and Slow",
-            "author": "Daniel Kahneman",
-            "rank": 1,
-            "chunk_id": 36,
-            "score": 0.889,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          "gold_rank": 1,
-          "k": 5,
-          "gold_ids": [
-            36
-          ],
-          "results": [
-            {
-              "title": "Thinking, Fast and Slow",
-              "author": "Daniel Kahneman",
-              "rank": 1,
-              "chunk_id": 36,
-              "score": 0.889,
-              "score_type": "bm25",
-              "is_gold": true
-            },
-            {
-              "title": "The Five Elements of Effective Thinking",
-              "author": "Edward B. Burger; Michael Starbird",
-              "rank": 2,
-              "chunk_id": 42,
-              "score": 0.6955,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "Six Thinking Hats",
-              "author": "Edward De Bono",
-              "rank": 3,
-              "chunk_id": 93,
-              "score": 0.6725,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "Slow Productivity",
-              "author": "Cal Newport",
-              "rank": 4,
-              "chunk_id": 91,
-              "score": 0.6707,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "21 Success Secrets of Self-Made Millionaires",
-              "author": "Brian Tracy",
-              "rank": 5,
-              "chunk_id": 5,
-              "score": 0.642,
-              "score_type": "bm25",
-              "is_gold": false
-            }
-          ]
-        },
-        "vector": {
-          "verdict": "found",
-          "shown": {
-            "title": "Thinking, Fast and Slow",
-            "author": "Daniel Kahneman",
-            "rank": 1,
-            "chunk_id": 36,
-            "score": 0.7975,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          "gold_rank": 1,
-          "k": 5,
-          "gold_ids": [
-            36
-          ],
-          "results": [
-            {
-              "title": "Thinking, Fast and Slow",
-              "author": "Daniel Kahneman",
-              "rank": 1,
-              "chunk_id": 36,
-              "score": 0.7975,
-              "score_type": "cosine",
-              "is_gold": true
-            },
-            {
-              "title": "Slow Productivity",
-              "author": "Cal Newport",
-              "rank": 2,
-              "chunk_id": 91,
-              "score": 0.5863,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Made to Stick",
-              "author": "Chip Heath; Dan Heath",
-              "rank": 3,
-              "chunk_id": 11,
-              "score": 0.5689,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "The Five Elements of Effective Thinking",
-              "author": "Edward B. Burger; Michael Starbird",
-              "rank": 4,
-              "chunk_id": 42,
-              "score": 0.5553,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Eat That Frog!",
-              "author": "Brian Tracy",
-              "rank": 5,
-              "chunk_id": 23,
-              "score": 0.5552,
-              "score_type": "cosine",
-              "is_gold": false
-            }
-          ]
-        },
-        "hybrid": {
-          "verdict": "found",
-          "shown": {
-            "title": "Thinking, Fast and Slow",
-            "author": "Daniel Kahneman",
-            "rank": 1,
-            "chunk_id": 36,
-            "score": 1.0,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ]
-          },
-          "gold_rank": 1,
-          "k": 5,
-          "gold_ids": [
-            36
-          ],
-          "results": [
-            {
-              "title": "Thinking, Fast and Slow",
-              "author": "Daniel Kahneman",
-              "rank": 1,
-              "chunk_id": 36,
-              "score": 1.0,
-              "score_type": "fused",
-              "is_gold": true,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Slow Productivity",
-              "author": "Cal Newport",
-              "rank": 2,
-              "chunk_id": 91,
-              "score": 0.7371,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "The Five Elements of Effective Thinking",
-              "author": "Edward B. Burger; Michael Starbird",
-              "rank": 3,
-              "chunk_id": 42,
-              "score": 0.7049,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Six Thinking Hats",
-              "author": "Edward De Bono",
-              "rank": 4,
-              "chunk_id": 93,
-              "score": 0.6917,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Made to Stick",
-              "author": "Chip Heath; Dan Heath",
-              "rank": 5,
-              "chunk_id": 11,
-              "score": 0.6628,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
                 "vector"
               ]
             }
@@ -6748,235 +6768,6 @@
         }
       }
     },
-    "g55": {
-      "id": "g55",
-      "query": "how to climb the ladder and get recognized for a bigger role",
-      "query_type": "semantic",
-      "query_class": "known_item",
-      "scenario": "",
-      "gold_ids": [
-        56
-      ],
-      "strategies": {
-        "lexical": {
-          "verdict": "wrong",
-          "shown": {
-            "title": "Bigger Leaner Stronger",
-            "author": "Michael Matthews",
-            "rank": 1,
-            "chunk_id": 31,
-            "score": 0.8132,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          "gold_rank": null,
-          "k": 5,
-          "gold_ids": [
-            56
-          ],
-          "results": [
-            {
-              "title": "Bigger Leaner Stronger",
-              "author": "Michael Matthews",
-              "rank": 1,
-              "chunk_id": 31,
-              "score": 0.8132,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "How to Win Friends & Influence People",
-              "author": "Dale Carnegie",
-              "rank": 2,
-              "chunk_id": 16,
-              "score": 0.758,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "How to Take Smart Notes",
-              "author": "Sonke Ahrens",
-              "rank": 3,
-              "chunk_id": 81,
-              "score": 0.7283,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "A Mind for Numbers",
-              "author": "Barbara Oakley",
-              "rank": 4,
-              "chunk_id": 80,
-              "score": 0.7147,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
-              "rank": 5,
-              "chunk_id": 27,
-              "score": 0.7025,
-              "score_type": "bm25",
-              "is_gold": false
-            }
-          ]
-        },
-        "vector": {
-          "verdict": "found",
-          "shown": {
-            "title": "Rise",
-            "author": "Patty Azzarello",
-            "rank": 3,
-            "chunk_id": 56,
-            "score": 0.6078,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          "gold_rank": 3,
-          "k": 5,
-          "gold_ids": [
-            56
-          ],
-          "results": [
-            {
-              "title": "The 5 Levels of Leadership",
-              "author": "John C. Maxwell",
-              "rank": 1,
-              "chunk_id": 48,
-              "score": 0.6767,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Good Leaders Ask Great Questions",
-              "author": "John C. Maxwell",
-              "rank": 2,
-              "chunk_id": 53,
-              "score": 0.6095,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Rise",
-              "author": "Patty Azzarello",
-              "rank": 3,
-              "chunk_id": 56,
-              "score": 0.6078,
-              "score_type": "cosine",
-              "is_gold": true
-            },
-            {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
-              "rank": 4,
-              "chunk_id": 27,
-              "score": 0.6022,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Extreme Ownership",
-              "author": "Jocko Willink; Leif Babin",
-              "rank": 5,
-              "chunk_id": 46,
-              "score": 0.5966,
-              "score_type": "cosine",
-              "is_gold": false
-            }
-          ]
-        },
-        "hybrid": {
-          "verdict": "found",
-          "shown": {
-            "title": "Rise",
-            "author": "Patty Azzarello",
-            "rank": 5,
-            "chunk_id": 56,
-            "score": 0.8663,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ]
-          },
-          "gold_rank": 5,
-          "k": 5,
-          "gold_ids": [
-            56
-          ],
-          "results": [
-            {
-              "title": "The 5 Levels of Leadership",
-              "author": "John C. Maxwell",
-              "rank": 1,
-              "chunk_id": 48,
-              "score": 0.9731,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
-              "rank": 2,
-              "chunk_id": 27,
-              "score": 0.8873,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Good Leaders Ask Great Questions",
-              "author": "John C. Maxwell",
-              "rank": 3,
-              "chunk_id": 53,
-              "score": 0.8783,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Bigger Leaner Stronger",
-              "author": "Michael Matthews",
-              "rank": 4,
-              "chunk_id": 31,
-              "score": 0.8668,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Rise",
-              "author": "Patty Azzarello",
-              "rank": 5,
-              "chunk_id": 56,
-              "score": 0.8663,
-              "score_type": "fused",
-              "is_gold": true,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            }
-          ],
-          "fusion_note": "found by keyword + semantic"
-        }
-      }
-    },
     "g59": {
       "id": "g59",
       "query": "how specialist advisors turn what they know into a lucrative practice",
@@ -7423,6 +7214,235 @@
               "rank": 5,
               "chunk_id": 46,
               "score": 0.8542,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            }
+          ],
+          "fusion_note": "found by keyword + semantic"
+        }
+      }
+    },
+    "g65": {
+      "id": "g65",
+      "query": "tiny daily choices that compound into big change over time",
+      "query_type": "semantic",
+      "query_class": "known_item",
+      "scenario": "",
+      "gold_ids": [
+        66
+      ],
+      "strategies": {
+        "lexical": {
+          "verdict": "wrong",
+          "shown": {
+            "title": "The 3 Secrets to Effective Time Investment",
+            "author": "Elizabeth Grace Saunders",
+            "rank": 1,
+            "chunk_id": 10,
+            "score": 0.7375,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          "gold_rank": null,
+          "k": 5,
+          "gold_ids": [
+            66
+          ],
+          "results": [
+            {
+              "title": "The 3 Secrets to Effective Time Investment",
+              "author": "Elizabeth Grace Saunders",
+              "rank": 1,
+              "chunk_id": 10,
+              "score": 0.7375,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "How to Win Friends & Influence People",
+              "author": "Dale Carnegie",
+              "rank": 2,
+              "chunk_id": 16,
+              "score": 0.696,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "A Mind for Numbers",
+              "author": "Barbara Oakley",
+              "rank": 3,
+              "chunk_id": 80,
+              "score": 0.6855,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "How to Be Heard",
+              "author": "Julian Treasure",
+              "rank": 4,
+              "chunk_id": 58,
+              "score": 0.6338,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "The Successful Speaker",
+              "author": "Grant Baldwin",
+              "rank": 5,
+              "chunk_id": 73,
+              "score": 0.6319,
+              "score_type": "bm25",
+              "is_gold": false
+            }
+          ]
+        },
+        "vector": {
+          "verdict": "wrong",
+          "shown": {
+            "title": "The Total Money Makeover",
+            "author": "Dave Ramsey",
+            "rank": 1,
+            "chunk_id": 21,
+            "score": 0.6011,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          "gold_rank": null,
+          "k": 5,
+          "gold_ids": [
+            66
+          ],
+          "results": [
+            {
+              "title": "The Total Money Makeover",
+              "author": "Dave Ramsey",
+              "rank": 1,
+              "chunk_id": 21,
+              "score": 0.6011,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "The 3 Secrets to Effective Time Investment",
+              "author": "Elizabeth Grace Saunders",
+              "rank": 2,
+              "chunk_id": 10,
+              "score": 0.5978,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Essentialism",
+              "author": "Greg McKeown",
+              "rank": 3,
+              "chunk_id": 39,
+              "score": 0.586,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Thinking, Fast and Slow",
+              "author": "Daniel Kahneman",
+              "rank": 4,
+              "chunk_id": 36,
+              "score": 0.5844,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Slow Productivity",
+              "author": "Cal Newport",
+              "rank": 5,
+              "chunk_id": 91,
+              "score": 0.5844,
+              "score_type": "cosine",
+              "is_gold": false
+            }
+          ]
+        },
+        "hybrid": {
+          "verdict": "wrong",
+          "shown": {
+            "title": "The 3 Secrets to Effective Time Investment",
+            "author": "Elizabeth Grace Saunders",
+            "rank": 1,
+            "chunk_id": 10,
+            "score": 0.9951,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ]
+          },
+          "gold_rank": null,
+          "k": 5,
+          "gold_ids": [
+            66
+          ],
+          "results": [
+            {
+              "title": "The 3 Secrets to Effective Time Investment",
+              "author": "Elizabeth Grace Saunders",
+              "rank": 1,
+              "chunk_id": 10,
+              "score": 0.9951,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "The Total Money Makeover",
+              "author": "Dave Ramsey",
+              "rank": 2,
+              "chunk_id": 21,
+              "score": 0.9681,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Essentialism",
+              "author": "Greg McKeown",
+              "rank": 3,
+              "chunk_id": 39,
+              "score": 0.9628,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "One Simple Idea, Revised and Expanded Edition",
+              "author": "Stephen Key",
+              "rank": 4,
+              "chunk_id": 26,
+              "score": 0.9459,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Eat That Frog!",
+              "author": "Brian Tracy",
+              "rank": 5,
+              "chunk_id": 23,
+              "score": 0.9382,
               "score_type": "fused",
               "is_gold": false,
               "found_by": [
@@ -9725,235 +9745,6 @@
         }
       }
     },
-    "g23": {
-      "id": "g23",
-      "query": "brian tracy on beating procrastination",
-      "query_type": "mixed",
-      "query_class": "known_item",
-      "scenario": "",
-      "gold_ids": [
-        23
-      ],
-      "strategies": {
-        "lexical": {
-          "verdict": "found",
-          "shown": {
-            "title": "Eat That Frog!",
-            "author": "Brian Tracy",
-            "rank": 1,
-            "chunk_id": 23,
-            "score": 0.8132,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          "gold_rank": 1,
-          "k": 5,
-          "gold_ids": [
-            23
-          ],
-          "results": [
-            {
-              "title": "Eat That Frog!",
-              "author": "Brian Tracy",
-              "rank": 1,
-              "chunk_id": 23,
-              "score": 0.8132,
-              "score_type": "bm25",
-              "is_gold": true
-            },
-            {
-              "title": "Speak to Win",
-              "author": "Brian Tracy",
-              "rank": 2,
-              "chunk_id": 9,
-              "score": 0.7834,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "Take Charge of Your Life",
-              "author": "Brian Tracy",
-              "rank": 3,
-              "chunk_id": 92,
-              "score": 0.7779,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "21 Success Secrets of Self-Made Millionaires",
-              "author": "Brian Tracy",
-              "rank": 4,
-              "chunk_id": 5,
-              "score": 0.772,
-              "score_type": "bm25",
-              "is_gold": false
-            },
-            {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
-              "rank": 5,
-              "chunk_id": 27,
-              "score": 0.7698,
-              "score_type": "bm25",
-              "is_gold": false
-            }
-          ]
-        },
-        "vector": {
-          "verdict": "found",
-          "shown": {
-            "title": "Eat That Frog!",
-            "author": "Brian Tracy",
-            "rank": 5,
-            "chunk_id": 23,
-            "score": 0.6812,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          "gold_rank": 5,
-          "k": 5,
-          "gold_ids": [
-            23
-          ],
-          "results": [
-            {
-              "title": "The Miracle of Self Discipline",
-              "author": "Brian Tracy",
-              "rank": 1,
-              "chunk_id": 28,
-              "score": 0.749,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
-              "rank": 2,
-              "chunk_id": 27,
-              "score": 0.7287,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Take Charge of Your Life",
-              "author": "Brian Tracy",
-              "rank": 3,
-              "chunk_id": 92,
-              "score": 0.7191,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Speak to Win",
-              "author": "Brian Tracy",
-              "rank": 4,
-              "chunk_id": 9,
-              "score": 0.7016,
-              "score_type": "cosine",
-              "is_gold": false
-            },
-            {
-              "title": "Eat That Frog!",
-              "author": "Brian Tracy",
-              "rank": 5,
-              "chunk_id": 23,
-              "score": 0.6812,
-              "score_type": "cosine",
-              "is_gold": true
-            }
-          ]
-        },
-        "hybrid": {
-          "verdict": "found",
-          "shown": {
-            "title": "Eat That Frog!",
-            "author": "Brian Tracy",
-            "rank": 5,
-            "chunk_id": 23,
-            "score": 0.9185,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ]
-          },
-          "gold_rank": 5,
-          "k": 5,
-          "gold_ids": [
-            23
-          ],
-          "results": [
-            {
-              "title": "The Miracle of Self Discipline",
-              "author": "Brian Tracy",
-              "rank": 1,
-              "chunk_id": 28,
-              "score": 0.9944,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
-              "author": "Brian Tracy",
-              "rank": 2,
-              "chunk_id": 27,
-              "score": 0.9702,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Take Charge of Your Life",
-              "author": "Brian Tracy",
-              "rank": 3,
-              "chunk_id": 92,
-              "score": 0.9597,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Speak to Win",
-              "author": "Brian Tracy",
-              "rank": 4,
-              "chunk_id": 9,
-              "score": 0.9394,
-              "score_type": "fused",
-              "is_gold": false,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            },
-            {
-              "title": "Eat That Frog!",
-              "author": "Brian Tracy",
-              "rank": 5,
-              "chunk_id": 23,
-              "score": 0.9185,
-              "score_type": "fused",
-              "is_gold": true,
-              "found_by": [
-                "bm25",
-                "vector"
-              ]
-            }
-          ],
-          "fusion_note": "found by keyword + semantic"
-        }
-      }
-    },
     "g27": {
       "id": "g27",
       "query": "brian tracy on setting and reaching your goals",
@@ -10182,6 +9973,235 @@
           "fusion_note": "found by keyword + semantic"
         }
       }
+    },
+    "g28": {
+      "id": "g28",
+      "query": "brian tracy's no-excuses take on self discipline",
+      "query_type": "mixed",
+      "query_class": "known_item",
+      "scenario": "",
+      "gold_ids": [
+        28
+      ],
+      "strategies": {
+        "lexical": {
+          "verdict": "found",
+          "shown": {
+            "title": "The Miracle of Self Discipline",
+            "author": "Brian Tracy",
+            "rank": 2,
+            "chunk_id": 28,
+            "score": 0.8135,
+            "score_type": "bm25",
+            "is_gold": true
+          },
+          "gold_rank": 2,
+          "k": 5,
+          "gold_ids": [
+            28
+          ],
+          "results": [
+            {
+              "title": "Take Charge of Your Life",
+              "author": "Brian Tracy",
+              "rank": 1,
+              "chunk_id": 92,
+              "score": 0.8265,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "The Miracle of Self Discipline",
+              "author": "Brian Tracy",
+              "rank": 2,
+              "chunk_id": 28,
+              "score": 0.8135,
+              "score_type": "bm25",
+              "is_gold": true
+            },
+            {
+              "title": "21 Success Secrets of Self-Made Millionaires",
+              "author": "Brian Tracy",
+              "rank": 3,
+              "chunk_id": 5,
+              "score": 0.7508,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "Discipline Is Destiny",
+              "author": "Ryan Holiday",
+              "rank": 4,
+              "chunk_id": 84,
+              "score": 0.7495,
+              "score_type": "bm25",
+              "is_gold": false
+            },
+            {
+              "title": "Can't Hurt Me",
+              "author": "David Goggins",
+              "rank": 5,
+              "chunk_id": 67,
+              "score": 0.7331,
+              "score_type": "bm25",
+              "is_gold": false
+            }
+          ]
+        },
+        "vector": {
+          "verdict": "found",
+          "shown": {
+            "title": "The Miracle of Self Discipline",
+            "author": "Brian Tracy",
+            "rank": 1,
+            "chunk_id": 28,
+            "score": 0.801,
+            "score_type": "cosine",
+            "is_gold": true
+          },
+          "gold_rank": 1,
+          "k": 5,
+          "gold_ids": [
+            28
+          ],
+          "results": [
+            {
+              "title": "The Miracle of Self Discipline",
+              "author": "Brian Tracy",
+              "rank": 1,
+              "chunk_id": 28,
+              "score": 0.801,
+              "score_type": "cosine",
+              "is_gold": true
+            },
+            {
+              "title": "Take Charge of Your Life",
+              "author": "Brian Tracy",
+              "rank": 2,
+              "chunk_id": 92,
+              "score": 0.6876,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
+              "author": "Brian Tracy",
+              "rank": 3,
+              "chunk_id": 27,
+              "score": 0.6795,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "Discipline Is Destiny",
+              "author": "Ryan Holiday",
+              "rank": 4,
+              "chunk_id": 84,
+              "score": 0.6582,
+              "score_type": "cosine",
+              "is_gold": false
+            },
+            {
+              "title": "21 Success Secrets of Self-Made Millionaires",
+              "author": "Brian Tracy",
+              "rank": 5,
+              "chunk_id": 5,
+              "score": 0.6524,
+              "score_type": "cosine",
+              "is_gold": false
+            }
+          ]
+        },
+        "hybrid": {
+          "verdict": "found",
+          "shown": {
+            "title": "The Miracle of Self Discipline",
+            "author": "Brian Tracy",
+            "rank": 1,
+            "chunk_id": 28,
+            "score": 0.9984,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ]
+          },
+          "gold_rank": 1,
+          "k": 5,
+          "gold_ids": [
+            28
+          ],
+          "results": [
+            {
+              "title": "The Miracle of Self Discipline",
+              "author": "Brian Tracy",
+              "rank": 1,
+              "chunk_id": 28,
+              "score": 0.9984,
+              "score_type": "fused",
+              "is_gold": true,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Take Charge of Your Life",
+              "author": "Brian Tracy",
+              "rank": 2,
+              "chunk_id": 92,
+              "score": 0.8726,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Goals! How to Get Everything You Want Faster Than You Ever Thought Possible",
+              "author": "Brian Tracy",
+              "rank": 3,
+              "chunk_id": 27,
+              "score": 0.8377,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "Discipline Is Destiny",
+              "author": "Ryan Holiday",
+              "rank": 4,
+              "chunk_id": 84,
+              "score": 0.8303,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            },
+            {
+              "title": "21 Success Secrets of Self-Made Millionaires",
+              "author": "Brian Tracy",
+              "rank": 5,
+              "chunk_id": 5,
+              "score": 0.8238,
+              "score_type": "fused",
+              "is_gold": false,
+              "found_by": [
+                "bm25",
+                "vector"
+              ]
+            }
+          ],
+          "fusion_note": "found by keyword + semantic"
+        }
+      }
     }
   },
   "pool_by_type": {
@@ -10193,11 +10213,11 @@
       "g16",
       "g18",
       "g21",
+      "g23",
       "g25",
       "g30",
       "g32",
-      "g33",
-      "g36"
+      "g33"
     ],
     "semantic": [
       "g3",
@@ -10209,9 +10229,9 @@
       "g29",
       "g34",
       "g53",
-      "g55",
       "g59",
-      "g64"
+      "g64",
+      "g65"
     ],
     "mixed": [
       "g2",
@@ -10224,8 +10244,8 @@
       "g17",
       "g19",
       "g22",
-      "g23",
-      "g27"
+      "g27",
+      "g28"
     ]
   },
   "representative": [

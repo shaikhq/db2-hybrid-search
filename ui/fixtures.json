@@ -13,46 +13,96 @@
   "queries": [
     {
       "id": 1,
-      "query": "doing well with your finances is more about behavior than being smart",
-      "query_type": "semantic",
+      "query": "atomic habits",
+      "query_type": "keyword",
       "featured": true,
       "gold_chunk_ids": [
-        75
+        66
       ],
-      "note": "A plain-language description using none of the book's own words. Keyword grabs a different money book; meaning-based search finds The Psychology of Money."
+      "note": "Exact title \u2014 the strongest keyword clue; every strategy nails it."
     },
     {
       "id": 2,
+      "query": "eat that frog",
+      "query_type": "keyword",
+      "featured": true,
+      "gold_chunk_ids": [
+        23
+      ],
+      "note": "A quirky exact title ('frog' is a distinctive token) \u2014 a clean keyword win."
+    },
+    {
+      "id": 3,
       "query": "teddy hamilton",
       "query_type": "keyword",
       "featured": true,
       "gold_chunk_ids": [
         97
       ],
-      "note": "Just the narrator's name \u2014 meaning-based search has nothing to embed and wanders off; keyword nails it, and hybrid keeps it."
-    },
-    {
-      "id": 3,
-      "query": "the goggins one",
-      "query_type": "keyword",
-      "featured": true,
-      "gold_chunk_ids": [
-        67
-      ],
-      "note": "A nickname for the author (Goggins). With a strong exact clue, every strategy agrees."
+      "note": "Just the narrator's name \u2014 keyword nails it; meaning-based search has nothing to embed and wanders."
     },
     {
       "id": 4,
-      "query": "jason fung on reversing blood-sugar disease",
+      "query": "doing well with your finances is more about behavior than being smart",
+      "query_type": "semantic",
+      "featured": true,
+      "gold_chunk_ids": [
+        75
+      ],
+      "note": "A paraphrase using none of the book's own words \u2014 keyword grabs a different money book; meaning finds The Psychology of Money."
+    },
+    {
+      "id": 5,
+      "query": "why we so often misjudge people we've just met",
+      "query_type": "semantic",
+      "featured": true,
+      "gold_chunk_ids": [
+        69
+      ],
+      "note": "The idea of Talking to Strangers in your own words \u2014 keyword lands a different communication book, meaning gets it."
+    },
+    {
+      "id": 6,
+      "query": "learning to say no to almost everything so you focus on the vital few",
+      "query_type": "semantic",
+      "featured": true,
+      "gold_chunk_ids": [
+        39
+      ],
+      "note": "The gist of Essentialism, worded around its own vocabulary \u2014 keyword drifts to a different productivity book."
+    },
+    {
+      "id": 7,
+      "query": "jason fung on reversing type 2 diabetes",
       "query_type": "mixed",
       "featured": true,
       "gold_chunk_ids": [
         61
       ],
-      "note": "Author name plus a paraphrased topic \u2014 combines to The Diabetes Code, not his Obesity Code."
+      "note": "Author's name plus a topic \u2014 combine to The Diabetes Code, not his Obesity Code."
     },
     {
-      "id": 5,
+      "id": 8,
+      "query": "cal newport on focusing deeply without distractions",
+      "query_type": "mixed",
+      "featured": true,
+      "gold_chunk_ids": [
+        15
+      ],
+      "note": "Author plus concept \u2014 picks Deep Work over his other title, Slow Productivity."
+    },
+    {
+      "id": 9,
+      "query": "the walter isaacson biography of the apple founder",
+      "query_type": "mixed",
+      "featured": true,
+      "gold_chunk_ids": [
+        33
+      ],
+      "note": "Author plus a description of the subject \u2014 picks Steve Jobs over his Benjamin Franklin biography."
+    },
+    {
+      "id": 10,
       "query": "books to get better at speaking in front of a crowd",
       "query_type": "semantic",
       "featured": true,
@@ -63,61 +113,803 @@
         73,
         79
       ],
-      "note": "A theme, not a single book \u2014 how many of the right public-speaking books surface."
-    },
-    {
-      "id": 6,
-      "query": "pragmatic programmer",
-      "query_type": "keyword",
-      "featured": true,
-      "gold_chunk_ids": [
-        72
-      ],
-      "note": "An exact title \u2014 straightforward for every strategy."
-    },
-    {
-      "id": 7,
-      "query": "atomic habits",
-      "query_type": "keyword",
-      "featured": true,
-      "gold_chunk_ids": [
-        66
-      ],
-      "note": "Exact title; the strongest possible keyword clue."
-    },
-    {
-      "id": 8,
-      "query": "the cal newport book about focusing deeply without distractions",
-      "query_type": "mixed",
-      "featured": true,
-      "gold_chunk_ids": [
-        15
-      ],
-      "note": "Author plus concept picks Deep Work over his other title, Slow Productivity."
-    },
-    {
-      "id": 9,
-      "query": "how our emotions and psychology shape the way we handle money",
-      "query_type": "semantic",
-      "featured": true,
-      "gold_chunk_ids": [
-        75
-      ],
-      "note": "Another angle on The Psychology of Money, worded around the book's own vocabulary."
-    },
-    {
-      "id": 10,
-      "query": "the walter isaacson biography of the apple founder",
-      "query_type": "mixed",
-      "featured": true,
-      "gold_chunk_ids": [
-        33
-      ],
-      "note": "Author plus a description of the subject picks Steve Jobs over his Benjamin Franklin biography."
+      "note": "A theme, not a single book \u2014 how many of the right public-speaking books surface (topical, scored by recall)."
     }
   ],
   "by_query": {
     "1": {
+      "lexical": {
+        "query": "atomic habits",
+        "mode": "lexical",
+        "k": 5,
+        "gold_chunk_ids": [
+          66
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 0.8279,
+            "score_type": "bm25",
+            "is_gold": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": 74,
+            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
+            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
+            "score": 0.6582,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 17,
+            "snippet": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-win",
+            "text": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
+            "score": 0.6056,
+            "score_type": "bm25",
+            "is_gold": false
+          }
+        ]
+      },
+      "vector": {
+        "query": "atomic habits",
+        "mode": "vector",
+        "k": 5,
+        "gold_chunk_ids": [
+          66
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 0.8092,
+            "score_type": "cosine",
+            "is_gold": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": 17,
+            "snippet": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-win",
+            "text": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
+            "score": 0.6325,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 74,
+            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
+            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
+            "score": 0.6095,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 11,
+            "snippet": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and D",
+            "text": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps....",
+            "score": 0.5841,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 19,
+            "snippet": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale C",
+            "text": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit....",
+            "score": 0.579,
+            "score_type": "cosine",
+            "is_gold": false
+          }
+        ]
+      },
+      "hybrid": {
+        "query": "atomic habits",
+        "mode": "hybrid",
+        "k": 5,
+        "gold_chunk_ids": [
+          66
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 1.0,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 1,
+                "score": 0.8279,
+                "norm": 1.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 1,
+                "score": 0.8092,
+                "norm": 1.0,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.1,
+              "vector": 0.9
+            }
+          },
+          {
+            "rank": 2,
+            "chunk_id": 17,
+            "snippet": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-win",
+            "text": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
+            "score": 0.7766,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 3,
+                "score": 0.6056,
+                "norm": 0.7314,
+                "gated": false
+              },
+              "vector": {
+                "rank": 2,
+                "score": 0.6325,
+                "norm": 0.7816,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0731,
+              "vector": 0.7034
+            }
+          },
+          {
+            "rank": 3,
+            "chunk_id": 74,
+            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
+            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
+            "score": 0.7573,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 2,
+                "score": 0.6582,
+                "norm": 0.795,
+                "gated": false
+              },
+              "vector": {
+                "rank": 3,
+                "score": 0.6095,
+                "norm": 0.7532,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0795,
+              "vector": 0.6778
+            }
+          },
+          {
+            "rank": 4,
+            "chunk_id": 11,
+            "snippet": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and D",
+            "text": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps....",
+            "score": 0.6496,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": null,
+                "score": null,
+                "norm": 0.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 4,
+                "score": 0.5841,
+                "norm": 0.7217,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0,
+              "vector": 0.6496
+            }
+          },
+          {
+            "rank": 5,
+            "chunk_id": 19,
+            "snippet": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale C",
+            "text": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit....",
+            "score": 0.6439,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": null,
+                "score": null,
+                "norm": 0.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 5,
+                "score": 0.579,
+                "norm": 0.7155,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0,
+              "vector": 0.6439
+            }
+          }
+        ],
+        "gates": {
+          "lexical_gated": false,
+          "vector_gated": false
+        }
+      }
+    },
+    "2": {
+      "lexical": {
+        "query": "eat that frog",
+        "mode": "lexical",
+        "k": 5,
+        "gold_chunk_ids": [
+          23
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 23,
+            "snippet": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything ",
+            "text": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
+            "score": 0.8223,
+            "score_type": "bm25",
+            "is_gold": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": 49,
+            "snippet": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live lo",
+            "text": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live longer, reduce your need for medications, and improve your health dramatically....",
+            "score": 0.724,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 58,
+            "snippet": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talk",
+            "text": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talking, but nobody is listening? Renowned five-time TED Talk speaker and author Julian Treasure reveals how to speak so that people listen and how to listen so that people feel heard....",
+            "score": 0.4643,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 39,
+            "snippet": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management ",
+            "text": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management strategy or a productivity technique. It is a systematic discipline for discerning what is absolutely essential, then eliminating everything that is not, so we can make the highest possible contribution toward the things that really matter....",
+            "score": 0.4612,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 44,
+            "snippet": "Moonwalking with Einstein by Joshua Foer. Narrated by Mike Chamberlain. The blockbuster phenomenon t",
+            "text": "Moonwalking with Einstein by Joshua Foer. Narrated by Mike Chamberlain. The blockbuster phenomenon that charts an amazing journey of the mind while revolutionizing our concept of memory. An instant best seller that is poised to become a classic, Moonwalking with Einstein recounts Joshua Foer's yearlong quest to improve his memory....",
+            "score": 0.4612,
+            "score_type": "bm25",
+            "is_gold": false
+          }
+        ]
+      },
+      "vector": {
+        "query": "eat that frog",
+        "mode": "vector",
+        "k": 5,
+        "gold_chunk_ids": [
+          23
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 23,
+            "snippet": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything ",
+            "text": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
+            "score": 0.7308,
+            "score_type": "cosine",
+            "is_gold": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": 49,
+            "snippet": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live lo",
+            "text": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live longer, reduce your need for medications, and improve your health dramatically....",
+            "score": 0.5828,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 37,
+            "snippet": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational ",
+            "text": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history....",
+            "score": 0.5407,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 31,
+            "snippet": "Bigger Leaner Stronger by Michael Matthews. Narrated by Michael Matthews. If you want to get bigger,",
+            "text": "Bigger Leaner Stronger by Michael Matthews. Narrated by Michael Matthews. If you want to get bigger, leaner, and stronger without steroids, good genetics, extreme dieting, or wasting ridiculous amounts of time in the gym...you want to listen to this book....",
+            "score": 0.5331,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 25,
+            "snippet": "The Energy Bus by Jon Gordon. Narrated by Jon Gordon. The Energy Bus takes listeners on an enlighten",
+            "text": "The Energy Bus by Jon Gordon. Narrated by Jon Gordon. The Energy Bus takes listeners on an enlightening and inspiring ride that reveals 10 secrets for approaching life and work with the kind of positive, forward thinking....",
+            "score": 0.5327,
+            "score_type": "cosine",
+            "is_gold": false
+          }
+        ]
+      },
+      "hybrid": {
+        "query": "eat that frog",
+        "mode": "hybrid",
+        "k": 5,
+        "gold_chunk_ids": [
+          23
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 23,
+            "snippet": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything ",
+            "text": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
+            "score": 1.0,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 1,
+                "score": 0.8223,
+                "norm": 1.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 1,
+                "score": 0.7308,
+                "norm": 1.0,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.1,
+              "vector": 0.9
+            }
+          },
+          {
+            "rank": 2,
+            "chunk_id": 49,
+            "snippet": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live lo",
+            "text": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live longer, reduce your need for medications, and improve your health dramatically....",
+            "score": 0.8058,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 2,
+                "score": 0.724,
+                "norm": 0.8805,
+                "gated": false
+              },
+              "vector": {
+                "rank": 2,
+                "score": 0.5828,
+                "norm": 0.7975,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0881,
+              "vector": 0.7177
+            }
+          },
+          {
+            "rank": 3,
+            "chunk_id": 25,
+            "snippet": "The Energy Bus by Jon Gordon. Narrated by Jon Gordon. The Energy Bus takes listeners on an enlighten",
+            "text": "The Energy Bus by Jon Gordon. Narrated by Jon Gordon. The Energy Bus takes listeners on an enlightening and inspiring ride that reveals 10 secrets for approaching life and work with the kind of positive, forward thinking....",
+            "score": 0.7057,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 10,
+                "score": 0.4086,
+                "norm": 0.4969,
+                "gated": false
+              },
+              "vector": {
+                "rank": 5,
+                "score": 0.5327,
+                "norm": 0.7289,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0497,
+              "vector": 0.656
+            }
+          },
+          {
+            "rank": 4,
+            "chunk_id": 22,
+            "snippet": "Fat Chance by Robert H. Lustig. Narrated by Jonathan Todd Ross. Compelling, controversial, and compl",
+            "text": "Fat Chance by Robert H. Lustig. Narrated by Jonathan Todd Ross. Compelling, controversial, and completely based in science, Fat Chance debunks the widely held notion to prove \"a calorie is NOT a calorie\", and takes that science to its logical conclusion....",
+            "score": 0.7025,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 13,
+                "score": 0.4014,
+                "norm": 0.4882,
+                "gated": false
+              },
+              "vector": {
+                "rank": 7,
+                "score": 0.5308,
+                "norm": 0.7263,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0488,
+              "vector": 0.6537
+            }
+          },
+          {
+            "rank": 5,
+            "chunk_id": 44,
+            "snippet": "Moonwalking with Einstein by Joshua Foer. Narrated by Mike Chamberlain. The blockbuster phenomenon t",
+            "text": "Moonwalking with Einstein by Joshua Foer. Narrated by Mike Chamberlain. The blockbuster phenomenon that charts an amazing journey of the mind while revolutionizing our concept of memory. An instant best seller that is poised to become a classic, Moonwalking with Einstein recounts Joshua Foer's yearlong quest to improve his memory....",
+            "score": 0.6669,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 5,
+                "score": 0.4612,
+                "norm": 0.5609,
+                "gated": false
+              },
+              "vector": {
+                "rank": 10,
+                "score": 0.496,
+                "norm": 0.6787,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0561,
+              "vector": 0.6108
+            }
+          }
+        ],
+        "gates": {
+          "lexical_gated": false,
+          "vector_gated": false
+        }
+      }
+    },
+    "3": {
+      "lexical": {
+        "query": "teddy hamilton",
+        "mode": "lexical",
+        "k": 5,
+        "gold_chunk_ids": [
+          97
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 97,
+            "snippet": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grays",
+            "text": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grayson Owens; Ava Lucas. The worst Adeline Reilly expected for her life were a few unholy ghosts haunting the hallways of Parsons Manor, not falling in love with her stalker and ending up in the clutches of a trafficking ring.",
+            "score": 0.7755,
+            "score_type": "bm25",
+            "is_gold": true
+          }
+        ]
+      },
+      "vector": {
+        "query": "teddy hamilton",
+        "mode": "vector",
+        "k": 5,
+        "gold_chunk_ids": [
+          97
+        ],
+        "gold_rank": null,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 37,
+            "snippet": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational ",
+            "text": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history....",
+            "score": 0.5049,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 2,
+            "chunk_id": 1,
+            "snippet": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-d",
+            "text": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
+            "score": 0.4849,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 58,
+            "snippet": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talk",
+            "text": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talking, but nobody is listening? Renowned five-time TED Talk speaker and author Julian Treasure reveals how to speak so that people listen and how to listen so that people feel heard....",
+            "score": 0.4817,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 15,
+            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
+            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
+            "score": 0.4807,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 3,
+            "snippet": "In the Line of Fire by Jerry Weissman. Narrated by Ax Norman. Discover how to avoid the defensive, e",
+            "text": "In the Line of Fire by Jerry Weissman. Narrated by Ax Norman. Discover how to avoid the defensive, evasive, or contentious answers that have destroyed political careers and ruin credibility....",
+            "score": 0.477,
+            "score_type": "cosine",
+            "is_gold": false
+          }
+        ]
+      },
+      "hybrid": {
+        "query": "teddy hamilton",
+        "mode": "hybrid",
+        "k": 5,
+        "gold_chunk_ids": [
+          97
+        ],
+        "gold_rank": 2,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 37,
+            "snippet": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational ",
+            "text": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history....",
+            "score": 0.9,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": null,
+                "score": null,
+                "norm": 0.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 1,
+                "score": 0.5049,
+                "norm": 1.0,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0,
+              "vector": 0.9
+            }
+          },
+          {
+            "rank": 2,
+            "chunk_id": 97,
+            "snippet": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grays",
+            "text": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grayson Owens; Ava Lucas. The worst Adeline Reilly expected for her life were a few unholy ghosts haunting the hallways of Parsons Manor, not falling in love with her stalker and ending up in the clutches of a trafficking ring.",
+            "score": 0.8757,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 1,
+                "score": 0.7755,
+                "norm": 1.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 21,
+                "score": 0.4352,
+                "norm": 0.8619,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.1,
+              "vector": 0.7757
+            }
+          },
+          {
+            "rank": 3,
+            "chunk_id": 1,
+            "snippet": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-d",
+            "text": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
+            "score": 0.8643,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": null,
+                "score": null,
+                "norm": 0.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 2,
+                "score": 0.4849,
+                "norm": 0.9603,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0,
+              "vector": 0.8643
+            }
+          },
+          {
+            "rank": 4,
+            "chunk_id": 58,
+            "snippet": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talk",
+            "text": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talking, but nobody is listening? Renowned five-time TED Talk speaker and author Julian Treasure reveals how to speak so that people listen and how to listen so that people feel heard....",
+            "score": 0.8586,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": null,
+                "score": null,
+                "norm": 0.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 3,
+                "score": 0.4817,
+                "norm": 0.954,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0,
+              "vector": 0.8586
+            }
+          },
+          {
+            "rank": 5,
+            "chunk_id": 15,
+            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
+            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
+            "score": 0.8568,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": null,
+                "score": null,
+                "norm": 0.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 4,
+                "score": 0.4807,
+                "norm": 0.952,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0,
+              "vector": 0.8568
+            }
+          }
+        ],
+        "gates": {
+          "lexical_gated": false,
+          "vector_gated": false
+        }
+      }
+    },
+    "4": {
       "lexical": {
         "query": "doing well with your finances is more about behavior than being smart",
         "mode": "lexical",
@@ -401,409 +1193,134 @@
         }
       }
     },
-    "2": {
+    "5": {
       "lexical": {
-        "query": "teddy hamilton",
+        "query": "why we so often misjudge people we've just met",
         "mode": "lexical",
         "k": 5,
         "gold_chunk_ids": [
-          97
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 97,
-            "snippet": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grays",
-            "text": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grayson Owens; Ava Lucas. The worst Adeline Reilly expected for her life were a few unholy ghosts haunting the hallways of Parsons Manor, not falling in love with her stalker and ending up in the clutches of a trafficking ring.",
-            "score": 0.7755,
-            "score_type": "bm25",
-            "is_gold": true
-          }
-        ]
-      },
-      "vector": {
-        "query": "teddy hamilton",
-        "mode": "vector",
-        "k": 5,
-        "gold_chunk_ids": [
-          97
+          69
         ],
         "gold_rank": null,
         "results": [
           {
             "rank": 1,
-            "chunk_id": 37,
-            "snippet": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational ",
-            "text": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history....",
-            "score": 0.5049,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 2,
-            "chunk_id": 1,
-            "snippet": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-d",
-            "text": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
-            "score": 0.4849,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
             "chunk_id": 58,
             "snippet": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talk",
             "text": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talking, but nobody is listening? Renowned five-time TED Talk speaker and author Julian Treasure reveals how to speak so that people listen and how to listen so that people feel heard....",
-            "score": 0.4817,
-            "score_type": "cosine",
+            "score": 0.7667,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 2,
+            "chunk_id": 23,
+            "snippet": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything ",
+            "text": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
+            "score": 0.7387,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 50,
+            "snippet": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasi",
+            "text": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
+            "score": 0.7328,
+            "score_type": "bm25",
             "is_gold": false
           },
           {
             "rank": 4,
-            "chunk_id": 15,
-            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
-            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
-            "score": 0.4807,
-            "score_type": "cosine",
+            "chunk_id": 39,
+            "snippet": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management ",
+            "text": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management strategy or a productivity technique. It is a systematic discipline for discerning what is absolutely essential, then eliminating everything that is not, so we can make the highest possible contribution toward the things that really matter....",
+            "score": 0.7251,
+            "score_type": "bm25",
             "is_gold": false
           },
           {
             "rank": 5,
-            "chunk_id": 3,
-            "snippet": "In the Line of Fire by Jerry Weissman. Narrated by Ax Norman. Discover how to avoid the defensive, e",
-            "text": "In the Line of Fire by Jerry Weissman. Narrated by Ax Norman. Discover how to avoid the defensive, evasive, or contentious answers that have destroyed political careers and ruin credibility....",
-            "score": 0.477,
-            "score_type": "cosine",
-            "is_gold": false
-          }
-        ]
-      },
-      "hybrid": {
-        "query": "teddy hamilton",
-        "mode": "hybrid",
-        "k": 5,
-        "gold_chunk_ids": [
-          97
-        ],
-        "gold_rank": 2,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 37,
-            "snippet": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational ",
-            "text": "Think and Grow Rich by Napoleon Hill. Narrated by Lloyd James. Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history....",
-            "score": 0.9,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 1,
-                "score": 0.5049,
-                "norm": 1.0,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.9
-            }
-          },
-          {
-            "rank": 2,
-            "chunk_id": 97,
-            "snippet": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grays",
-            "text": "Hunting Adeline by H. D. Carlton. Narrated by Teddy Hamilton; Michelle Sparks; Tempest Mensah; Grayson Owens; Ava Lucas. The worst Adeline Reilly expected for her life were a few unholy ghosts haunting the hallways of Parsons Manor, not falling in love with her stalker and ending up in the clutches of a trafficking ring.",
-            "score": 0.8757,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 1,
-                "score": 0.7755,
-                "norm": 1.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 21,
-                "score": 0.4352,
-                "norm": 0.8619,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.1,
-              "vector": 0.7757
-            }
-          },
-          {
-            "rank": 3,
             "chunk_id": 1,
             "snippet": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-d",
             "text": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
-            "score": 0.8643,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 2,
-                "score": 0.4849,
-                "norm": 0.9603,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.8643
-            }
-          },
-          {
-            "rank": 4,
-            "chunk_id": 58,
-            "snippet": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talk",
-            "text": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talking, but nobody is listening? Renowned five-time TED Talk speaker and author Julian Treasure reveals how to speak so that people listen and how to listen so that people feel heard....",
-            "score": 0.8586,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 3,
-                "score": 0.4817,
-                "norm": 0.954,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.8586
-            }
-          },
-          {
-            "rank": 5,
-            "chunk_id": 15,
-            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
-            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
-            "score": 0.8568,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 4,
-                "score": 0.4807,
-                "norm": 0.952,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.8568
-            }
-          }
-        ],
-        "gates": {
-          "lexical_gated": false,
-          "vector_gated": false
-        }
-      }
-    },
-    "3": {
-      "lexical": {
-        "query": "the goggins one",
-        "mode": "lexical",
-        "k": 5,
-        "gold_chunk_ids": [
-          67
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 67,
-            "snippet": "Can't Hurt Me by David Goggins. Narrated by David Goggins; Adam Skolnick. For David Goggins, childho",
-            "text": "Can't Hurt Me by David Goggins. Narrated by David Goggins; Adam Skolnick. For David Goggins, childhood was a nightmare--poverty, prejudice, and physical abuse colored his days and haunted his nights. But through self-discipline, mental toughness, and hard work, Goggins transformed himself....",
-            "score": 0.7638,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 88,
-            "snippet": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been o",
-            "text": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been one to follow conventional rules. He\u2019s achieved extraordinary success and emerged as one of the greatest marketing minds of our time by doing things differently. But there is a method to his maverick style....",
-            "score": 0.5488,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 26,
-            "snippet": "One Simple Idea, Revised and Expanded Edition by Stephen Key. Narrated by A. T. Chandler. With must-",
-            "text": "One Simple Idea, Revised and Expanded Edition by Stephen Key. Narrated by A. T. Chandler. With must-have updates, a new edition of the best-selling method that shows how anyone can turn their one simple idea into millions - without lifting a finger! Stephen Key is an award-winning inventor who has licensed more than 20 product ideas. In 2011, he shared the secrets to his success in...",
-            "score": 0.5225,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 18,
-            "snippet": "Unstuff Your Life by Andrew J. Mellen. Narrated by Andrew J. Mellen. One of the country's most sough",
-            "text": "Unstuff Your Life by Andrew J. Mellen. Narrated by Andrew J. Mellen. One of the country's most sought-after professional organizers makes his foolproof rescue plan available for everyone....",
-            "score": 0.5163,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 76,
-            "snippet": "Credence by Penelope Douglas. Narrated by Sofia Willingham; Greg Tremblay; Carson Beck; Michael Paul",
-            "text": "Credence by Penelope Douglas. Narrated by Sofia Willingham; Greg Tremblay; Carson Beck; Michael Pauley. Three of them, one of her, and a remote cabin in the woods. Let the hot winter nights ensue....",
-            "score": 0.5155,
+            "score": 0.7141,
             "score_type": "bm25",
             "is_gold": false
           }
         ]
       },
       "vector": {
-        "query": "the goggins one",
+        "query": "why we so often misjudge people we've just met",
         "mode": "vector",
         "k": 5,
         "gold_chunk_ids": [
-          67
+          69
         ],
         "gold_rank": 1,
         "results": [
           {
             "rank": 1,
-            "chunk_id": 67,
-            "snippet": "Can't Hurt Me by David Goggins. Narrated by David Goggins; Adam Skolnick. For David Goggins, childho",
-            "text": "Can't Hurt Me by David Goggins. Narrated by David Goggins; Adam Skolnick. For David Goggins, childhood was a nightmare--poverty, prejudice, and physical abuse colored his days and haunted his nights. But through self-discipline, mental toughness, and hard work, Goggins transformed himself....",
-            "score": 0.5542,
+            "chunk_id": 69,
+            "snippet": "Talking to Strangers by Malcolm Gladwell. Narrated by Malcolm Gladwell. Malcolm Gladwell, host of th",
+            "text": "Talking to Strangers by Malcolm Gladwell. Narrated by Malcolm Gladwell. Malcolm Gladwell, host of the podcast Revisionist History and author of the number-one New York Times best seller Outliers, reinvents the audiobook in this immersive production of Talking to Strangers, a powerful examination of our interactions with people....",
+            "score": 0.524,
             "score_type": "cosine",
             "is_gold": true
           },
           {
             "rank": 2,
-            "chunk_id": 26,
-            "snippet": "One Simple Idea, Revised and Expanded Edition by Stephen Key. Narrated by A. T. Chandler. With must-",
-            "text": "One Simple Idea, Revised and Expanded Edition by Stephen Key. Narrated by A. T. Chandler. With must-have updates, a new edition of the best-selling method that shows how anyone can turn their one simple idea into millions - without lifting a finger! Stephen Key is an award-winning inventor who has licensed more than 20 product ideas. In 2011, he shared the secrets to his success in...",
-            "score": 0.5313,
+            "chunk_id": 74,
+            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
+            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
+            "score": 0.5131,
             "score_type": "cosine",
             "is_gold": false
           },
           {
             "rank": 3,
-            "chunk_id": 41,
-            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
-            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
-            "score": 0.5048,
+            "chunk_id": 50,
+            "snippet": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasi",
+            "text": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
+            "score": 0.5121,
             "score_type": "cosine",
             "is_gold": false
           },
           {
             "rank": 4,
-            "chunk_id": 12,
-            "snippet": "The Autobiography of Black Hawk by Black Hawk. Narrated by Brett Barry. This story is told in the wo",
-            "text": "The Autobiography of Black Hawk by Black Hawk. Narrated by Brett Barry. This story is told in the words of a tragic figure in American history - a hook-nosed, hollow-cheeked old Sauk warrior who lived under four flags....",
-            "score": 0.5047,
+            "chunk_id": 4,
+            "snippet": "Crucial Conversations by Kerry Patterson. Narrated by Joseph Grenny. Perhaps once a decade, a book c",
+            "text": "Crucial Conversations by Kerry Patterson. Narrated by Joseph Grenny. Perhaps once a decade, a book comes along that transforms people's lives in a very real, measurable way. This is one of them....",
+            "score": 0.5084,
             "score_type": "cosine",
             "is_gold": false
           },
           {
             "rank": 5,
-            "chunk_id": 23,
-            "snippet": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything ",
-            "text": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
-            "score": 0.4946,
+            "chunk_id": 36,
+            "snippet": "Thinking, Fast and Slow by Daniel Kahneman. Narrated by Patrick Egan. The guru to the gurus at last ",
+            "text": "Thinking, Fast and Slow by Daniel Kahneman. Narrated by Patrick Egan. The guru to the gurus at last shares his knowledge with the rest of us....",
+            "score": 0.5011,
             "score_type": "cosine",
             "is_gold": false
           }
         ]
       },
       "hybrid": {
-        "query": "the goggins one",
+        "query": "why we so often misjudge people we've just met",
         "mode": "hybrid",
         "k": 5,
         "gold_chunk_ids": [
-          67
+          69
         ],
-        "gold_rank": 1,
+        "gold_rank": 2,
         "results": [
           {
             "rank": 1,
-            "chunk_id": 67,
-            "snippet": "Can't Hurt Me by David Goggins. Narrated by David Goggins; Adam Skolnick. For David Goggins, childho",
-            "text": "Can't Hurt Me by David Goggins. Narrated by David Goggins; Adam Skolnick. For David Goggins, childhood was a nightmare--poverty, prejudice, and physical abuse colored his days and haunted his nights. But through self-discipline, mental toughness, and hard work, Goggins transformed himself....",
-            "score": 1.0,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 1,
-                "score": 0.7638,
-                "norm": 1.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 1,
-                "score": 0.5542,
-                "norm": 1.0,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.1,
-              "vector": 0.9
-            }
-          },
-          {
-            "rank": 2,
-            "chunk_id": 26,
-            "snippet": "One Simple Idea, Revised and Expanded Edition by Stephen Key. Narrated by A. T. Chandler. With must-",
-            "text": "One Simple Idea, Revised and Expanded Edition by Stephen Key. Narrated by A. T. Chandler. With must-have updates, a new edition of the best-selling method that shows how anyone can turn their one simple idea into millions - without lifting a finger! Stephen Key is an award-winning inventor who has licensed more than 20 product ideas. In 2011, he shared the secrets to his success in...",
-            "score": 0.9311,
+            "chunk_id": 50,
+            "snippet": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasi",
+            "text": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
+            "score": 0.9752,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -813,28 +1330,59 @@
             "per_leg": {
               "bm25": {
                 "rank": 3,
-                "score": 0.5225,
-                "norm": 0.6841,
+                "score": 0.7328,
+                "norm": 0.9558,
                 "gated": false
               },
               "vector": {
-                "rank": 2,
-                "score": 0.5313,
-                "norm": 0.9586,
+                "rank": 3,
+                "score": 0.5121,
+                "norm": 0.9774,
                 "gated": false
               }
             },
             "contribution": {
-              "bm25": 0.0684,
-              "vector": 0.8627
+              "bm25": 0.0956,
+              "vector": 0.8797
+            }
+          },
+          {
+            "rank": 2,
+            "chunk_id": 69,
+            "snippet": "Talking to Strangers by Malcolm Gladwell. Narrated by Malcolm Gladwell. Malcolm Gladwell, host of th",
+            "text": "Talking to Strangers by Malcolm Gladwell. Narrated by Malcolm Gladwell. Malcolm Gladwell, host of the podcast Revisionist History and author of the number-one New York Times best seller Outliers, reinvents the audiobook in this immersive production of Talking to Strangers, a powerful examination of our interactions with people....",
+            "score": 0.9658,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 19,
+                "score": 0.5042,
+                "norm": 0.6576,
+                "gated": false
+              },
+              "vector": {
+                "rank": 1,
+                "score": 0.524,
+                "norm": 1.0,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0658,
+              "vector": 0.9
             }
           },
           {
             "rank": 3,
-            "chunk_id": 69,
-            "snippet": "Talking to Strangers by Malcolm Gladwell. Narrated by Malcolm Gladwell. Malcolm Gladwell, host of th",
-            "text": "Talking to Strangers by Malcolm Gladwell. Narrated by Malcolm Gladwell. Malcolm Gladwell, host of the podcast Revisionist History and author of the number-one New York Times best seller Outliers, reinvents the audiobook in this immersive production of Talking to Strangers, a powerful examination of our interactions with people....",
-            "score": 0.8405,
+            "chunk_id": 74,
+            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
+            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
+            "score": 0.9609,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -844,28 +1392,28 @@
             "per_leg": {
               "bm25": {
                 "rank": 9,
-                "score": 0.487,
-                "norm": 0.6376,
+                "score": 0.6108,
+                "norm": 0.7967,
                 "gated": false
               },
               "vector": {
-                "rank": 8,
-                "score": 0.4783,
-                "norm": 0.863,
+                "rank": 2,
+                "score": 0.5131,
+                "norm": 0.9792,
                 "gated": false
               }
             },
             "contribution": {
-              "bm25": 0.0638,
-              "vector": 0.7767
+              "bm25": 0.0797,
+              "vector": 0.8812
             }
           },
           {
             "rank": 4,
-            "chunk_id": 41,
-            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
-            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
-            "score": 0.8376,
+            "chunk_id": 70,
+            "snippet": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert o",
+            "text": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential....",
+            "score": 0.9276,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -874,29 +1422,29 @@
             ],
             "per_leg": {
               "bm25": {
-                "rank": 48,
-                "score": 0.1367,
-                "norm": 0.1789,
+                "rank": 11,
+                "score": 0.5913,
+                "norm": 0.7713,
                 "gated": false
               },
               "vector": {
-                "rank": 3,
-                "score": 0.5048,
-                "norm": 0.9108,
+                "rank": 6,
+                "score": 0.4951,
+                "norm": 0.9449,
                 "gated": false
               }
             },
             "contribution": {
-              "bm25": 0.0179,
-              "vector": 0.8197
+              "bm25": 0.0771,
+              "vector": 0.8504
             }
           },
           {
             "rank": 5,
-            "chunk_id": 12,
-            "snippet": "The Autobiography of Black Hawk by Black Hawk. Narrated by Brett Barry. This story is told in the wo",
-            "text": "The Autobiography of Black Hawk by Black Hawk. Narrated by Brett Barry. This story is told in the words of a tragic figure in American history - a hook-nosed, hollow-cheeked old Sauk warrior who lived under four flags....",
-            "score": 0.8376,
+            "chunk_id": 1,
+            "snippet": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-d",
+            "text": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
+            "score": 0.9118,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -905,21 +1453,21 @@
             ],
             "per_leg": {
               "bm25": {
-                "rank": 47,
-                "score": 0.1375,
-                "norm": 0.18,
+                "rank": 5,
+                "score": 0.7141,
+                "norm": 0.9314,
                 "gated": false
               },
               "vector": {
-                "rank": 4,
-                "score": 0.5047,
-                "norm": 0.9106,
+                "rank": 10,
+                "score": 0.4766,
+                "norm": 0.9096,
                 "gated": false
               }
             },
             "contribution": {
-              "bm25": 0.018,
-              "vector": 0.8196
+              "bm25": 0.0931,
+              "vector": 0.8186
             }
           }
         ],
@@ -929,9 +1477,293 @@
         }
       }
     },
-    "4": {
+    "6": {
       "lexical": {
-        "query": "jason fung on reversing blood-sugar disease",
+        "query": "learning to say no to almost everything so you focus on the vital few",
+        "mode": "lexical",
+        "k": 5,
+        "gold_chunk_ids": [
+          39
+        ],
+        "gold_rank": null,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 23,
+            "snippet": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything ",
+            "text": "Eat That Frog! by Brian Tracy. Narrated by Brian Tracy. There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
+            "score": 0.7879,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 2,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 0.7726,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 50,
+            "snippet": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasi",
+            "text": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
+            "score": 0.7701,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 73,
+            "snippet": "The Successful Speaker by Grant Baldwin. Narrated by Grant Baldwin. Do you have a message you want t",
+            "text": "The Successful Speaker by Grant Baldwin. Narrated by Grant Baldwin. Do you have a message you want to get out into the world? Have you ever dreamed of speaking for a living? Is there something you have to say, but you just aren't sure what to do next? The Successful Speaker is a proven, easy-to-follow guide to helping you do just that....",
+            "score": 0.7569,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 58,
+            "snippet": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talk",
+            "text": "How to Be Heard by Julian Treasure. Narrated by Julian Treasure. Have you ever felt like you're talking, but nobody is listening? Renowned five-time TED Talk speaker and author Julian Treasure reveals how to speak so that people listen and how to listen so that people feel heard....",
+            "score": 0.7529,
+            "score_type": "bm25",
+            "is_gold": false
+          }
+        ]
+      },
+      "vector": {
+        "query": "learning to say no to almost everything so you focus on the vital few",
+        "mode": "vector",
+        "k": 5,
+        "gold_chunk_ids": [
+          39
+        ],
+        "gold_rank": 2,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 6,
+            "snippet": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to str",
+            "text": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to streamline your life by identifying the essential and eliminating the unnecessary....",
+            "score": 0.6155,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 2,
+            "chunk_id": 39,
+            "snippet": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management ",
+            "text": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management strategy or a productivity technique. It is a systematic discipline for discerning what is absolutely essential, then eliminating everything that is not, so we can make the highest possible contribution toward the things that really matter....",
+            "score": 0.614,
+            "score_type": "cosine",
+            "is_gold": true
+          },
+          {
+            "rank": 3,
+            "chunk_id": 19,
+            "snippet": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale C",
+            "text": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit....",
+            "score": 0.5983,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 2,
+            "snippet": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University ps",
+            "text": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity....",
+            "score": 0.5931,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 70,
+            "snippet": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert o",
+            "text": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential....",
+            "score": 0.589,
+            "score_type": "cosine",
+            "is_gold": false
+          }
+        ]
+      },
+      "hybrid": {
+        "query": "learning to say no to almost everything so you focus on the vital few",
+        "mode": "hybrid",
+        "k": 5,
+        "gold_chunk_ids": [
+          39
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 39,
+            "snippet": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management ",
+            "text": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management strategy or a productivity technique. It is a systematic discipline for discerning what is absolutely essential, then eliminating everything that is not, so we can make the highest possible contribution toward the things that really matter....",
+            "score": 0.9922,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 8,
+                "score": 0.7432,
+                "norm": 0.9432,
+                "gated": false
+              },
+              "vector": {
+                "rank": 2,
+                "score": 0.614,
+                "norm": 0.9976,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0943,
+              "vector": 0.8978
+            }
+          },
+          {
+            "rank": 2,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 0.9551,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 2,
+                "score": 0.7726,
+                "norm": 0.9805,
+                "gated": false
+              },
+              "vector": {
+                "rank": 6,
+                "score": 0.5861,
+                "norm": 0.9523,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.098,
+              "vector": 0.857
+            }
+          },
+          {
+            "rank": 3,
+            "chunk_id": 6,
+            "snippet": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to str",
+            "text": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to streamline your life by identifying the essential and eliminating the unnecessary....",
+            "score": 0.9504,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 58,
+                "score": 0.3971,
+                "norm": 0.504,
+                "gated": false
+              },
+              "vector": {
+                "rank": 1,
+                "score": 0.6155,
+                "norm": 1.0,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0504,
+              "vector": 0.9
+            }
+          },
+          {
+            "rank": 4,
+            "chunk_id": 70,
+            "snippet": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert o",
+            "text": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential....",
+            "score": 0.9499,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 11,
+                "score": 0.6982,
+                "norm": 0.8861,
+                "gated": false
+              },
+              "vector": {
+                "rank": 5,
+                "score": 0.589,
+                "norm": 0.957,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0886,
+              "vector": 0.8613
+            }
+          },
+          {
+            "rank": 5,
+            "chunk_id": 2,
+            "snippet": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University ps",
+            "text": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity....",
+            "score": 0.9436,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 21,
+                "score": 0.6008,
+                "norm": 0.7625,
+                "gated": false
+              },
+              "vector": {
+                "rank": 4,
+                "score": 0.5931,
+                "norm": 0.9637,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0762,
+              "vector": 0.8673
+            }
+          }
+        ],
+        "gates": {
+          "lexical_gated": false,
+          "vector_gated": false
+        }
+      }
+    },
+    "7": {
+      "lexical": {
+        "query": "jason fung on reversing type 2 diabetes",
         "mode": "lexical",
         "k": 5,
         "gold_chunk_ids": [
@@ -944,7 +1776,7 @@
             "chunk_id": 61,
             "snippet": "The Diabetes Code by Dr. Jason Fung. Narrated by Dr. Jason Fung. Today, most doctors, dietitians, an",
             "text": "The Diabetes Code by Dr. Jason Fung. Narrated by Dr. Jason Fung. Today, most doctors, dietitians, and even diabetes specialists consider type 2 diabetes to be a chronic and progressive disease - a life sentence with no possibility of parole....",
-            "score": 0.866,
+            "score": 0.9215,
             "score_type": "bm25",
             "is_gold": true
           },
@@ -959,35 +1791,35 @@
           },
           {
             "rank": 3,
-            "chunk_id": 85,
-            "snippet": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking ",
-            "text": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking manifesto on living better and longer that challenges the conventional medical thinking on aging and reveals a new approach to preventing chronic disease and extending long-term health, from a visionary physician and leading longevity expert....",
-            "score": 0.7279,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 71,
-            "snippet": "House of Earth and Blood by Sarah J. Maas. Narrated by Elizabeth Evans. Bryce Quinlan had the perfec",
-            "text": "House of Earth and Blood by Sarah J. Maas. Narrated by Elizabeth Evans. Bryce Quinlan had the perfect life-working hard all day and partying all night - until a demon murdered her closest friends, leaving her bereft, wounded, and alone. When the accused is behind bars but the crimes start up again, Bryce finds herself at the heart of the investigation....",
-            "score": 0.6217,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
             "chunk_id": 24,
             "snippet": "Stein on Writing by Sol Stein. Narrated by Christopher Lane. Stein on Writing provides immediately u",
             "text": "Stein on Writing by Sol Stein. Narrated by Christopher Lane. Stein on Writing provides immediately useful advice for writers of fiction and nonfiction, whether newcomers or accomplished professionals....",
             "score": 0.5615,
             "score_type": "bm25",
             "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 38,
+            "snippet": "HBR's 10 Must Reads on Strategy by Harvard Business Review; Michael E. Porter; W. Chan Kim; Renee Re",
+            "text": "HBR's 10 Must Reads on Strategy by Harvard Business Review; Michael E. Porter; W. Chan Kim; Renee Renee. Narrated by Paul McLain. Is your company spending too much time on strategy development - with too little to show for it....",
+            "score": 0.5427,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 85,
+            "snippet": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking ",
+            "text": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking manifesto on living better and longer that challenges the conventional medical thinking on aging and reveals a new approach to preventing chronic disease and extending long-term health, from a visionary physician and leading longevity expert....",
+            "score": 0.525,
+            "score_type": "bm25",
+            "is_gold": false
           }
         ]
       },
       "vector": {
-        "query": "jason fung on reversing blood-sugar disease",
+        "query": "jason fung on reversing type 2 diabetes",
         "mode": "vector",
         "k": 5,
         "gold_chunk_ids": [
@@ -1000,7 +1832,7 @@
             "chunk_id": 61,
             "snippet": "The Diabetes Code by Dr. Jason Fung. Narrated by Dr. Jason Fung. Today, most doctors, dietitians, an",
             "text": "The Diabetes Code by Dr. Jason Fung. Narrated by Dr. Jason Fung. Today, most doctors, dietitians, and even diabetes specialists consider type 2 diabetes to be a chronic and progressive disease - a life sentence with no possibility of parole....",
-            "score": 0.7851,
+            "score": 0.8238,
             "score_type": "cosine",
             "is_gold": true
           },
@@ -1009,7 +1841,7 @@
             "chunk_id": 57,
             "snippet": "The Obesity Code by Jason Fung. Narrated by Brian Nishii. We are in the midst of an obesity epidemic",
             "text": "The Obesity Code by Jason Fung. Narrated by Brian Nishii. We are in the midst of an obesity epidemic, but despite being inundated with diet advice we are only getting fatter. We count calories and exercise regularly, yet still the pounds won't budge....",
-            "score": 0.6679,
+            "score": 0.6748,
             "score_type": "cosine",
             "is_gold": false
           },
@@ -1018,16 +1850,16 @@
             "chunk_id": 22,
             "snippet": "Fat Chance by Robert H. Lustig. Narrated by Jonathan Todd Ross. Compelling, controversial, and compl",
             "text": "Fat Chance by Robert H. Lustig. Narrated by Jonathan Todd Ross. Compelling, controversial, and completely based in science, Fat Chance debunks the widely held notion to prove \"a calorie is NOT a calorie\", and takes that science to its logical conclusion....",
-            "score": 0.6063,
+            "score": 0.6001,
             "score_type": "cosine",
             "is_gold": false
           },
           {
             "rank": 4,
-            "chunk_id": 49,
-            "snippet": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live lo",
-            "text": "Eat to Live by Joel Fuhrman M.D.. Narrated by Joel Fuhrman. This is a book that will let you live longer, reduce your need for medications, and improve your health dramatically....",
-            "score": 0.5643,
+            "chunk_id": 17,
+            "snippet": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-win",
+            "text": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
+            "score": 0.5593,
             "score_type": "cosine",
             "is_gold": false
           },
@@ -1036,14 +1868,14 @@
             "chunk_id": 31,
             "snippet": "Bigger Leaner Stronger by Michael Matthews. Narrated by Michael Matthews. If you want to get bigger,",
             "text": "Bigger Leaner Stronger by Michael Matthews. Narrated by Michael Matthews. If you want to get bigger, leaner, and stronger without steroids, good genetics, extreme dieting, or wasting ridiculous amounts of time in the gym...you want to listen to this book....",
-            "score": 0.557,
+            "score": 0.5589,
             "score_type": "cosine",
             "is_gold": false
           }
         ]
       },
       "hybrid": {
-        "query": "jason fung on reversing blood-sugar disease",
+        "query": "jason fung on reversing type 2 diabetes",
         "mode": "hybrid",
         "k": 5,
         "gold_chunk_ids": [
@@ -1066,13 +1898,13 @@
             "per_leg": {
               "bm25": {
                 "rank": 1,
-                "score": 0.866,
+                "score": 0.9215,
                 "norm": 1.0,
                 "gated": false
               },
               "vector": {
                 "rank": 1,
-                "score": 0.7851,
+                "score": 0.8238,
                 "norm": 1.0,
                 "gated": false
               }
@@ -1087,7 +1919,7 @@
             "chunk_id": 57,
             "snippet": "The Obesity Code by Jason Fung. Narrated by Brian Nishii. We are in the midst of an obesity epidemic",
             "text": "The Obesity Code by Jason Fung. Narrated by Brian Nishii. We are in the midst of an obesity epidemic, but despite being inundated with diet advice we are only getting fatter. We count calories and exercise regularly, yet still the pounds won't budge....",
-            "score": 0.8548,
+            "score": 0.8209,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -1098,19 +1930,19 @@
               "bm25": {
                 "rank": 2,
                 "score": 0.7717,
-                "norm": 0.8912,
+                "norm": 0.8375,
                 "gated": false
               },
               "vector": {
                 "rank": 2,
-                "score": 0.6679,
-                "norm": 0.8508,
+                "score": 0.6748,
+                "norm": 0.8191,
                 "gated": false
               }
             },
             "contribution": {
-              "bm25": 0.0891,
-              "vector": 0.7657
+              "bm25": 0.0837,
+              "vector": 0.7372
             }
           },
           {
@@ -1118,7 +1950,7 @@
             "chunk_id": 22,
             "snippet": "Fat Chance by Robert H. Lustig. Narrated by Jonathan Todd Ross. Compelling, controversial, and compl",
             "text": "Fat Chance by Robert H. Lustig. Narrated by Jonathan Todd Ross. Compelling, controversial, and completely based in science, Fat Chance debunks the widely held notion to prove \"a calorie is NOT a calorie\", and takes that science to its logical conclusion....",
-            "score": 0.6951,
+            "score": 0.6556,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -1133,22 +1965,22 @@
               },
               "vector": {
                 "rank": 3,
-                "score": 0.6063,
-                "norm": 0.7723,
+                "score": 0.6001,
+                "norm": 0.7285,
                 "gated": false
               }
             },
             "contribution": {
               "bm25": 0.0,
-              "vector": 0.6951
+              "vector": 0.6556
             }
           },
           {
             "rank": 4,
-            "chunk_id": 85,
-            "snippet": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking ",
-            "text": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking manifesto on living better and longer that challenges the conventional medical thinking on aging and reveals a new approach to preventing chronic disease and extending long-term health, from a visionary physician and leading longevity expert....",
-            "score": 0.6807,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 0.6426,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -1157,29 +1989,29 @@
             ],
             "per_leg": {
               "bm25": {
-                "rank": 3,
-                "score": 0.7279,
-                "norm": 0.8406,
+                "rank": 11,
+                "score": 0.4411,
+                "norm": 0.4787,
                 "gated": false
               },
               "vector": {
-                "rank": 20,
-                "score": 0.5204,
-                "norm": 0.6629,
+                "rank": 8,
+                "score": 0.5443,
+                "norm": 0.6608,
                 "gated": false
               }
             },
             "contribution": {
-              "bm25": 0.0841,
-              "vector": 0.5966
+              "bm25": 0.0479,
+              "vector": 0.5947
             }
           },
           {
             "rank": 5,
-            "chunk_id": 66,
-            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
-            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
-            "score": 0.6776,
+            "chunk_id": 85,
+            "snippet": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking ",
+            "text": "Outlive by Peter Attia MD; Bill Gifford - contributor. Narrated by Peter Attia MD. A groundbreaking manifesto on living better and longer that challenges the conventional medical thinking on aging and reveals a new approach to preventing chronic disease and extending long-term health, from a visionary physician and leading longevity expert....",
+            "score": 0.6294,
             "score_type": "fused",
             "is_gold": false,
             "found_by": [
@@ -1188,21 +2020,21 @@
             ],
             "per_leg": {
               "bm25": {
-                "rank": 12,
-                "score": 0.4411,
-                "norm": 0.5094,
+                "rank": 5,
+                "score": 0.525,
+                "norm": 0.5698,
                 "gated": false
               },
               "vector": {
-                "rank": 7,
-                "score": 0.5466,
-                "norm": 0.6963,
+                "rank": 17,
+                "score": 0.5239,
+                "norm": 0.636,
                 "gated": false
               }
             },
             "contribution": {
-              "bm25": 0.0509,
-              "vector": 0.6267
+              "bm25": 0.057,
+              "vector": 0.5724
             }
           }
         ],
@@ -1212,7 +2044,575 @@
         }
       }
     },
-    "5": {
+    "8": {
+      "lexical": {
+        "query": "cal newport on focusing deeply without distractions",
+        "mode": "lexical",
+        "k": 5,
+        "gold_chunk_ids": [
+          15
+        ],
+        "gold_rank": 2,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 91,
+            "snippet": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling autho",
+            "text": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload....",
+            "score": 0.832,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 2,
+            "chunk_id": 15,
+            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
+            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
+            "score": 0.7802,
+            "score_type": "bm25",
+            "is_gold": true
+          },
+          {
+            "rank": 3,
+            "chunk_id": 43,
+            "snippet": "Getting to Yes by Roger Fisher; William Ury. Narrated by Dennis Boutsikaris. Getting to Yes is a str",
+            "text": "Getting to Yes by Roger Fisher; William Ury. Narrated by Dennis Boutsikaris. Getting to Yes is a straightorward, universally applicable method for negotiating personal and professional disputes without getting taken - and without getting angry....",
+            "score": 0.6572,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 20,
+            "snippet": "Thinner Leaner Stronger by Michael Matthews. Narrated by Elliott Denkers. You can get that beautiful",
+            "text": "Thinner Leaner Stronger by Michael Matthews. Narrated by Elliott Denkers. You can get that beautiful \u201cbeach-ready\u201d body without following a bland, boring, bodybuilding diet and without doing exhausting strength training workouts you hate. And this exercise book shows you how....",
+            "score": 0.648,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 56,
+            "snippet": "Rise by Patty Azzarello. Narrated by Patty Azzarello. A straight-shooting Silicon Valley executive r",
+            "text": "Rise by Patty Azzarello. Narrated by Patty Azzarello. A straight-shooting Silicon Valley executive reveals insider career strategies to becoming a great leader, developing your network, succeeding without wasting time, and managing trade-offs....",
+            "score": 0.5896,
+            "score_type": "bm25",
+            "is_gold": false
+          }
+        ]
+      },
+      "vector": {
+        "query": "cal newport on focusing deeply without distractions",
+        "mode": "vector",
+        "k": 5,
+        "gold_chunk_ids": [
+          15
+        ],
+        "gold_rank": 2,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 91,
+            "snippet": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling autho",
+            "text": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload....",
+            "score": 0.7148,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 2,
+            "chunk_id": 15,
+            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
+            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
+            "score": 0.6592,
+            "score_type": "cosine",
+            "is_gold": true
+          },
+          {
+            "rank": 3,
+            "chunk_id": 84,
+            "snippet": "Discipline Is Destiny by Ryan Holiday. Narrated by Ryan Holiday. In his bestselling book Courage is ",
+            "text": "Discipline Is Destiny by Ryan Holiday. Narrated by Ryan Holiday. In his bestselling book Courage is Calling, author Ryan Holiday made the Stoic case for a bold and brave life. In this much-anticipated second book of his Stoic Virtue series, Holiday celebrates the awesome power of self-discipline and those who have seized it....",
+            "score": 0.5793,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 0.5768,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 74,
+            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
+            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
+            "score": 0.5746,
+            "score_type": "cosine",
+            "is_gold": false
+          }
+        ]
+      },
+      "hybrid": {
+        "query": "cal newport on focusing deeply without distractions",
+        "mode": "hybrid",
+        "k": 5,
+        "gold_chunk_ids": [
+          15
+        ],
+        "gold_rank": 2,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 91,
+            "snippet": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling autho",
+            "text": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload....",
+            "score": 1.0,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 1,
+                "score": 0.832,
+                "norm": 1.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 1,
+                "score": 0.7148,
+                "norm": 1.0,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.1,
+              "vector": 0.9
+            }
+          },
+          {
+            "rank": 2,
+            "chunk_id": 15,
+            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
+            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
+            "score": 0.9237,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 2,
+                "score": 0.7802,
+                "norm": 0.9378,
+                "gated": false
+              },
+              "vector": {
+                "rank": 2,
+                "score": 0.6592,
+                "norm": 0.9222,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0938,
+              "vector": 0.83
+            }
+          },
+          {
+            "rank": 3,
+            "chunk_id": 66,
+            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
+            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
+            "score": 0.7792,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 16,
+                "score": 0.4411,
+                "norm": 0.5302,
+                "gated": false
+              },
+              "vector": {
+                "rank": 4,
+                "score": 0.5768,
+                "norm": 0.8069,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.053,
+              "vector": 0.7262
+            }
+          },
+          {
+            "rank": 4,
+            "chunk_id": 24,
+            "snippet": "Stein on Writing by Sol Stein. Narrated by Christopher Lane. Stein on Writing provides immediately u",
+            "text": "Stein on Writing by Sol Stein. Narrated by Christopher Lane. Stein on Writing provides immediately useful advice for writers of fiction and nonfiction, whether newcomers or accomplished professionals....",
+            "score": 0.7748,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 7,
+                "score": 0.5615,
+                "norm": 0.6749,
+                "gated": false
+              },
+              "vector": {
+                "rank": 11,
+                "score": 0.5617,
+                "norm": 0.7859,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0675,
+              "vector": 0.7073
+            }
+          },
+          {
+            "rank": 5,
+            "chunk_id": 70,
+            "snippet": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert o",
+            "text": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential....",
+            "score": 0.7705,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 14,
+                "score": 0.4641,
+                "norm": 0.5579,
+                "gated": false
+              },
+              "vector": {
+                "rank": 8,
+                "score": 0.5677,
+                "norm": 0.7941,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0558,
+              "vector": 0.7147
+            }
+          }
+        ],
+        "gates": {
+          "lexical_gated": false,
+          "vector_gated": false
+        }
+      }
+    },
+    "9": {
+      "lexical": {
+        "query": "the walter isaacson biography of the apple founder",
+        "mode": "lexical",
+        "k": 5,
+        "gold_chunk_ids": [
+          33
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 33,
+            "snippet": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biograph",
+            "text": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs....",
+            "score": 0.8626,
+            "score_type": "bm25",
+            "is_gold": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": 41,
+            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
+            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
+            "score": 0.7771,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 2,
+            "snippet": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University ps",
+            "text": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity....",
+            "score": 0.658,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 29,
+            "snippet": "Your Brain at Work by David Rock. Narrated by Bob Walter. David Rock knows how the brain works - and",
+            "text": "Your Brain at Work by David Rock. Narrated by Bob Walter. David Rock knows how the brain works - and more specifically, how it works in a work setting. Rock shows how it's possible to not only to survive in today's overwhelming work environment but succeed in it - and still feel energized and accomplished at the end of the day....",
+            "score": 0.6338,
+            "score_type": "bm25",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 6,
+            "snippet": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to str",
+            "text": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to streamline your life by identifying the essential and eliminating the unnecessary....",
+            "score": 0.3944,
+            "score_type": "bm25",
+            "is_gold": false
+          }
+        ]
+      },
+      "vector": {
+        "query": "the walter isaacson biography of the apple founder",
+        "mode": "vector",
+        "k": 5,
+        "gold_chunk_ids": [
+          33
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 33,
+            "snippet": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biograph",
+            "text": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs....",
+            "score": 0.7393,
+            "score_type": "cosine",
+            "is_gold": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": 41,
+            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
+            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
+            "score": 0.6645,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": 30,
+            "snippet": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorize",
+            "text": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorized look at the extraordinary life of one of Silicon Valley's most exciting, unpredictable, and ambitious entrepreneurs....",
+            "score": 0.5712,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 4,
+            "chunk_id": 60,
+            "snippet": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise m",
+            "text": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise manifesto is intended to elevate the impact of advisors who sell insight as entrepreneurs....",
+            "score": 0.5452,
+            "score_type": "cosine",
+            "is_gold": false
+          },
+          {
+            "rank": 5,
+            "chunk_id": 88,
+            "snippet": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been o",
+            "text": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been one to follow conventional rules. He\u2019s achieved extraordinary success and emerged as one of the greatest marketing minds of our time by doing things differently. But there is a method to his maverick style....",
+            "score": 0.5401,
+            "score_type": "cosine",
+            "is_gold": false
+          }
+        ]
+      },
+      "hybrid": {
+        "query": "the walter isaacson biography of the apple founder",
+        "mode": "hybrid",
+        "k": 5,
+        "gold_chunk_ids": [
+          33
+        ],
+        "gold_rank": 1,
+        "results": [
+          {
+            "rank": 1,
+            "chunk_id": 33,
+            "snippet": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biograph",
+            "text": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs....",
+            "score": 1.0,
+            "score_type": "fused",
+            "is_gold": true,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 1,
+                "score": 0.8626,
+                "norm": 1.0,
+                "gated": false
+              },
+              "vector": {
+                "rank": 1,
+                "score": 0.7393,
+                "norm": 1.0,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.1,
+              "vector": 0.9
+            }
+          },
+          {
+            "rank": 2,
+            "chunk_id": 41,
+            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
+            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
+            "score": 0.8991,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 2,
+                "score": 0.7771,
+                "norm": 0.901,
+                "gated": false
+              },
+              "vector": {
+                "rank": 2,
+                "score": 0.6645,
+                "norm": 0.8989,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0901,
+              "vector": 0.809
+            }
+          },
+          {
+            "rank": 3,
+            "chunk_id": 30,
+            "snippet": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorize",
+            "text": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorized look at the extraordinary life of one of Silicon Valley's most exciting, unpredictable, and ambitious entrepreneurs....",
+            "score": 0.7335,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 39,
+                "score": 0.3287,
+                "norm": 0.3811,
+                "gated": false
+              },
+              "vector": {
+                "rank": 3,
+                "score": 0.5712,
+                "norm": 0.7726,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0381,
+              "vector": 0.6954
+            }
+          },
+          {
+            "rank": 4,
+            "chunk_id": 60,
+            "snippet": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise m",
+            "text": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise manifesto is intended to elevate the impact of advisors who sell insight as entrepreneurs....",
+            "score": 0.7065,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 17,
+                "score": 0.3688,
+                "norm": 0.4275,
+                "gated": false
+              },
+              "vector": {
+                "rank": 4,
+                "score": 0.5452,
+                "norm": 0.7375,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0428,
+              "vector": 0.6637
+            }
+          },
+          {
+            "rank": 5,
+            "chunk_id": 88,
+            "snippet": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been o",
+            "text": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been one to follow conventional rules. He\u2019s achieved extraordinary success and emerged as one of the greatest marketing minds of our time by doing things differently. But there is a method to his maverick style....",
+            "score": 0.6984,
+            "score_type": "fused",
+            "is_gold": false,
+            "found_by": [
+              "bm25",
+              "vector"
+            ],
+            "per_leg": {
+              "bm25": {
+                "rank": 27,
+                "score": 0.3526,
+                "norm": 0.4088,
+                "gated": false
+              },
+              "vector": {
+                "rank": 5,
+                "score": 0.5401,
+                "norm": 0.7306,
+                "gated": false
+              }
+            },
+            "contribution": {
+              "bm25": 0.0409,
+              "vector": 0.6576
+            }
+          }
+        ],
+        "gates": {
+          "lexical_gated": false,
+          "vector_gated": false
+        }
+      }
+    },
+    "10": {
       "lexical": {
         "query": "books to get better at speaking in front of a crowd",
         "mode": "lexical",
@@ -1507,1394 +2907,24 @@
           "vector_gated": false
         }
       }
-    },
-    "6": {
-      "lexical": {
-        "query": "pragmatic programmer",
-        "mode": "lexical",
-        "k": 5,
-        "gold_chunk_ids": [
-          72
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 72,
-            "snippet": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition by David Thomas; Andrew Hunt. Narrat",
-            "text": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition by David Thomas; Andrew Hunt. Narrated by Anna Katarina. Dave Thomas and Andy Hunt wrote the first edition of this influential book in 1999 to help their clients create better software and rediscover the joy of coding. These lessons have helped a generation of programmers examine the very essence of software development....",
-            "score": 0.7552,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 77,
-            "snippet": "Clean Architecture by Robert C. Martin. Narrated by Theodore O'Brien. Clean Architecture is an essen",
-            "text": "Clean Architecture by Robert C. Martin. Narrated by Theodore O'Brien. Clean Architecture is an essential book for every current or aspiring software architect, systems analyst, system designer, and software manager - and for every programmer who must execute someone else\u2019s designs....",
-            "score": 0.6328,
-            "score_type": "bm25",
-            "is_gold": false
-          }
-        ]
-      },
-      "vector": {
-        "query": "pragmatic programmer",
-        "mode": "vector",
-        "k": 5,
-        "gold_chunk_ids": [
-          72
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 72,
-            "snippet": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition by David Thomas; Andrew Hunt. Narrat",
-            "text": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition by David Thomas; Andrew Hunt. Narrated by Anna Katarina. Dave Thomas and Andy Hunt wrote the first edition of this influential book in 1999 to help their clients create better software and rediscover the joy of coding. These lessons have helped a generation of programmers examine the very essence of software development....",
-            "score": 0.7892,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 94,
-            "snippet": "Build a Large Language Model (From Scratch) by Sebastian Raschka. Narrated by Julie Brierley. In Bui",
-            "text": "Build a Large Language Model (From Scratch) by Sebastian Raschka. Narrated by Julie Brierley. In Build a Large Language Model (from Scratch) bestselling author Sebastian Raschka guides you step by step through creating your own LLM. Each stage is explained with clear text, diagrams, and examples.",
-            "score": 0.5774,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 77,
-            "snippet": "Clean Architecture by Robert C. Martin. Narrated by Theodore O'Brien. Clean Architecture is an essen",
-            "text": "Clean Architecture by Robert C. Martin. Narrated by Theodore O'Brien. Clean Architecture is an essential book for every current or aspiring software architect, systems analyst, system designer, and software manager - and for every programmer who must execute someone else\u2019s designs....",
-            "score": 0.5706,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 8,
-            "snippet": "The Productivity Project by Chris Bailey. Narrated by Chris Bailey. A fresh, personal, and entertain",
-            "text": "The Productivity Project by Chris Bailey. Narrated by Chris Bailey. A fresh, personal, and entertaining exploration of a topic that concerns all of us: how to be more productive at work and in every facet of our lives....",
-            "score": 0.565,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 83,
-            "snippet": "Crucial Conversations (Third Edition) by Joseph Grenny; Kerry Patterson; Ron McMillan; Al Switzler; ",
-            "text": "Crucial Conversations (Third Edition) by Joseph Grenny; Kerry Patterson; Ron McMillan; Al Switzler; Emily Gregory. Narrated by Emily Gregory; Joseph Grenny. The book that revolutionized business communications has been updated for today's workplace. Crucial Conversations provides powerful skills to ensure every conversation - especially difficult ones - leads to the results you want....",
-            "score": 0.5552,
-            "score_type": "cosine",
-            "is_gold": false
-          }
-        ]
-      },
-      "hybrid": {
-        "query": "pragmatic programmer",
-        "mode": "hybrid",
-        "k": 5,
-        "gold_chunk_ids": [
-          72
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 72,
-            "snippet": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition by David Thomas; Andrew Hunt. Narrat",
-            "text": "The Pragmatic Programmer: 20th Anniversary Edition, 2nd Edition by David Thomas; Andrew Hunt. Narrated by Anna Katarina. Dave Thomas and Andy Hunt wrote the first edition of this influential book in 1999 to help their clients create better software and rediscover the joy of coding. These lessons have helped a generation of programmers examine the very essence of software development....",
-            "score": 1.0,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 1,
-                "score": 0.7552,
-                "norm": 1.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 1,
-                "score": 0.7892,
-                "norm": 1.0,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.1,
-              "vector": 0.9
-            }
-          },
-          {
-            "rank": 2,
-            "chunk_id": 77,
-            "snippet": "Clean Architecture by Robert C. Martin. Narrated by Theodore O'Brien. Clean Architecture is an essen",
-            "text": "Clean Architecture by Robert C. Martin. Narrated by Theodore O'Brien. Clean Architecture is an essential book for every current or aspiring software architect, systems analyst, system designer, and software manager - and for every programmer who must execute someone else\u2019s designs....",
-            "score": 0.7344,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 2,
-                "score": 0.6328,
-                "norm": 0.8379,
-                "gated": false
-              },
-              "vector": {
-                "rank": 3,
-                "score": 0.5706,
-                "norm": 0.7229,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0838,
-              "vector": 0.6506
-            }
-          },
-          {
-            "rank": 3,
-            "chunk_id": 94,
-            "snippet": "Build a Large Language Model (From Scratch) by Sebastian Raschka. Narrated by Julie Brierley. In Bui",
-            "text": "Build a Large Language Model (From Scratch) by Sebastian Raschka. Narrated by Julie Brierley. In Build a Large Language Model (from Scratch) bestselling author Sebastian Raschka guides you step by step through creating your own LLM. Each stage is explained with clear text, diagrams, and examples.",
-            "score": 0.6585,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 2,
-                "score": 0.5774,
-                "norm": 0.7317,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.6585
-            }
-          },
-          {
-            "rank": 4,
-            "chunk_id": 8,
-            "snippet": "The Productivity Project by Chris Bailey. Narrated by Chris Bailey. A fresh, personal, and entertain",
-            "text": "The Productivity Project by Chris Bailey. Narrated by Chris Bailey. A fresh, personal, and entertaining exploration of a topic that concerns all of us: how to be more productive at work and in every facet of our lives....",
-            "score": 0.6444,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 4,
-                "score": 0.565,
-                "norm": 0.716,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.6444
-            }
-          },
-          {
-            "rank": 5,
-            "chunk_id": 83,
-            "snippet": "Crucial Conversations (Third Edition) by Joseph Grenny; Kerry Patterson; Ron McMillan; Al Switzler; ",
-            "text": "Crucial Conversations (Third Edition) by Joseph Grenny; Kerry Patterson; Ron McMillan; Al Switzler; Emily Gregory. Narrated by Emily Gregory; Joseph Grenny. The book that revolutionized business communications has been updated for today's workplace. Crucial Conversations provides powerful skills to ensure every conversation - especially difficult ones - leads to the results you want....",
-            "score": 0.6332,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 5,
-                "score": 0.5552,
-                "norm": 0.7035,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.6332
-            }
-          }
-        ],
-        "gates": {
-          "lexical_gated": false,
-          "vector_gated": false
-        }
-      }
-    },
-    "7": {
-      "lexical": {
-        "query": "atomic habits",
-        "mode": "lexical",
-        "k": 5,
-        "gold_chunk_ids": [
-          66
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 66,
-            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
-            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
-            "score": 0.8279,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 74,
-            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
-            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
-            "score": 0.6582,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 17,
-            "snippet": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-win",
-            "text": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
-            "score": 0.6056,
-            "score_type": "bm25",
-            "is_gold": false
-          }
-        ]
-      },
-      "vector": {
-        "query": "atomic habits",
-        "mode": "vector",
-        "k": 5,
-        "gold_chunk_ids": [
-          66
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 66,
-            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
-            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
-            "score": 0.8092,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 17,
-            "snippet": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-win",
-            "text": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
-            "score": 0.6325,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 74,
-            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
-            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
-            "score": 0.6095,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 11,
-            "snippet": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and D",
-            "text": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps....",
-            "score": 0.5841,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 19,
-            "snippet": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale C",
-            "text": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit....",
-            "score": 0.579,
-            "score_type": "cosine",
-            "is_gold": false
-          }
-        ]
-      },
-      "hybrid": {
-        "query": "atomic habits",
-        "mode": "hybrid",
-        "k": 5,
-        "gold_chunk_ids": [
-          66
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 66,
-            "snippet": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a ",
-            "text": "Atomic Habits by James Clear. Narrated by James Clear. No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
-            "score": 1.0,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 1,
-                "score": 0.8279,
-                "norm": 1.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 1,
-                "score": 0.8092,
-                "norm": 1.0,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.1,
-              "vector": 0.9
-            }
-          },
-          {
-            "rank": 2,
-            "chunk_id": 17,
-            "snippet": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-win",
-            "text": "The Power of Habit by Charles Duhigg. Narrated by Mike Chamberlain. In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
-            "score": 0.7766,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 3,
-                "score": 0.6056,
-                "norm": 0.7314,
-                "gated": false
-              },
-              "vector": {
-                "rank": 2,
-                "score": 0.6325,
-                "norm": 0.7816,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0731,
-              "vector": 0.7034
-            }
-          },
-          {
-            "rank": 3,
-            "chunk_id": 74,
-            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
-            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
-            "score": 0.7573,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 2,
-                "score": 0.6582,
-                "norm": 0.795,
-                "gated": false
-              },
-              "vector": {
-                "rank": 3,
-                "score": 0.6095,
-                "norm": 0.7532,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0795,
-              "vector": 0.6778
-            }
-          },
-          {
-            "rank": 4,
-            "chunk_id": 11,
-            "snippet": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and D",
-            "text": "Made to Stick by Chip Heath; Dan Heath. Narrated by Charles Kahlenberg. In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps....",
-            "score": 0.6496,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 4,
-                "score": 0.5841,
-                "norm": 0.7217,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.6496
-            }
-          },
-          {
-            "rank": 5,
-            "chunk_id": 19,
-            "snippet": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale C",
-            "text": "How to Stop Worrying and Start Living by Dale Carnegie. Narrated by Andrew MacMillan. Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit....",
-            "score": 0.6439,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": null,
-                "score": null,
-                "norm": 0.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 5,
-                "score": 0.579,
-                "norm": 0.7155,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0,
-              "vector": 0.6439
-            }
-          }
-        ],
-        "gates": {
-          "lexical_gated": false,
-          "vector_gated": false
-        }
-      }
-    },
-    "8": {
-      "lexical": {
-        "query": "the cal newport book about focusing deeply without distractions",
-        "mode": "lexical",
-        "k": 5,
-        "gold_chunk_ids": [
-          15
-        ],
-        "gold_rank": 2,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 91,
-            "snippet": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling autho",
-            "text": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload....",
-            "score": 0.8355,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 2,
-            "chunk_id": 15,
-            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
-            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
-            "score": 0.8163,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          {
-            "rank": 3,
-            "chunk_id": 20,
-            "snippet": "Thinner Leaner Stronger by Michael Matthews. Narrated by Elliott Denkers. You can get that beautiful",
-            "text": "Thinner Leaner Stronger by Michael Matthews. Narrated by Elliott Denkers. You can get that beautiful \u201cbeach-ready\u201d body without following a bland, boring, bodybuilding diet and without doing exhausting strength training workouts you hate. And this exercise book shows you how....",
-            "score": 0.7302,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 31,
-            "snippet": "Bigger Leaner Stronger by Michael Matthews. Narrated by Michael Matthews. If you want to get bigger,",
-            "text": "Bigger Leaner Stronger by Michael Matthews. Narrated by Michael Matthews. If you want to get bigger, leaner, and stronger without steroids, good genetics, extreme dieting, or wasting ridiculous amounts of time in the gym...you want to listen to this book....",
-            "score": 0.7002,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 43,
-            "snippet": "Getting to Yes by Roger Fisher; William Ury. Narrated by Dennis Boutsikaris. Getting to Yes is a str",
-            "text": "Getting to Yes by Roger Fisher; William Ury. Narrated by Dennis Boutsikaris. Getting to Yes is a straightorward, universally applicable method for negotiating personal and professional disputes without getting taken - and without getting angry....",
-            "score": 0.6572,
-            "score_type": "bm25",
-            "is_gold": false
-          }
-        ]
-      },
-      "vector": {
-        "query": "the cal newport book about focusing deeply without distractions",
-        "mode": "vector",
-        "k": 5,
-        "gold_chunk_ids": [
-          15
-        ],
-        "gold_rank": 2,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 91,
-            "snippet": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling autho",
-            "text": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload....",
-            "score": 0.7368,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 2,
-            "chunk_id": 15,
-            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
-            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
-            "score": 0.6746,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          {
-            "rank": 3,
-            "chunk_id": 74,
-            "snippet": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Nar",
-            "text": "The 7 Habits of Highly Effective People by Sean Covey; Jim Collins - foreword; Stephen R. Covey. Narrated by Stephen R. Covey; Sean Covey. One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
-            "score": 0.6284,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 84,
-            "snippet": "Discipline Is Destiny by Ryan Holiday. Narrated by Ryan Holiday. In his bestselling book Courage is ",
-            "text": "Discipline Is Destiny by Ryan Holiday. Narrated by Ryan Holiday. In his bestselling book Courage is Calling, author Ryan Holiday made the Stoic case for a bold and brave life. In this much-anticipated second book of his Stoic Virtue series, Holiday celebrates the awesome power of self-discipline and those who have seized it....",
-            "score": 0.6155,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 39,
-            "snippet": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management ",
-            "text": "Essentialism by Greg McKeown. Narrated by Greg McKeown. Essentialism is more than a time-management strategy or a productivity technique. It is a systematic discipline for discerning what is absolutely essential, then eliminating everything that is not, so we can make the highest possible contribution toward the things that really matter....",
-            "score": 0.6057,
-            "score_type": "cosine",
-            "is_gold": false
-          }
-        ]
-      },
-      "hybrid": {
-        "query": "the cal newport book about focusing deeply without distractions",
-        "mode": "hybrid",
-        "k": 5,
-        "gold_chunk_ids": [
-          15
-        ],
-        "gold_rank": 2,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 91,
-            "snippet": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling autho",
-            "text": "Slow Productivity by Cal Newport. Narrated by Cal Newport. From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload....",
-            "score": 1.0,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 1,
-                "score": 0.8355,
-                "norm": 1.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 1,
-                "score": 0.7368,
-                "norm": 1.0,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.1,
-              "vector": 0.9
-            }
-          },
-          {
-            "rank": 2,
-            "chunk_id": 15,
-            "snippet": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and",
-            "text": "Deep Work by Cal Newport. Narrated by Jeff Bottoms. Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
-            "score": 0.9218,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 2,
-                "score": 0.8163,
-                "norm": 0.977,
-                "gated": false
-              },
-              "vector": {
-                "rank": 2,
-                "score": 0.6746,
-                "norm": 0.9156,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0977,
-              "vector": 0.8241
-            }
-          },
-          {
-            "rank": 3,
-            "chunk_id": 84,
-            "snippet": "Discipline Is Destiny by Ryan Holiday. Narrated by Ryan Holiday. In his bestselling book Courage is ",
-            "text": "Discipline Is Destiny by Ryan Holiday. Narrated by Ryan Holiday. In his bestselling book Courage is Calling, author Ryan Holiday made the Stoic case for a bold and brave life. In this much-anticipated second book of his Stoic Virtue series, Holiday celebrates the awesome power of self-discipline and those who have seized it....",
-            "score": 0.8178,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 13,
-                "score": 0.5503,
-                "norm": 0.6586,
-                "gated": false
-              },
-              "vector": {
-                "rank": 4,
-                "score": 0.6155,
-                "norm": 0.8354,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0659,
-              "vector": 0.7519
-            }
-          },
-          {
-            "rank": 4,
-            "chunk_id": 4,
-            "snippet": "Crucial Conversations by Kerry Patterson. Narrated by Joseph Grenny. Perhaps once a decade, a book c",
-            "text": "Crucial Conversations by Kerry Patterson. Narrated by Joseph Grenny. Perhaps once a decade, a book comes along that transforms people's lives in a very real, measurable way. This is one of them....",
-            "score": 0.7952,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 19,
-                "score": 0.4844,
-                "norm": 0.5797,
-                "gated": false
-              },
-              "vector": {
-                "rank": 6,
-                "score": 0.6035,
-                "norm": 0.8191,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.058,
-              "vector": 0.7372
-            }
-          },
-          {
-            "rank": 5,
-            "chunk_id": 70,
-            "snippet": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert o",
-            "text": "Failing Forward by John C. Maxwell. Narrated by Henry O. Arnold; John C. Maxwell. America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential....",
-            "score": 0.7873,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 7,
-                "score": 0.5913,
-                "norm": 0.7078,
-                "gated": false
-              },
-              "vector": {
-                "rank": 10,
-                "score": 0.5866,
-                "norm": 0.7962,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0708,
-              "vector": 0.7166
-            }
-          }
-        ],
-        "gates": {
-          "lexical_gated": false,
-          "vector_gated": false
-        }
-      }
-    },
-    "9": {
-      "lexical": {
-        "query": "how our emotions and psychology shape the way we handle money",
-        "mode": "lexical",
-        "k": 5,
-        "gold_chunk_ids": [
-          75
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 75,
-            "snippet": "The Psychology of Money by Morgan Housel. Narrated by Chris Hill. In The Psychology of Money, award-",
-            "text": "The Psychology of Money by Morgan Housel. Narrated by Chris Hill. In The Psychology of Money, award-winning author Morgan Housel shares 19 short stories exploring the strange ways people think about money and teaches you how to make better sense of one of life\u2019s most important topics....",
-            "score": 0.844,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 63,
-            "snippet": "Make Time by Jake Knapp; John Zeratsky. Narrated by Jake Knapp; John Zeratsky. Nobody ever looked at",
-            "text": "Make Time by Jake Knapp; John Zeratsky. Narrated by Jake Knapp; John Zeratsky. Nobody ever looked at an empty calendar and said, \"The best way to spend this time is by cramming it full of meetings!\" or got to work in the morning and thought, Today I'll spend hours on Facebook! Yet that's exactly what we do....",
-            "score": 0.7547,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 50,
-            "snippet": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasi",
-            "text": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
-            "score": 0.7305,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 57,
-            "snippet": "The Obesity Code by Jason Fung. Narrated by Brian Nishii. We are in the midst of an obesity epidemic",
-            "text": "The Obesity Code by Jason Fung. Narrated by Brian Nishii. We are in the midst of an obesity epidemic, but despite being inundated with diet advice we are only getting fatter. We count calories and exercise regularly, yet still the pounds won't budge....",
-            "score": 0.718,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 21,
-            "snippet": "The Total Money Makeover by Dave Ramsey. Narrated by Dave Ramsey. Dave Ramsey helps you transform yo",
-            "text": "The Total Money Makeover by Dave Ramsey. Narrated by Dave Ramsey. Dave Ramsey helps you transform your personal finances with time-tested tools for paying off debt, saving for retirement, and more.",
-            "score": 0.6838,
-            "score_type": "bm25",
-            "is_gold": false
-          }
-        ]
-      },
-      "vector": {
-        "query": "how our emotions and psychology shape the way we handle money",
-        "mode": "vector",
-        "k": 5,
-        "gold_chunk_ids": [
-          75
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 75,
-            "snippet": "The Psychology of Money by Morgan Housel. Narrated by Chris Hill. In The Psychology of Money, award-",
-            "text": "The Psychology of Money by Morgan Housel. Narrated by Chris Hill. In The Psychology of Money, award-winning author Morgan Housel shares 19 short stories exploring the strange ways people think about money and teaches you how to make better sense of one of life\u2019s most important topics....",
-            "score": 0.6799,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 50,
-            "snippet": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasi",
-            "text": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
-            "score": 0.5972,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 1,
-            "snippet": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-d",
-            "text": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
-            "score": 0.5866,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 2,
-            "snippet": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University ps",
-            "text": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity....",
-            "score": 0.5778,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 78,
-            "snippet": "$100M Offers by Alex Hormozi. Narrated by Alexander Hormozi. The methods contained within this book ",
-            "text": "$100M Offers by Alex Hormozi. Narrated by Alexander Hormozi. The methods contained within this book are so simple, so instantaneous, and so effective, it\u2019s as if they work by magic. If you implement even one tactic in this book, you\u2019ll see the change in your prospects' demeanor....",
-            "score": 0.5604,
-            "score_type": "cosine",
-            "is_gold": false
-          }
-        ]
-      },
-      "hybrid": {
-        "query": "how our emotions and psychology shape the way we handle money",
-        "mode": "hybrid",
-        "k": 5,
-        "gold_chunk_ids": [
-          75
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 75,
-            "snippet": "The Psychology of Money by Morgan Housel. Narrated by Chris Hill. In The Psychology of Money, award-",
-            "text": "The Psychology of Money by Morgan Housel. Narrated by Chris Hill. In The Psychology of Money, award-winning author Morgan Housel shares 19 short stories exploring the strange ways people think about money and teaches you how to make better sense of one of life\u2019s most important topics....",
-            "score": 1.0,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 1,
-                "score": 0.844,
-                "norm": 1.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 1,
-                "score": 0.6799,
-                "norm": 1.0,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.1,
-              "vector": 0.9
-            }
-          },
-          {
-            "rank": 2,
-            "chunk_id": 50,
-            "snippet": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasi",
-            "text": "Influence by Robert B. Cialdini. Narrated by George Newbern. Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
-            "score": 0.8771,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 3,
-                "score": 0.7305,
-                "norm": 0.8655,
-                "gated": false
-              },
-              "vector": {
-                "rank": 2,
-                "score": 0.5972,
-                "norm": 0.8784,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0866,
-              "vector": 0.7905
-            }
-          },
-          {
-            "rank": 3,
-            "chunk_id": 1,
-            "snippet": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-d",
-            "text": "Influence, New and Expanded by Robert B. Cialdini. Narrated by Robert B. Cialdini. In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
-            "score": 0.8545,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 9,
-                "score": 0.6585,
-                "norm": 0.7802,
-                "gated": false
-              },
-              "vector": {
-                "rank": 3,
-                "score": 0.5866,
-                "norm": 0.8628,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.078,
-              "vector": 0.7765
-            }
-          },
-          {
-            "rank": 4,
-            "chunk_id": 2,
-            "snippet": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University ps",
-            "text": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity....",
-            "score": 0.8431,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 8,
-                "score": 0.6597,
-                "norm": 0.7817,
-                "gated": false
-              },
-              "vector": {
-                "rank": 4,
-                "score": 0.5778,
-                "norm": 0.8499,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0782,
-              "vector": 0.7649
-            }
-          },
-          {
-            "rank": 5,
-            "chunk_id": 21,
-            "snippet": "The Total Money Makeover by Dave Ramsey. Narrated by Dave Ramsey. Dave Ramsey helps you transform yo",
-            "text": "The Total Money Makeover by Dave Ramsey. Narrated by Dave Ramsey. Dave Ramsey helps you transform your personal finances with time-tested tools for paying off debt, saving for retirement, and more.",
-            "score": 0.8156,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 5,
-                "score": 0.6838,
-                "norm": 0.8102,
-                "gated": false
-              },
-              "vector": {
-                "rank": 6,
-                "score": 0.555,
-                "norm": 0.8162,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.081,
-              "vector": 0.7346
-            }
-          }
-        ],
-        "gates": {
-          "lexical_gated": false,
-          "vector_gated": false
-        }
-      }
-    },
-    "10": {
-      "lexical": {
-        "query": "the walter isaacson biography of the apple founder",
-        "mode": "lexical",
-        "k": 5,
-        "gold_chunk_ids": [
-          33
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 33,
-            "snippet": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biograph",
-            "text": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs....",
-            "score": 0.8626,
-            "score_type": "bm25",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 41,
-            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
-            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
-            "score": 0.7771,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 2,
-            "snippet": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University ps",
-            "text": "The Willpower Instinct by Kelly McGonigal. Narrated by Walter Dixon. Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity....",
-            "score": 0.658,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 29,
-            "snippet": "Your Brain at Work by David Rock. Narrated by Bob Walter. David Rock knows how the brain works - and",
-            "text": "Your Brain at Work by David Rock. Narrated by Bob Walter. David Rock knows how the brain works - and more specifically, how it works in a work setting. Rock shows how it's possible to not only to survive in today's overwhelming work environment but succeed in it - and still feel energized and accomplished at the end of the day....",
-            "score": 0.6338,
-            "score_type": "bm25",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 6,
-            "snippet": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to str",
-            "text": "The Power of Less by Leo Babauta. Narrated by Fred Stella. The Power of Less demonstrates how to streamline your life by identifying the essential and eliminating the unnecessary....",
-            "score": 0.3944,
-            "score_type": "bm25",
-            "is_gold": false
-          }
-        ]
-      },
-      "vector": {
-        "query": "the walter isaacson biography of the apple founder",
-        "mode": "vector",
-        "k": 5,
-        "gold_chunk_ids": [
-          33
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 33,
-            "snippet": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biograph",
-            "text": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs....",
-            "score": 0.7393,
-            "score_type": "cosine",
-            "is_gold": true
-          },
-          {
-            "rank": 2,
-            "chunk_id": 41,
-            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
-            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
-            "score": 0.6645,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 3,
-            "chunk_id": 30,
-            "snippet": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorize",
-            "text": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorized look at the extraordinary life of one of Silicon Valley's most exciting, unpredictable, and ambitious entrepreneurs....",
-            "score": 0.5712,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 4,
-            "chunk_id": 60,
-            "snippet": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise m",
-            "text": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise manifesto is intended to elevate the impact of advisors who sell insight as entrepreneurs....",
-            "score": 0.5452,
-            "score_type": "cosine",
-            "is_gold": false
-          },
-          {
-            "rank": 5,
-            "chunk_id": 88,
-            "snippet": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been o",
-            "text": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been one to follow conventional rules. He\u2019s achieved extraordinary success and emerged as one of the greatest marketing minds of our time by doing things differently. But there is a method to his maverick style....",
-            "score": 0.5401,
-            "score_type": "cosine",
-            "is_gold": false
-          }
-        ]
-      },
-      "hybrid": {
-        "query": "the walter isaacson biography of the apple founder",
-        "mode": "hybrid",
-        "k": 5,
-        "gold_chunk_ids": [
-          33
-        ],
-        "gold_rank": 1,
-        "results": [
-          {
-            "rank": 1,
-            "chunk_id": 33,
-            "snippet": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biograph",
-            "text": "Steve Jobs by Walter Isaacson. Narrated by Dylan Baker. From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs....",
-            "score": 1.0,
-            "score_type": "fused",
-            "is_gold": true,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 1,
-                "score": 0.8626,
-                "norm": 1.0,
-                "gated": false
-              },
-              "vector": {
-                "rank": 1,
-                "score": 0.7393,
-                "norm": 1.0,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.1,
-              "vector": 0.9
-            }
-          },
-          {
-            "rank": 2,
-            "chunk_id": 41,
-            "snippet": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin",
-            "text": "Benjamin Franklin: An American Life by Walter Isaacson. Narrated by Nelson Runger. Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
-            "score": 0.8991,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 2,
-                "score": 0.7771,
-                "norm": 0.901,
-                "gated": false
-              },
-              "vector": {
-                "rank": 2,
-                "score": 0.6645,
-                "norm": 0.8989,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0901,
-              "vector": 0.809
-            }
-          },
-          {
-            "rank": 3,
-            "chunk_id": 30,
-            "snippet": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorize",
-            "text": "Elon Musk by Ashlee Vance. Narrated by Fred Sanders. Elon Musk is both an illuminating and authorized look at the extraordinary life of one of Silicon Valley's most exciting, unpredictable, and ambitious entrepreneurs....",
-            "score": 0.7335,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 39,
-                "score": 0.3287,
-                "norm": 0.3811,
-                "gated": false
-              },
-              "vector": {
-                "rank": 3,
-                "score": 0.5712,
-                "norm": 0.7726,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0381,
-              "vector": 0.6954
-            }
-          },
-          {
-            "rank": 4,
-            "chunk_id": 60,
-            "snippet": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise m",
-            "text": "The Business of Expertise by David C. Baker. Narrated by David C. Baker. This passionate expertise manifesto is intended to elevate the impact of advisors who sell insight as entrepreneurs....",
-            "score": 0.7065,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 17,
-                "score": 0.3688,
-                "norm": 0.4275,
-                "gated": false
-              },
-              "vector": {
-                "rank": 4,
-                "score": 0.5452,
-                "norm": 0.7375,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0428,
-              "vector": 0.6637
-            }
-          },
-          {
-            "rank": 5,
-            "chunk_id": 88,
-            "snippet": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been o",
-            "text": "The Diary of a CEO by Steven Bartlett. Narrated by Steven Bartlett. Steven Bartlett has never been one to follow conventional rules. He\u2019s achieved extraordinary success and emerged as one of the greatest marketing minds of our time by doing things differently. But there is a method to his maverick style....",
-            "score": 0.6984,
-            "score_type": "fused",
-            "is_gold": false,
-            "found_by": [
-              "bm25",
-              "vector"
-            ],
-            "per_leg": {
-              "bm25": {
-                "rank": 27,
-                "score": 0.3526,
-                "norm": 0.4088,
-                "gated": false
-              },
-              "vector": {
-                "rank": 5,
-                "score": 0.5401,
-                "norm": 0.7306,
-                "gated": false
-              }
-            },
-            "contribution": {
-              "bm25": 0.0409,
-              "vector": 0.6576
-            }
-          }
-        ],
-        "gates": {
-          "lexical_gated": false,
-          "vector_gated": false
-        }
-      }
     }
   },
   "aggregate": {
     "n": 10,
     "hit_at_5": {
-      "lexical": "9/10",
+      "lexical": "7/10",
       "vector": "9/10",
       "hybrid": "10/10"
     },
     "hit_rate": {
-      "lexical": 0.9,
+      "lexical": 0.7,
       "vector": 0.9,
       "hybrid": 1.0
     },
     "mrr": {
-      "lexical": 0.85,
-      "vector": 0.725,
-      "hybrid": 0.833
+      "lexical": 0.65,
+      "vector": 0.675,
+      "hybrid": 0.783
     }
   }
 }
