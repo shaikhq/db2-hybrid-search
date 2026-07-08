@@ -18,38 +18,25 @@ Db2  TO_EMBEDDING(text USING MYSCHEMA.CHUNKS_EMBED)
 llama-server  (bge-small-en-v1.5, --embedding --pooling cls)  →  384-dim vector
 ```
 
-## One-time setup
-
-**1. Build llama.cpp** (needs `cmake`, `gcc`/`g++`):
+## One-time setup — `0_llamacpp-install.sh`
 
 ```bash
-sudo dnf install -y cmake                      # if missing
-git clone --depth 1 https://github.com/ggml-org/llama.cpp.git ~/llama.cpp
-cd ~/llama.cpp
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF -DGGML_NATIVE=ON
-cmake --build build --target llama-server -j"$(nproc)"
+./scripts/0_llamacpp-install.sh
 ```
 
-**2. Download the GGUF** (~37 MB, q8_0):
+Builds llama.cpp into `~/llama.cpp` (installs `cmake` if missing), downloads the
+GGUF (~37 MB, q8_0) into `~/models/bge-small-en-v1.5/`, and verifies a 384-dim
+embedding. Idempotent; leaves nothing running. Override with `LLAMA_CPP_DIR`, `BGE_DIR`.
+
+## Run the embedding server — `1_start-services.sh`
 
 ```bash
-python - <<'PY'
-from huggingface_hub import hf_hub_download
-hf_hub_download("CompendiumLabs/bge-small-en-v1.5-gguf",
-               "bge-small-en-v1.5-q8_0.gguf",
-               local_dir="$HOME/models/bge-small-en-v1.5")
-PY
+./scripts/1_start-services.sh              # starts Db2, OpenSearch + the embedding server (:8085)
 ```
 
-## Run the embedding server
-
-```bash
-./scripts/serve_embeddings.sh          # serves on http://127.0.0.1:8085
-```
-
-Overridable via env: `LLAMA_CPP_DIR`, `BGE_GGUF`, `EMBED_PORT`. Keep it running —
-it's used **both** at ingest time (embedding every chunk) and at search time
-(embedding each query, via `hybrid_core.py`'s vector leg).
+The embedding server must be up for **both** ingest (embedding every chunk) and
+search (embedding each query, via `hybrid_core.py`'s vector leg). Overridable via
+env: `LLAMA_CPP_DIR`, `BGE_GGUF`, `EMBED_PORT`. Stop with `./scripts/stop-services.sh`.
 
 Smoke test:
 
@@ -81,10 +68,9 @@ search leg embeds queries through the same model.
 
 - **Pooling**: bge uses CLS pooling → `--pooling cls`. (Wrong pooling silently
   degrades quality.)
-- **Query instruction**: bge retrieval is tuned for a query prefix
-  ("Represent this sentence for searching relevant passages: "). `TO_EMBEDDING`
-  embeds queries and passages identically, so that asymmetry is not applied here
-  — a known small quality cost vs. the model's benchmark numbers.
+- **Query instruction**: queries are embedded with bge's retrieval prefix
+  ("Represent this sentence for searching relevant passages: ") via
+  `hybrid_core.py`'s `embed_query` (env `EMBED_QUERY_PREFIX`); passages stay raw.
 - **Fusion gate**: `HYBRID_VEC_GATE` (default 0.30) was tuned against the previous
   model's cosine distribution. Re-tune it against `eval.py` for bge if you want to
   squeeze back MRR.

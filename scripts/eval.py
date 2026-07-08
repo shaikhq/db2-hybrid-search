@@ -1,20 +1,8 @@
 #!/usr/bin/env python3
-"""
-eval.py — measure retrieval quality on a small GOLDEN EVAL SET.
-
-The golden eval set below is a set of relevance judgments (a.k.a. *qrels* in
-information-retrieval terms): each query is paired with its known-relevant
-chunk(s). Reports MRR, Recall@K and Hits@1 for each leg (lexical, vector,
-hybrid), plus a per-query table of where the first relevant result landed. Run it
-after any change to chunking, the embedding model, the fusion gates, or the
-weights, and judge the change by the numbers instead of by eyeballing one query.
-
-    DB2_HOST=local python scripts/eval.py    # as the Db2 instance owner, local connection
-
-The labels are loaded from the shared ui/queries.json so the eval and the demo
-UI use the SAME curated set. They're for the IBM Db2 12.1.5 LLM-integration
-reference doc; replace queries.json for your own corpus.
-"""
+"""Measure retrieval quality on the golden set (qrels in ui/queries.json, shared
+with the UI): MRR, Recall@K, Hits@1 per leg + a per-query table. Judge any
+chunking/model/knob change by the numbers, not one query.
+Run: DB2_HOST=local python scripts/eval.py"""
 
 import json
 import os

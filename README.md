@@ -59,22 +59,24 @@ other's blind spot.
 > scripts' text-search admin steps must run on a local Db2 connection as the
 > instance owner.
 
-## Setup
+## Setup (one-time)
 
 ```bash
-# 1. Clone
-git clone <your-repo-url> hybrid-search
-cd hybrid-search
+git clone <your-repo-url> hybrid-search && cd hybrid-search
+```
 
-# 2. Create a virtual environment and install dependencies.
-python3 -m venv .venv
-source .venv/bin/activate
+Install the pieces — each is idempotent and leaves nothing running:
 
-# CPU-only PyTorch first (avoids large CUDA downloads):
-pip install --index-url https://download.pytorch.org/whl/cpu torch==2.12.1 torchvision==0.27.1
-pip install -r requirements.txt
+```bash
+./scripts/0_docling-install.sh      # Python venv: Docling, ibm_db, UI deps (+ libGL)
+./scripts/0_llamacpp-install.sh     # build llama.cpp + download bge-small-en-v1.5, verify
+./scripts/0_opensearch-install.sh   # install + configure OpenSearch (Db2 Text Search backend)
+sudo ./scripts/0_db2-install.sh /path/to/server_dec   # install Db2 + instance + SAMPLE (skip if Db2 exists)
+```
 
-# 3. Configure credentials. Copy the template and fill in real values.
+Then configure the connection:
+
+```bash
 cp .env.example .env
 $EDITOR .env          # Db2 connection + password (embeddings are local — no API keys)
 ```
@@ -83,40 +85,42 @@ $EDITOR .env          # Db2 connection + password (embeddings are local — no A
 
 ## Usage — run the scripts in order
 
-The filenames are numbered by execution order — run them **1 → 5** as the Db2
-instance owner, from the repo root. The ingestion is split into small steps
-(extract → chunk → load) so you can open and inspect each intermediate file:
-the `.md` and the `.chunks.csv`.
+The filenames are numbered by execution order. **Step 0** is the one-time installs
+(see [Setup](#setup-one-time)); then run **1 → 5** as the Db2 instance owner from
+the repo root. Step 1 brings up the services; the ingestion (2–4) is split into
+small steps (extract → chunk → load) so you can inspect each intermediate file: the
+`.md` and the `.chunks.csv`. (Text Search is enabled once by `0_db2-install.sh`.)
 
-### 1. `1_extract.py` — PDF → Markdown
+### 1. Start the services
+
+The pipeline needs three services up — **Db2**, **OpenSearch**, and the **llama.cpp
+embedding server** (Db2's `TO_EMBEDDING` calls it during ingest and search). After
+the one-time [Setup](#setup-one-time), bring them all up:
 
 ```bash
-python scripts/1_extract.py path/to/your-document.pdf
+./scripts/1_start-services.sh        # starts Db2, OpenSearch, and the embedding server
+```
+
+Idempotent (skips anything already up). Stop them with `./scripts/stop-services.sh`.
+
+### 2. `2_extract.py` — PDF → Markdown
+
+```bash
+python scripts/2_extract.py path/to/your-document.pdf
 ```
 
 Docling parses the PDF and writes clean Markdown next to it (`your-document.md`).
 **Leaves behind:** a Markdown file you can open and read.
 
-### 2. `2_chunk.py` — Markdown → chunks (CSV)
+### 3. `3_chunk.py` — Markdown → chunks (CSV)
 
 ```bash
-python scripts/2_chunk.py path/to/your-document.md
+python scripts/3_chunk.py path/to/your-document.md
 ```
 
 Splits the Markdown with Docling's HybridChunker (capped to the embedding
 model's token limit) and writes a two-column CSV (`chunk_id, chunk_text`).
 **Leaves behind:** `your-document.chunks.csv` — open it to see exactly what gets indexed.
-
-### 3. `3_enable_text_search.sql` — enable text search (one-time)
-
-```bash
-db2 -tvf scripts/3_enable_text_search.sql
-```
-
-Enables Db2 Text Search and registers OpenSearch as the lexical backend.
-Run it **once** per database: `SYSPROC.SYSTS_CREATE_SERVER` does not dedupe, so
-re-running registers a duplicate OpenSearch server (drop the existing
-registration first if you need to re-run).
 
 ### 4. `4_ingest.sql` — chunks (CSV) → Db2
 
@@ -130,10 +134,10 @@ Drops any existing chunks table/index (so it's re-runnable), `IMPORT`s
 (`PROVIDER OPENAI` → llama.cpp), fills a `VECTOR` column via `TO_EMBEDDING`, and
 builds the vector index.
 
-Before the first run: `db2set DB2_VECTOR_INDEXING=YES -immediate` (once), and
-**start the local embedding server** so `TO_EMBEDDING` can reach it —
-`./scripts/serve_embeddings.sh` (keep it running for search too). No secrets: the
-endpoint is local and keyless. See [docs/local-embeddings.md](docs/local-embeddings.md).
+Before the first run: `db2set DB2_VECTOR_INDEXING=YES -immediate` (once), and make
+sure the services from step 1 are up (`./scripts/1_start-services.sh`) so
+`TO_EMBEDDING` can reach the embedding server. No secrets — it's local and keyless.
+See [docs/local-embeddings.md](docs/local-embeddings.md).
 **Leaves behind:** one table (default `myschema.chunks`) where every row has
 `chunk_id`, `chunk_text`, a text-search index entry, and an `embedding` vector.
 
@@ -145,7 +149,7 @@ endpoint is local and keyless. See [docs/local-embeddings.md](docs/local-embeddi
 ### 5. `5_search.sql` — hybrid retrieval
 
 ```bash
-db2 -tvf scripts/5_search.sql       # or: ./scripts/search.sh
+db2 -tvf scripts/5_search.sql
 ```
 
 Runs all three legs for **one hardcoded query** and prints them: the **lexical**
@@ -245,11 +249,12 @@ embedding model/endpoint is set in `4_ingest.sql`.) The fusion knobs
 ## Repository layout
 
 ```
-scripts/   1_extract.py · 2_chunk.py · 3_enable_text_search.sql · 4_ingest.sql · 5_search.sql
-           search.sh (runs 5_search.sql) · serve_embeddings.sh (local bge server)
-           hybrid_core.py (search engine + fusion, used by eval.py + UI) · eval.py (golden set)
+scripts/   install:   0_docling-install.sh · 0_llamacpp-install.sh · 0_opensearch-install.sh · 0_db2-install.sh
+           services:  1_start-services.sh · stop-services.sh
+           pipeline:  2_extract.py · 3_chunk.py · 4_ingest.sql · 5_search.sql
+           other:     hybrid_core.py (engine+fusion, used by eval.py + UI) · eval.py · pipeline-2-5.sh
 ui/        run.sh · build_fixtures.sh · api.py · queries.json · static/ (the demo)
-docs/      Db2 and OpenSearch setup notes, images
+docs/      Db2, OpenSearch, and local-embeddings setup notes
 ```
 
 ## Docs

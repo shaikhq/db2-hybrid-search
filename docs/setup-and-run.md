@@ -1,138 +1,97 @@
 # Setup & Run — End to End
 
-A complete, repeatable runbook for standing up the hybrid-search app on a fresh
-VM and running it, from prerequisites through the demo UI. This consolidates
-[README.md](../README.md) with the practical gotchas you hit on a real
-single-user Db2 VM.
+A repeatable runbook for standing up the app on a fresh VM and running it, via the
+`scripts/*-install.sh` installers and the numbered pipeline. Consolidates
+[README.md](../README.md) with the practical gotchas from a real single-user Db2 VM.
 
-> Assumes **IBM Db2 12.1.5** and **OpenSearch** are already installed. For
-> installing those from scratch, see [db2-setup.md](db2-setup.md) and
-> [opensearch-setup.md](opensearch-setup.md).
+Everything runs **as the Db2 instance owner** (e.g. `db2inst1`) — the text-search
+and local-connection steps require it.
 
 ---
 
-## Two decisions that shape the whole run
+## Two decisions that shape the run
 
-1. **Do you want the semantic leg?** (It needs the local embedding server up.)
-   - **Yes** → full hybrid search — run `./scripts/serve_embeddings.sh` (llama.cpp
-     serving bge-small-en-v1.5; see [local-embeddings.md](local-embeddings.md)).
-   - **No** → **lexical-only**: delete the model/embed/vector sections in
+1. **Do you want the semantic leg?** It needs the local embedding server (started
+   by `1_start-services.sh`).
+   - **No** → lexical-only: delete the model/embed/vector sections in
      `4_ingest.sql` (keep table + text index); add semantic later.
-2. **Are you logged in *as* the Db2 instance owner (e.g. `db2inst1`)?**
-   - On a single-user VM, **yes** — and that means the `build_fixtures.sh` wrapper
-     won't work as written. Use the `DB2_HOST=local python ...` direct-invoke form
-     shown throughout. (`search.sh` is fine — it runs pure SQL now.) See
-     [Gotchas](#gotchas--why).
-
-Everything below must run **as the Db2 instance owner** — the text-index steps
-use a local Db2 connection and the `db2ts` tooling, which require it.
+2. **Is Db2 / OpenSearch already installed?** If so, skip those installers below —
+   but you still need Text Search enabled + OpenSearch registered (normally done by
+   `0_db2-install.sh`; run `SYSTS_ENABLE` + `SYSTS_CREATE_SERVER` by hand if not).
 
 ---
 
-## Step 0 — Confirm prerequisites
+## Step 1 — Install (one-time)
+
+Each installer is idempotent and **leaves nothing running**:
 
 ```bash
-whoami                       # must be the Db2 instance owner (e.g. db2inst1)
-db2level                     # expect "DB2 v12.1.5.x"
-db2gcf -s                    # expect: DB2 State : Available
-python3 --version            # need Python 3.12
-curl -s -o /dev/null -w "OpenSearch: %{http_code}\n" http://localhost:9200   # expect 200
+git clone <repo-url> hybrid-search && cd hybrid-search
+./scripts/0_docling-install.sh      # Python venv: Docling, ibm_db, UI deps (+ libGL)
+./scripts/0_llamacpp-install.sh     # build llama.cpp + download bge-small-en-v1.5, verify
+./scripts/0_opensearch-install.sh   # install + configure OpenSearch (Db2 Text Search backend)
+sudo ./scripts/0_db2-install.sh /path/to/server_dec   # Db2 + instance + SAMPLE + Text Search
 ```
 
-**Find your Db2 TCP port** — do *not* assume the `.env.example` default of 50000;
-a typical instance uses something else (e.g. `25010`):
-
-```bash
-svc=$(db2 get dbm cfg | awk -F'= ' '/TCP\/IP Service name/{print $2}' | tr -d ' ')
-grep "^$svc\b" /etc/services       # → your DB2_PORT
-```
-
-**Local embedding server** (for the semantic leg): llama.cpp serving
-`bge-small-en-v1.5` (384-dim) on an OpenAI-compatible endpoint — set it up per
-[local-embeddings.md](local-embeddings.md). No API keys. Skip if lexical-only.
+- `0_db2-install.sh` needs **root** and the extracted install media; `db2_install`
+  may be interactive on your media. It also enables Text Search and registers
+  OpenSearch. Skip if Db2 is already installed. See [db2-setup.md](db2-setup.md),
+  [opensearch-setup.md](opensearch-setup.md), [local-embeddings.md](local-embeddings.md).
 
 ---
 
-## Step 1 — System library for Docling / OpenCV
-
-```bash
-# RHEL / Fedora:
-sudo dnf install -y libglvnd-glx
-# Debian / Ubuntu:
-# sudo apt-get install -y libgl1
-```
-
-`libGL.so.1` is required by Docling's OpenCV dependency, used by the PDF
-**extract/chunk** steps. If you ingest a pre-built `.chunks.csv` you can skip
-those steps — but `pip` still installs `opencv-python`, so install the lib anyway.
-
----
-
-## Step 2 — Python virtual environment + dependencies
-
-```bash
-cd /path/to/hybrid-search
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-
-# Install CPU-only torch FIRST so pip doesn't pull multi-GB CUDA wheels:
-pip install --index-url https://download.pytorch.org/whl/cpu torch==2.12.1 torchvision==0.27.1
-pip install -r requirements.txt
-
-# Sanity check:
-python -c "import ibm_db, docling, transformers; print('imports OK')"
-```
-
----
-
-## Step 3 — Configure `.env`
+## Step 2 — Configure `.env`
 
 ```bash
 cp .env.example .env
 $EDITOR .env
 ```
 
-Fill in:
-
 | Key | Value |
 |-----|-------|
-| `DB2_PORT` | the port from Step 0 |
+| `DB2_PORT` | your instance's port — do **not** assume 50000 (see below) |
 | `DB2_PASSWORD` | the instance owner's Db2 password |
-| _(embeddings)_ | none — generated by a **local** llama.cpp server, no API keys (see Step 5 / [local-embeddings.md](local-embeddings.md)) |
+| _(embeddings)_ | none — local llama.cpp server, no API keys |
 
 Defaults for `DB2_HOST=localhost`, `DB2_DATABASE=sample`, `DB2_SCHEMA=myschema`,
 `DB2_TABLE=chunks`, and the `HYBRID_*` fusion knobs are usually fine. `.env` is
-git-ignored — credentials are never committed.
+git-ignored.
 
-Verify the connection:
+**Find your Db2 port** (a typical instance uses e.g. `25010`, not 50000):
 
 ```bash
-db2 connect to sample && db2 connect reset      # expect "Connection ... successful"
+svc=$(db2 get dbm cfg | awk -F'= ' '/TCP\/IP Service name/{print $2}' | tr -d ' ')
+grep "^$svc\b" /etc/services       # → your DB2_PORT
 ```
 
 ---
 
-## Step 4 — One-time Db2 setup (Text Search + OpenSearch)
+## Step 3 — Start the services
 
 ```bash
-db2 -tvf scripts/3_enable_text_search.sql     # enable Db2 Text Search + register OpenSearch as the backend
+./scripts/1_start-services.sh        # Db2, OpenSearch, embedding server (idempotent)
 ```
 
-Run `3_enable_text_search.sql` **once** per database. `SYSPROC.SYSTS_CREATE_SERVER` does not
-dedupe, so re-running it registers a duplicate OpenSearch server — drop the
-existing registration first if you ever need to re-run it.
+Confirm all three are up:
+
+```bash
+db2gcf -s                                              # DB2 State : Available
+curl -s -o /dev/null -w "opensearch: %{http_code}\n" http://localhost:9200
+curl -s -o /dev/null -w "embeddings: %{http_code}\n" http://127.0.0.1:8085/health
+```
+
+Stop them with `./scripts/stop-services.sh`.
 
 ---
 
-## Step 5 — Ingest the corpus
+## Step 4 — Ingest the corpus
 
-**From a PDF** (full pipeline — the intermediate `.md` and `.chunks.csv` are
-inspectable):
+**From a PDF** (the intermediate `.md` and `.chunks.csv` are inspectable):
 
 ```bash
-python scripts/1_extract.py your-doc.pdf           # PDF → your-doc.md   (needs libGL)
-python scripts/2_chunk.py   your-doc.md            # .md  → your-doc.chunks.csv
+source .venv/bin/activate
+python scripts/2_extract.py your-doc.pdf           # PDF → your-doc.md
+python scripts/3_chunk.py   your-doc.md            # .md  → your-doc.chunks.csv
 db2 -tvf scripts/4_ingest.sql                      # → Db2: rows + text index + vectors
 ```
 
@@ -142,91 +101,67 @@ db2 -tvf scripts/4_ingest.sql                      # → Db2: rows + text index 
 db2 -tvf scripts/4_ingest.sql
 ```
 
-`4_ingest.sql` `IMPORT`s the chunks into `myschema.chunks`, builds the Db2 Text
-Search index (`SYSTS_CREATE`/`SYSTS_UPDATE`), registers the **local** embedding
-model (`PROVIDER OPENAI` → llama.cpp), fills a `VECTOR(384)` column via
-`TO_EMBEDDING`, and builds the vector index. Expect a final `RUNSTATS`, then 101
-rows with non-null embeddings.
+`4_ingest.sql` clears any old table, `IMPORT`s the chunks, builds the Text Search
+index (`SYSTS_CREATE`/`SYSTS_UPDATE`), registers the local embedding model
+(`PROVIDER OPENAI` → llama.cpp), fills a `VECTOR(384)` column via `TO_EMBEDDING`,
+and builds the vector index. Expect 101 rows with non-null embeddings.
 
-**Before the first run:**
-- `db2set DB2_VECTOR_INDEXING=YES -immediate` — once, enables the vector index.
-- **Start the embedding server**: `./scripts/serve_embeddings.sh` (bge-small on
-  `http://127.0.0.1:8085`). `TO_EMBEDDING` calls it — no API keys. See
-  [local-embeddings.md](local-embeddings.md).
-- The script reads a **fixed** `sample.chunks.csv` — rename your CSV to that or
-  edit the `IMPORT FROM` line. For lexical-only, delete the model/embed/vector steps.
+**Notes:**
+- Once per instance: `db2set DB2_VECTOR_INDEXING=YES -immediate` (enables the
+  vector index). `1_start-services.sh` assumes Db2; the ingest needs this registry var.
+- Reads a **fixed** `sample.chunks.csv` — rename your CSV to that or edit the
+  `IMPORT FROM` line. For lexical-only, delete the model/embed/vector steps.
 
 ---
 
-## Step 6 — Search & evaluate
-
-The search demo is pure SQL — `search.sh` just runs `db2 -tvf scripts/5_search.sql`:
+## Step 5 — Search & evaluate
 
 ```bash
-# Hybrid search demo — lexical / vector / hybrid for the query hardcoded in the SQL:
-db2 -tvf scripts/5_search.sql        # or: ./scripts/search.sh
+db2 -tvf scripts/5_search.sql        # lexical / vector / hybrid for the query hardcoded in the SQL
 ```
 
-To search a different query, edit the query text in `5_search.sql`. For dynamic
-ad-hoc queries, use the live demo UI (Step 7), which calls `hybrid_core.py`.
+Edit the query text in `5_search.sql` to search something else; for dynamic ad-hoc
+queries use the live demo UI (Step 6).
 
 > ⚠️ **Run `eval.py` from the venv** (it imports `ibm_db`), with `DB2_HOST=local`
-> for the fast local connection:
+> for the fast (~0.4s) local connection instead of the slow `ibm_db` TCP path:
 
 ```bash
 source .venv/bin/activate
-
-# Quality metrics on the golden set (MRR, Recall@5, Hits@1 per leg + fusion):
-DB2_HOST=local python scripts/eval.py
+DB2_HOST=local python scripts/eval.py       # MRR, Recall@5, Hits@1 per leg + fusion
 ```
 
-`DB2_HOST=local` forces the fast (~0.4s) **local** Db2 connection instead of the
-slow `ibm_db` TCP connect. On the sample corpus, expect hybrid to beat both single
-legs on every metric (hybrid MRR ≈ 0.89 vs vector ≈ 0.68 vs lexical ≈ 0.51).
+On the sample corpus, hybrid beats both single legs (MRR ≈ 0.81 vs vector ≈ 0.67
+vs lexical ≈ 0.51).
 
 ---
 
-## Step 7 — Demo UI
+## Step 6 — Demo UI
 
-### Offline mode (default — frozen fixtures, no Db2 at view time)
-
-Rebuild the fixtures against your corpus first. The `build_fixtures.sh` wrapper has
-the same sudo issue, so invoke the Python directly with `scripts/` on the path:
+**Offline** (default — frozen fixtures, no Db2 at view time). Rebuild fixtures
+first (the `build_fixtures.sh` wrapper hits the sudo/`ibm_db` issue, so invoke the
+Python directly with `scripts/` on the path):
 
 ```bash
 cd ui
-source ../.venv/bin/activate
-DB2_HOST=local PYTHONPATH=../scripts python build_fixtures.py   # writes ui/fixtures.json
-cp fixtures.json static/fixtures.json
-cp queries.json  static/queries.json
-cd ..
-
-./ui/run.sh                    # serves static UI + fixtures → http://127.0.0.1:8000
+DB2_HOST=local PYTHONPATH=../scripts python build_fixtures.py   # → ui/fixtures.json
+cp fixtures.json static/fixtures.json && cp queries.json static/queries.json
+./run.sh                        # static UI + fixtures → http://127.0.0.1:8000
 ```
 
-### Live mode (typed ad-hoc queries hit the real engine)
-
-Run uvicorn directly against the venv instead of `./ui/run.sh --live`:
+**Live** (typed ad-hoc queries hit the real engine) — run uvicorn against the venv
+instead of `./ui/run.sh --live`:
 
 ```bash
 cd ui
-source ../.venv/bin/activate
 DB2_HOST=local PYTHONPATH=../scripts python -m uvicorn api:app --host 127.0.0.1 --port 8000
-# UI at http://127.0.0.1:8000 · Swagger at http://127.0.0.1:8000/docs
+# UI at http://127.0.0.1:8000 · Swagger at /docs
 ```
 
-### Viewing the UI from your laptop (remote VM)
-
-The server binds to `127.0.0.1` **on the VM**, so a browser on your laptop can't
-reach it directly. Two options:
-
-- **VS Code Remote:** open the **Ports** panel → **Forward a Port** → `8000`, then
-  click the forwarded `localhost:8000` link. (Background processes started outside
-  the integrated terminal are often not auto-forwarded — add it manually.)
-- **Direct network access:** start the server with `--host 0.0.0.0` and open port
-  8000 in the VM's firewall/security group. Only do this on a trusted network.
-
-**Stop a running UI server:** `fuser -k 8000/tcp`
+**Viewing from your laptop (remote VM):** the server binds to `127.0.0.1` on the
+VM. In VS Code Remote, open **Ports** → **Forward a Port** → `8000` (background
+processes are often not auto-forwarded — add it manually). Or bind `--host 0.0.0.0`
+and open the firewall (trusted networks only). Stop it: `fuser -k 8000/tcp`.
 
 ---
 
@@ -234,26 +169,23 @@ reach it directly. Two options:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `DB2_PORT` connection fails | `.env.example` ships `50000`; real instances differ | Look up `SVCENAME` in `/etc/services` (Step 0) |
-| `ModuleNotFoundError: No module named 'ibm_db'` from `build_fixtures.sh` | The wrapper `sudo -iu <owner>`s into a **system** python that lacks the venv's `ibm_db` | Run `DB2_HOST=local PYTHONPATH=../scripts python build_fixtures.py` directly in the venv |
-| `ModuleNotFoundError: No module named 'hybrid_core'` running `build_fixtures.py` directly | It imports `hybrid_core` expecting it alongside (the wrapper stages it into `/tmp`) | Add `PYTHONPATH=../scripts` |
-| UI "not running" in browser but `curl 127.0.0.1:8000` returns 200 on the VM | Server bound to VM loopback; laptop can't reach it | Forward port 8000 (VS Code Ports) or bind `0.0.0.0` |
+| `DB2_PORT` connection fails | `.env.example` ships `50000`; real instances differ | Look up `SVCENAME` in `/etc/services` (Step 2) |
+| `ModuleNotFoundError: ibm_db` from `build_fixtures.sh` | The wrapper `sudo -iu <owner>`s into a **system** python lacking the venv's `ibm_db` | Run the Python directly with `DB2_HOST=local PYTHONPATH=../scripts` |
+| `ModuleNotFoundError: hybrid_core` running a UI Python file directly | It imports `hybrid_core` from `scripts/` | Add `PYTHONPATH=../scripts` |
+| UI "not running" in browser but `curl 127.0.0.1:8000` → 200 on the VM | Server bound to VM loopback; laptop can't reach it | Forward port 8000 (VS Code Ports) or bind `0.0.0.0` |
 | `ibm_db` TCP connect hangs ~40s | Slow TCP path on this setup | Use `DB2_HOST=local` for the fast local connection |
-| Docling import error about `libGL.so.1` | OpenCV system lib missing | `sudo dnf install -y libglvnd-glx` (Step 1) |
+| Docling import error about `libGL.so.1` | OpenCV system lib missing | `0_docling-install.sh` installs it (`libglvnd-glx`) |
 
 ---
 
-## Quick reference — full run on a prepared VM
+## Quick reference — prepared VM
 
 ```bash
 cd /path/to/hybrid-search
-source .venv/bin/activate
-
-db2 -tvf scripts/3_enable_text_search.sql
-db2 -tvf scripts/4_ingest.sql          # includes cleanup; start serve_embeddings.sh first
-
-db2 -tvf scripts/5_search.sql
-DB2_HOST=local python scripts/eval.py
+./scripts/1_start-services.sh                    # Db2, OpenSearch, embedding server
+db2 -tvf scripts/4_ingest.sql                  # cleanup + load + index + embed
+db2 -tvf scripts/5_search.sql                  # hybrid search demo
+DB2_HOST=local python scripts/eval.py          # metrics (venv active)
 
 # UI (live):
 cd ui && DB2_HOST=local PYTHONPATH=../scripts python -m uvicorn api:app --host 127.0.0.1 --port 8000

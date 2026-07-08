@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
-"""
-build_fixtures.py — run every curated query through all three strategies ONCE
-and freeze the results to fixtures.json, so the demo runs fully offline (no live
-Db2/watsonx at talk time).
-
-Run it via ui/build_fixtures.sh (which executes it as the Db2 instance owner over
-a local connection). Reads queries.json and writes fixtures.json, both in this
-script's own directory.
-
-The frozen response shape matches the live API (ui/api.py), so the frontend is
-identical whether it reads fixtures or hits --live.
-"""
+"""Run every curated query through all three strategies ONCE and freeze the
+results to fixtures.json, so the demo runs fully offline (no Db2/embedding server
+at talk time). Reads/writes in this dir. Same response shape as the live API
+(ui/api.py), so the frontend is identical for fixtures or --live."""
 
 import json
 import os

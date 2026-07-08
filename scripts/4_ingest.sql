@@ -2,7 +2,7 @@
 -- Run from repo root as the Db2 instance owner:  db2 -tvf scripts/4_ingest.sql
 -- Prereqs: db2set DB2_VECTOR_INDEXING=YES -immediate (first run only), and the
 -- local embedding server must be up: llama.cpp serving bge-small-en-v1.5 on
--- http://127.0.0.1:8085 (see scripts/serve_embeddings.sh). Drop the
+-- http://127.0.0.1:8085 (see scripts/1_start-services.sh). Drop the
 -- model/embed/vector steps for lexical-only.
 
 CONNECT TO SAMPLE;

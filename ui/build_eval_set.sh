@@ -3,7 +3,7 @@
 # ui/static/eval_set.json, which powers the "Golden eval set" page.
 #
 # Like build_fixtures.sh, it runs as the Db2 instance owner over a LOCAL
-# connection. Cheap (no embeddings/watsonx) — just reads chunk text by id.
+# connection. Cheap (no embedding calls) — just reads chunk text by id.
 # Re-run it whenever the corpus or the featured query set changes.
 #
 #   ./ui/build_eval_set.sh

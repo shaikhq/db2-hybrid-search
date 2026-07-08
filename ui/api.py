@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-"""
-ui/api.py — live backend for the demo (used only by `./ui/run.sh --live`).
-
-A thin wrapper over the search engine. It returns the SAME JSON shape that
-build_fixtures.py freezes into fixtures.json, so the frontend is identical
-whether it reads frozen fixtures (offline, the default) or hits this API live.
-
-The default demo path does NOT use this server at all — it serves the static
-page + fixtures.json with python's stdlib http.server, so the talk runs fully
-offline. This file exists for ad-hoc/typed queries during Q&A.
-"""
+"""Live backend for the demo (`./ui/run.sh --live`) — a thin wrapper over the
+search engine returning the SAME JSON shape as fixtures.json, so the frontend is
+identical offline or live. The default demo is offline (static page + fixtures);
+this exists for ad-hoc queries during Q&A."""
 
 import json
 import logging
@@ -22,10 +15,8 @@ import ibm_db
 import hybrid_core as h
 import build_fixtures as bf   # responses_for()
 
-# Surface the SQL that hybrid_core sends to Db2 in the uvicorn console (INFO).
-# Reuse uvicorn's own handler/formatting (it lives on the "uvicorn" logger) so
-# each search's queries appear inline with the access log; fall back to a basic
-# handler if run without uvicorn.
+# Log hybrid_core's SQL to the uvicorn console (reuse uvicorn's handler; fall
+# back to a basic one if run standalone).
 _uvicorn_handlers = logging.getLogger("uvicorn").handlers
 if _uvicorn_handlers:
     h.log.handlers = _uvicorn_handlers
