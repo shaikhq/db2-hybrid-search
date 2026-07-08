@@ -7,7 +7,7 @@ at talk time). Reads/writes in this dir. Same response shape as the live API
 import json
 import os
 import ibm_db
-import hybrid_core as h
+from hybrid_search import core as h
 
 K = 5  # results shown per strategy (and the "in top K?" cutoff)
 

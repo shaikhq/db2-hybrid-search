@@ -2,6 +2,10 @@
 
 Steps before `su - db2inst1` run as **root**.
 
+> **Shortcut:** `sudo ./scripts/install/db2-install.sh /path/to/server_dec`
+> scripts everything below — install, create the instance + `SAMPLE`, enable Text
+> Search + register OpenSearch — then leaves Db2 stopped.
+
 ## 1. Install Db2 and create the instance
 
 As **root** — extract the media (filename varies by version/edition), install the

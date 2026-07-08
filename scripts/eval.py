@@ -1,83 +1,135 @@
 #!/usr/bin/env python3
-"""Measure retrieval quality on the golden set (qrels in ui/queries.json, shared
-with the UI): MRR, Recall@K, Hits@1 per leg + a per-query table. Judge any
-chunking/model/knob change by the numbers, not one query.
-Run: DB2_HOST=local python scripts/eval.py"""
+"""Score retrieval quality against the golden eval set, per leg (lexical / vector /
+hybrid) and per query class:
 
+  known_item (one correct book)  -> MRR, Hits@1
+  topical    (many correct books) -> Recall@K, nDCG@K
+
+Numbers are reported for the HELDOUT slice (the honest signal — never tune on it),
+TRAIN, and ALL, plus a per-query-type diagnostic (keyword should favor the lexical
+leg, semantic the vector leg, mixed the fusion).
+
+Golden set: JSON array of items with gold_ids referencing the corpus `id`
+(= table chunk_id). Resolved from, in order: $GOLDEN_SET, argv[1], the newest
+~/out/eval/golden_set.draft.v*.json. If ~/out/eval/gold_core.template.json has a
+non-empty my_memory_queries, those are merged in.
+
+Run:  DB2_HOST=local PYTHONPATH=src python scripts/eval.py
+      (or `pip install -e .` first, then drop PYTHONPATH)
+"""
+import glob
 import json
+import math
 import os
+import sys
 
 import ibm_db
-import hybrid_core as h
+from hybrid_search import core as h
 
-K = 5  # recall / top-k cutoff
-
-# Golden eval set / relevance judgments (qrels): loaded from the shared
-# ui/queries.json so the eval and the demo UI stay in sync. Each entry yields
-# (query, {relevant chunk_id, ...}).
-def _load_golden():
-    here = os.path.dirname(os.path.abspath(__file__))
-    for path in (os.path.join(here, "queries.json"),                 # staged alongside, if present
-                 os.path.join(here, "..", "ui", "queries.json")):    # repo layout
-        if os.path.exists(path):
-            with open(path) as f:
-                return [(item["query"], set(item["gold_chunk_ids"])) for item in json.load(f)]
-    raise FileNotFoundError("queries.json not found (looked in script dir and ../ui/)")
+K = 5          # cutoff for Recall@K / nDCG@K (topical)
+RETRIEVE = 10  # depth pulled from each leg (MRR sees ranks up to here)
+EVAL_DIR = os.path.expanduser("~/out/eval")
 
 
-GOLDEN = _load_golden()
+# ---------- load ----------
+def resolve_path():
+    if os.environ.get("GOLDEN_SET"):
+        return os.environ["GOLDEN_SET"]
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+    cands = sorted(glob.glob(os.path.join(EVAL_DIR, "golden_set.draft.v*.json")))
+    if cands:
+        return cands[-1]
+    raise FileNotFoundError(
+        "No golden set. Set $GOLDEN_SET, pass a path, or generate ~/out/eval/golden_set.draft.v*.json")
 
 
-def first_relevant_rank(ranked, relevant):
+def load_items():
+    path = resolve_path()
+    items = json.load(open(path))
+    # merge personal-memory gold queries, if the user has filled them in
+    tmpl = os.path.join(EVAL_DIR, "gold_core.template.json")
+    merged = 0
+    if os.path.exists(tmpl):
+        mine = json.load(open(tmpl)).get("my_memory_queries", [])
+        for m in mine:
+            m.setdefault("split", "holdout")   # personal gold defaults to heldout
+            items.append(m)
+            merged += 1
+    for it in items:
+        it["gold_ids"] = [int(g) for g in it["gold_ids"]]
+        it.setdefault("split", "train")
+    return path, items, merged
+
+
+# ---------- metrics ----------
+def rr(ranked, gold):
     for i, cid in enumerate(ranked, start=1):
-        if cid in relevant:
-            return i
-    return None
+        if cid in gold:
+            return 1.0 / i
+    return 0.0
+
+def hit1(ranked, gold):
+    return 1.0 if ranked and ranked[0] in gold else 0.0
+
+def recall_at_k(ranked, gold, k=K):
+    return len(set(ranked[:k]) & gold) / len(gold) if gold else 0.0
+
+def ndcg_at_k(ranked, gold, k=K):
+    dcg = sum(1.0 / math.log2(i + 1) for i, cid in enumerate(ranked[:k], start=1) if cid in gold)
+    ideal = sum(1.0 / math.log2(i + 1) for i in range(1, min(len(gold), k) + 1))
+    return dcg / ideal if ideal else 0.0
+
+def mean(xs):
+    xs = list(xs)
+    return sum(xs) / len(xs) if xs else float("nan")
 
 
-def summarize(results):
-    """results: [(ranked_ids, relevant_set)] -> (MRR, Recall@K, Hits@1)."""
-    rr = recall = hit1 = 0.0
-    for ranked, relevant in results:
-        rank = first_relevant_rank(ranked, relevant)
-        rr += 1.0 / rank if rank else 0.0
-        recall += len(set(ranked[:K]) & relevant) / len(relevant)
-        hit1 += 1.0 if ranked[:1] and ranked[0] in relevant else 0.0
-    n = len(results) or 1
-    return rr / n, recall / n, hit1 / n
-
-
+# ---------- run ----------
 def main():
-    conn = h.connect()
+    path, items, merged = load_items()
     legs = {"lexical": h.lexical, "vector": h.vector, "hybrid": h.hybrid}
-    collected = {name: [] for name in legs}
-    per_query = []
 
-    for query, relevant in GOLDEN:
-        ranks = {}
+    conn = h.connect()
+    # ranked[(leg, item_id)] = [chunk_id, ...]
+    ranked = {}
+    for it in items:
         for name, fn in legs.items():
-            ranked = [cid for cid, _ in fn(conn, query, 10)]
-            collected[name].append((ranked, relevant))
-            ranks[name] = first_relevant_rank(ranked, relevant)
-        per_query.append((query, ranks))
+            ranked[(name, it["id"])] = [int(cid) for cid, _ in fn(conn, it["query"], RETRIEVE)]
     ibm_db.close(conn)
 
-    def cell(r):
-        return (str(r) if r else "-").rjust(3)
+    def block(subset, title):
+        rows = [it for it in items if subset(it)]
+        ki = [it for it in rows if it["query_class"] == "known_item"]
+        tp = [it for it in rows if it["query_class"] == "topical"]
+        print(f"\n{title}  (known_item={len(ki)}, topical={len(tp)})")
+        print(f"  {'leg':8} | {'MRR':>6} {'Hits@1':>7} | {'Recall@'+str(K):>9} {'nDCG@'+str(K):>7}")
+        print(f"  {'-'*8}-+-{'-'*6}-{'-'*7}-+-{'-'*9}-{'-'*7}")
+        for name in legs:
+            g = lambda it: set(it["gold_ids"])
+            mrr = mean(rr(ranked[(name, it["id"])], g(it)) for it in ki)
+            h1  = mean(hit1(ranked[(name, it["id"])], g(it)) for it in ki)
+            rec = mean(recall_at_k(ranked[(name, it["id"])], g(it)) for it in tp)
+            ndg = mean(ndcg_at_k(ranked[(name, it["id"])], g(it)) for it in tp)
+            print(f"  {name:8} | {mrr:6.3f} {h1:7.3f} | {rec:9.3f} {ndg:7.3f}")
 
-    print(f"\nGolden set: {len(GOLDEN)} queries — rank of first relevant result "
-          f"(lower is better, '-' = not in top 10)\n")
-    print(f"  {'query':52}  lex  vec  hyb")
-    print(f"  {'-' * 52}  ---  ---  ---")
-    for query, ranks in per_query:
-        print(f"  {query[:52]:52}  {cell(ranks['lexical'])}  "
-              f"{cell(ranks['vector'])}  {cell(ranks['hybrid'])}")
+    print(f"\nGolden set: {os.path.basename(path)}  ·  {len(items)} queries"
+          + (f"  (+{merged} personal-memory)" if merged else ""))
+    block(lambda it: it["split"] == "holdout", "HELDOUT  ← the honest number (never tuned on)")
+    block(lambda it: it["split"] == "train",   "TRAIN")
+    block(lambda it: True,                      "ALL")
 
-    print(f"\n  {'leg':8}  {'MRR':>6}  {('Recall@' + str(K)):>9}  {'Hits@1':>7}")
-    print(f"  {'-' * 8}  {'-' * 6}  {'-' * 9}  {'-' * 7}")
-    for name in legs:
-        mrr, recall, hit1 = summarize(collected[name])
-        print(f"  {name:8}  {mrr:6.3f}  {recall:9.3f}  {hit1:7.3f}")
+    # diagnostic: known_item MRR by query_type — does each leg win where it should?
+    print("\nDIAGNOSTIC — known_item MRR by query_type (expect keyword→lexical, semantic→vector, mixed→hybrid)")
+    types = ["keyword", "semantic", "mixed"]
+    print(f"  {'type':9} | " + " ".join(f"{n:>8}" for n in legs))
+    print(f"  {'-'*9}-+-" + "-".join("-"*8 for _ in legs))
+    for t in types:
+        ki = [it for it in items if it["query_class"] == "known_item" and it["query_type"] == t]
+        cells = []
+        for name in legs:
+            cells.append(f"{mean(rr(ranked[(name, it['id'])], set(it['gold_ids'])) for it in ki):8.3f}")
+        print(f"  {t:9} | " + " ".join(cells))
     print()
 
 

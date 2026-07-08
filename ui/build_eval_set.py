@@ -12,7 +12,7 @@ Reads queries.json and writes eval_set.json, both in this script's directory.
 import json
 import os
 import ibm_db
-import hybrid_core as h
+from hybrid_search import core as h
 
 
 def chunk_text(conn, cid):

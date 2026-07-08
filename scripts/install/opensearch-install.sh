@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 0_opensearch-install.sh — install & configure OpenSearch (the Db2 Text Search
-# backend), verify it starts, then leave it STOPPED (1_start-services.sh runs it).
+# opensearch-install.sh — install & configure OpenSearch (the Db2 Text Search
+# backend), verify it starts, then leave it STOPPED (0_start-services.sh runs it).
 # One-time, single-node, security OFF (local use only). Red Hat Linux 10 + sudo.
 # Idempotent: skips whatever is already done. See docs/opensearch-setup.md.
 set -euo pipefail

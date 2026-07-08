@@ -1,88 +1,77 @@
-# Evaluation Results — Hybrid Search
+# Evaluation Results — Hybrid Search (audiobook corpus)
 
-Search-quality results produced by the evaluation harness.
+Search-quality results from `scripts/eval.py` against the personal audiobook
+corpus (one row per book; `chunk_text` = title + authors + narrators + description).
 
-- **Reproduce:** `DB2_HOST=local python scripts/eval.py`
-- **Golden eval set** (relevance judgments / *qrels*): [scripts/eval.py](../scripts/eval.py)
-  — 16 queries, each paired with its known-relevant chunk(s)
-- **Corpus:** IBM Db2 12.1.5 LLM-integration reference (101 chunks)
-- **Embeddings:** local **bge-small-en-v1.5** (384-dim) via llama.cpp / Db2
-  `PROVIDER OPENAI` — see [local-embeddings.md](local-embeddings.md). Queries carry
-  bge's retrieval instruction; passages are embedded raw.
-- **Date:** 2026-07-07
-- **Verdict:** ✅ PASS
+- **Reproduce:** `DB2_HOST=local PYTHONPATH=src python scripts/eval.py` (or `pip install -e .` then drop `PYTHONPATH`)
+- **Golden eval set:** `~/out/eval/golden_set.draft.v*.json` — **112 silver queries** (`needs_review`), 96/96 book coverage, stratified into TRAIN (90) / **HELDOUT (22, ~20%)**. known_item queries have one gold book; topical queries list all qualifying books.
+- **Corpus:** 97 audiobooks in Db2 `MYSCHEMA.CHUNKS` (book [45] "Your First Listen" excluded — placeholder).
+- **Embeddings:** local **bge-small-en-v1.5** (384-dim) via llama.cpp / Db2 `PROVIDER OPENAI` — see [local-embeddings.md](local-embeddings.md). Queries carry bge's retrieval instruction; passages embedded raw.
+- **Fusion knobs:** tuned on TRAIN (`HYBRID_W_LEX=0.1 W_VEC=0.9 VEC_GATE=0.0 LEX_GATE=0.0 POOL=97`).
+- **Date:** 2026-07-08
 
-Each number is the **position of the correct answer** in that mode's results
-(1 = top, lower is better). **—** = not found in the top 10.
+Metrics: **known_item →** MRR, Hits@1. **topical →** Recall@5, nDCG@5.
 
-## Scores by mode
+## HELDOUT — the honest number (never tuned on)
 
-| mode | MRR | Recall@5 | Hits@1 |
-|---|---|---|---|
-| lexical (keyword) | 0.511 | 0.688 | 0.375 |
-| vector (semantic) | 0.669 | 0.885 | 0.500 |
-| **hybrid (fusion)** | **0.807** | **0.938** | **0.688** |
+| leg | MRR | Hits@1 | Recall@5 | nDCG@5 |
+|---|---|---|---|---|
+| lexical | 0.816 | 0.789 | 0.556 | 0.588 |
+| **vector** | **0.947** | **0.947** | **0.917** | **0.944** |
+| hybrid (tuned) | 0.921 | 0.895 | 0.806 | 0.866 |
 
-Plain-English (hybrid mode): correct answer at **#1 in 11/16 (69%)**, in the
-**top 5 in 16/16 (100%)**, and **never missed** (0/16). Keyword-only got #1 in
-6/16; vector-only in 8/16 — the fusion is still clearly best.
+## ALL 112 queries
 
-## Per-query results
+| leg | MRR | Hits@1 | Recall@5 | nDCG@5 |
+|---|---|---|---|---|
+| lexical | 0.786 | 0.729 | 0.467 | 0.527 |
+| vector | 0.889 | 0.823 | 0.627 | 0.692 |
+| hybrid (tuned) | 0.880 | 0.823 | 0.571 | 0.653 |
 
-| # | Question | Best suited to | Lex | Vec | Hyb |
-|---|---|---|---|---|---|
-| 1 | `42615` | keyword (code) | 1 | 1 | 1 |
-| 2 | `42613` | keyword (code) | 1 | 5 | 1 |
-| 3 | `REASONING_EFFORT` | identifier | — | 1 | 1 |
-| 4 | `REPETITION_PENALTY` | identifier | — | 1 | 1 |
-| 5 | `42601` | keyword (code) | 5 | 4 | 1 |
-| 6 | `38555` | keyword (code) | 1 | — | 1 |
-| 7 | how can I make the model stop generating at a certain phrase | vector | 4 | 2 | 1 |
-| 8 | how do I turn text into vectors | vector | 2 | 1 | 1 |
-| 9 | what controls the randomness of the output | vector | 3 | 2 | 3 |
-| 10 | limit the maximum length of the generated text | vector | 2 | 4 | 2 |
-| 11 | how long can text generation run before timing out | vector | — | 1 | 4 |
-| 12 | what privilege is needed to use TO_EMBEDDING | hybrid | 4 | 2 | 2 |
-| 13 | how do I change the API key on an existing model | hybrid | 1 | 1 | 1 |
-| 14 | how do I transfer ownership of a model to another user | hybrid | 1 | 2 | 1 |
-| 15 | how do I register an external model | hybrid | 7 | 1 | 3 |
-| 16 | how do I drop an external model | hybrid | 1 | 1 | 1 |
+## Diagnostic — known_item MRR by query type (leg-level, knob-independent)
 
-## Summary
+| query_type | lexical | vector |
+|---|---|---|
+| keyword | 0.975 | 0.975 |
+| semantic | 0.185 | 0.635 |
+| mixed | 0.855 | 0.911 |
 
-- ✅ correct answer at #1 (hybrid): **11 / 16**
-- ⚠️ correct answer in top 5, not #1: **5 / 16** (#9, #10, #11, #12, #15)
-- ❌ missed entirely: **0 / 16**
+This is the eval set validating itself: **semantic** queries score **0.185** on the
+lexical leg (they defeat keyword matching — the vocabulary rule held), while
+**keyword** queries ace it. Note the vector leg *also* aces keyword queries (0.975):
+because `chunk_text` embeds the title/author/narrator, the dense leg already carries
+the lexical signal.
+
+## Tuning: baseline → tuned (HELDOUT)
+
+| | baseline (.5/.5, gate .3, pool 50) | tuned (.1/.9, gates 0, pool 97) |
+|---|---|---|
+| hybrid MRR | 0.868 | **0.921** |
+| hybrid Hits@1 | 0.842 | **0.895** |
+| hybrid Recall@5 | 0.778 | **0.806** |
+| hybrid nDCG@5 | 0.785 | **0.866** |
+
+Swept 168 configs on TRAIN, reported HELDOUT for the winner; the gain generalized
+(TRAIN blended 0.799 → 0.831 tracked HELDOUT 0.857 → 0.914).
 
 ## Observations
 
-- **Fusion adds real value** — #5, #7, #12, #14 rank better in hybrid than in
-  either single leg; hybrid MRR (0.807) beats lexical (0.511) and vector (0.669).
-- **Vector recall is strong** — bge finds a relevant chunk in the top-5 for 15/16
-  queries. bge's query instruction (applied to queries only) is what lifts recall.
-- **The gate barely fires with bge.** bge cosine similarities cluster high
-  (~0.59–0.69) even for bare error codes (42615 → 0.60), so `HYBRID_VEC_GATE`
-  can't cleanly separate "confident" from "guessing" the way it did for a
-  wider-spread model. The vector leg therefore participates on nearly every query
-  — sometimes helping (#5), sometimes nudging a keyword-perfect answer down (#11).
-- The imperfect cases (#9–#12, #15) trace to **fragmented chunks + a small
-  384-d model**, plus that flat gate.
+- **The vector leg dominates this corpus.** Pure vector (HELDOUT MRR 0.947) still
+  edges even the tuned hybrid (0.921). Because `chunk_text` is a rich self-contained
+  blurb (title + author + narrator + synopsis), the embedding captures the keyword
+  signal too, so the lexical leg adds little. Tuning's win is mostly *not*
+  over-weighting the weak lexical leg and *not* gating the strong vector leg.
+- **The `POOL=97` win won't scale.** 97 = the whole library, so nothing is truncated
+  — a free recall boost here, not on a larger corpus. The weight/gate changes are the
+  transferable lesson.
+- **Silver, not gold.** Every query is `review_status: needs_review`. Fill
+  `~/out/eval/gold_core.template.json` with personal-memory queries (auto-merged),
+  promote reviewed items, and keep the HELDOUT slice untouched by tuning.
 
-## Comparison to the previous model
+## Next levers (re-run `eval.py` after each)
 
-The earlier run used watsonx.ai `all-MiniLM-L6-v2` and scored hybrid
-**MRR 0.887 / Recall@5 0.969 / Hits@1 0.812**. Switching to local bge-small
-traded a little top-rank accuracy (Hits@1 0.812 → 0.688) for **better vector
-recall** (0.812 → 0.885) — and, more importantly, no API keys, no egress, and no
-per-call cost. On a 16-query set this is a 1–2 query swing; judge on your own
-corpus.
+1. **Cross-encoder reranker** over the fused top-k — most likely lift given the strong vector recall.
+2. **Larger embedding model** (768-d, e.g. bge-base), served the same way; update `VECTOR(384)` → new dim in `1_ingest.sql`.
+3. **Surface metadata in retrieval** (pillar/series/author filters) for the topical queries.
 
-## Next levers (re-run `DB2_HOST=local python scripts/eval.py` after each)
-
-1. **Better chunking** — merge heading fragments and prepend section context.
-2. **Larger embedding model** — a 768-d model (e.g. bge-base / gte-base), served
-   the same way; update `VECTOR(384)` → the new dim in `4_ingest.sql`.
-3. **Cross-encoder reranker** — rerank the fused top-k.
-
-> Notes: these results depend on the corpus, the embedding model, and the fusion
-> knobs (`HYBRID_*`). Re-run after any change to refresh this report.
+> Results depend on the corpus, embedding model, and `HYBRID_*` knobs. Re-run after any change.

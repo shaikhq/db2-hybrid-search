@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# 1_start-services.sh — start the three services the pipeline needs: Db2, OpenSearch,
+# 0_start-services.sh — start the three services the pipeline needs: Db2, OpenSearch,
 # and the llama.cpp embedding server. Run as the Db2 instance owner. Idempotent:
-# skips anything already up. Run the install-*.sh scripts once beforehand.
+# skips anything already up. Complete the one-time setup (see docs/) beforehand.
 set -uo pipefail
 
 LLAMA="${LLAMA_CPP_DIR:-$HOME/llama.cpp}"

@@ -22,8 +22,8 @@ if [ "${1:-}" = "--live" ]; then
     # Stage everything the instance owner can read (it can't read /home/<you>).
     STAGE=/tmp/hybrid-ui
     rm -rf "$STAGE"; mkdir -p "$STAGE"
-    cp "$HERE/api.py" "$HERE/build_fixtures.py" "$HERE/queries.json" \
-       "$REPO/scripts/hybrid_core.py" "$STAGE/"
+    cp "$HERE/api.py" "$HERE/build_fixtures.py" "$HERE/queries.json" "$STAGE/"
+    cp -r "$REPO/src/hybrid_search" "$STAGE/"      # the search engine package
     cp -r "$HERE/static" "$STAGE/static"
     chmod -R a+rX "$STAGE"
     # A previous server orphaned by a closed terminal keeps holding the port and

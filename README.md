@@ -1,7 +1,7 @@
 # Hybrid Search on IBM Db2 12.1.5
 
 Build a **hybrid search** corpus inside Db2 — keyword search *and* semantic
-(vector) search over the same data — straight from a PDF.
+(vector) search over the same data — from a CSV corpus you provide.
 
 ## What this does / why it exists
 
@@ -11,9 +11,9 @@ when you combine **two** ways of finding text:
 - **Lexical** (keyword / BM25) — great at exact terms: API names, error codes, identifiers.
 - **Semantic** (vector embeddings) — great at meaning: paraphrases and synonyms.
 
-This project ingests a PDF and stores each chunk in Db2 with **both**
-representations, then searches with both and fuses the results. It uses
-Db2 12.1.5's built-in features end to end:
+This project ingests a CSV corpus (one text chunk per row) and stores each row in
+Db2 with **both** representations, then searches with both and fuses the results.
+It uses Db2 12.1.5's built-in features end to end:
 
 - **Db2 Text Search** (OpenSearch-backed) for the lexical/BM25 index, and
 - **native `VECTOR` columns + in-database `TO_EMBEDDING`** (via a registered
@@ -25,15 +25,15 @@ Db2 table is the source of truth.
 ## Architecture: one chunk, two representations
 
 ```
-PDF ──Docling──▶ Markdown ──HybridChunker──▶ chunks
-                                               │
-                                               ▼
-                         Db2 table  (chunk_id, chunk_text, embedding)
-                                ├── chunk_text → Db2 Text Search index (OpenSearch)   → BM25 / CONTAINS · SCORE
-                                └── embedding  → native VECTOR column (local bge-small)  → cosine · VECTOR_DISTANCE
-                                               │
-                                               ▼
-            5_search.sql: run both legs, fuse — all in one Db2 SQL query
+CSV corpus (chunk_id, chunk_text)
+        │
+        ▼
+Db2 table  (chunk_id, chunk_text, embedding)
+       ├── chunk_text → Db2 Text Search index (OpenSearch)      → BM25 / CONTAINS · SCORE
+       └── embedding  → native VECTOR column (local bge-small)  → cosine · VECTOR_DISTANCE
+                            │
+                            ▼
+       2_search.sql: run both legs, fuse — all in one Db2 SQL query
 ```
 
 Each chunk is **one row** holding its text, a stable `chunk_id`, a text-search
@@ -47,13 +47,15 @@ other's blind spot.
   (model registration + `TO_EMBEDDING`). See [docs/db2-setup.md](docs/db2-setup.md).
 - **OpenSearch**, installed and registered with Db2 Text Search.
   See [docs/opensearch-setup.md](docs/opensearch-setup.md).
-- **Python 3.12** and the packages in [requirements.txt](requirements.txt).
+- **Python 3.12**; install the project with `pip install -e .` — pulls in `ibm_db`
+  and the live-UI deps from [requirements.txt](requirements.txt).
 - A **local embedding server** — llama.cpp serving `BAAI/bge-small-en-v1.5`
   (384-dim) on an OpenAI-compatible endpoint. Db2's `PROVIDER OPENAI` model calls
-  it; no API keys, no network egress. See [docs/local-embeddings.md](docs/local-embeddings.md).
-- A system library for Docling's OpenCV dependency (`libGL.so.1`):
-  - RHEL/Fedora: `sudo dnf install -y libglvnd-glx`
-  - Debian/Ubuntu: `sudo apt-get install -y libgl1`
+  it; no API keys, no network egress. See [docs/llamacpp-setup.md](docs/llamacpp-setup.md)
+  (install) and [docs/local-embeddings.md](docs/local-embeddings.md) (Db2 wiring).
+- A **CSV corpus** to index — two columns, `chunk_id, chunk_text` (one chunk per
+  row). A ready-made `data/sample_chunks.csv` is included; bring your own by matching
+  that shape.
 
 > Run the pipeline **as the Db2 instance owner** (e.g. `db2inst1`). The SQL
 > scripts' text-search admin steps must run on a local Db2 connection as the
@@ -65,14 +67,15 @@ other's blind spot.
 git clone <your-repo-url> hybrid-search && cd hybrid-search
 ```
 
-Install the pieces — each is idempotent and leaves nothing running:
+Install the prerequisites. Each has an installer under
+`scripts/install/` that installs, verifies, then **leaves the service
+stopped** (`0_start-services.sh` starts them for the run); each is also documented
+in `docs/`. Install OpenSearch before Db2 (Db2 registers it as the Text Search
+backend):
 
-```bash
-./scripts/0_docling-install.sh      # Python venv: Docling, ibm_db, UI deps (+ libGL)
-./scripts/0_llamacpp-install.sh     # build llama.cpp + download bge-small-en-v1.5, verify
-./scripts/0_opensearch-install.sh   # install + configure OpenSearch (Db2 Text Search backend)
-sudo ./scripts/0_db2-install.sh /path/to/server_dec   # install Db2 + instance + SAMPLE (skip if Db2 exists)
-```
+- **OpenSearch** — `scripts/install/opensearch-install.sh` · [docs/opensearch-setup.md](docs/opensearch-setup.md).
+- **Db2 12.1.5** — `sudo scripts/install/db2-install.sh /path/to/server_dec` · [docs/db2-setup.md](docs/db2-setup.md) (skip if you already have it).
+- **llama.cpp + bge-small-en-v1.5** — `scripts/install/llamacpp-install.sh` · [docs/llamacpp-setup.md](docs/llamacpp-setup.md).
 
 Then configure the connection:
 
@@ -85,71 +88,54 @@ $EDITOR .env          # Db2 connection + password (embeddings are local — no A
 
 ## Usage — run the scripts in order
 
-The filenames are numbered by execution order. **Step 0** is the one-time installs
-(see [Setup](#setup-one-time)); then run **1 → 5** as the Db2 instance owner from
-the repo root. Step 1 brings up the services; the ingestion (2–4) is split into
-small steps (extract → chunk → load) so you can inspect each intermediate file: the
-`.md` and the `.chunks.csv`. (Text Search is enabled once by `0_db2-install.sh`.)
+The filenames are numbered by execution order. After the one-time
+[Setup](#setup-one-time), run them **0 → 2** as the Db2 instance owner from the
+repo root — start the services, ingest your CSV corpus, then search — and
+`3_stop-services.sh` when you're done. (Text Search is enabled once when you set
+up Db2 — see [docs/db2-setup.md](docs/db2-setup.md).)
 
-### 1. Start the services
+### 0. `0_start-services.sh` — start the services
 
 The pipeline needs three services up — **Db2**, **OpenSearch**, and the **llama.cpp
 embedding server** (Db2's `TO_EMBEDDING` calls it during ingest and search). After
 the one-time [Setup](#setup-one-time), bring them all up:
 
 ```bash
-./scripts/1_start-services.sh        # starts Db2, OpenSearch, and the embedding server
+./scripts/0_start-services.sh        # starts Db2, OpenSearch, and the embedding server
 ```
 
-Idempotent (skips anything already up). Stop them with `./scripts/stop-services.sh`.
+Idempotent (skips anything already up).
 
-### 2. `2_extract.py` — PDF → Markdown
-
-```bash
-python scripts/2_extract.py path/to/your-document.pdf
-```
-
-Docling parses the PDF and writes clean Markdown next to it (`your-document.md`).
-**Leaves behind:** a Markdown file you can open and read.
-
-### 3. `3_chunk.py` — Markdown → chunks (CSV)
+### 1. `1_ingest.sql` — CSV corpus → Db2
 
 ```bash
-python scripts/3_chunk.py path/to/your-document.md
-```
-
-Splits the Markdown with Docling's HybridChunker (capped to the embedding
-model's token limit) and writes a two-column CSV (`chunk_id, chunk_text`).
-**Leaves behind:** `your-document.chunks.csv` — open it to see exactly what gets indexed.
-
-### 4. `4_ingest.sql` — chunks (CSV) → Db2
-
-```bash
-db2 -tvf scripts/4_ingest.sql
+db2 -tvf scripts/1_ingest.sql
 ```
 
 Drops any existing chunks table/index (so it's re-runnable), `IMPORT`s
-`sample.chunks.csv` into a fresh table, builds the Db2 Text Search index
+`data/sample_chunks.csv` into a fresh table, builds the Db2 Text Search index
 (`SYSTS_CREATE`/`SYSTS_UPDATE`), registers the local embedding model
 (`PROVIDER OPENAI` → llama.cpp), fills a `VECTOR` column via `TO_EMBEDDING`, and
 builds the vector index.
 
+Bring your own corpus as a two-column CSV (`chunk_id, chunk_text`). The script
+reads a fixed filename, `data/sample_chunks.csv`; rename your CSV to that or edit the
+`IMPORT FROM` line.
+
 Before the first run: `db2set DB2_VECTOR_INDEXING=YES -immediate` (once), and make
-sure the services from step 1 are up (`./scripts/1_start-services.sh`) so
+sure the services from step 0 are up (`./scripts/0_start-services.sh`) so
 `TO_EMBEDDING` can reach the embedding server. No secrets — it's local and keyless.
 See [docs/local-embeddings.md](docs/local-embeddings.md).
 **Leaves behind:** one table (default `myschema.chunks`) where every row has
 `chunk_id`, `chunk_text`, a text-search index entry, and an `embedding` vector.
 
 > Lexical-only: delete the model / embed / vector-index sections in
-> `4_ingest.sql` (keep table + text index).
-> The script reads a fixed filename, `sample.chunks.csv`; rename your CSV to that
-> or edit the `IMPORT FROM` line.
+> `1_ingest.sql` (keep table + text index).
 
-### 5. `5_search.sql` — hybrid retrieval
+### 2. `2_search.sql` — hybrid retrieval
 
 ```bash
-db2 -tvf scripts/5_search.sql
+db2 -tvf scripts/2_search.sql
 ```
 
 Runs all three legs for **one hardcoded query** and prints them: the **lexical**
@@ -158,14 +144,14 @@ query embedding), and the **hybrid** fusion — the gated, score-normalized weig
 sum, **all in one Db2 SQL query**. To search something else, edit the query text
 in the three statements (the raw form for the vector leg and the `word OR word …`
 form for the keyword leg). For dynamic ad-hoc queries, use the live demo UI, which
-calls the same engine (`hybrid_core.py`).
+calls the same engine (`hybrid_search.core`).
 **Leaves behind:** nothing — it's read-only.
 
 **How the fusion works (and why not plain RRF).** Reciprocal Rank Fusion ranks
 by position only, so a leg that is essentially guessing (vectors on an exact
 error code, keywords on a pure paraphrase) injects its top guesses with the same
 weight as the other leg's real hits — and they tie, so noise floats to the top.
-Instead, the fusion (in [scripts/hybrid_core.py](scripts/hybrid_core.py)):
+Instead, the fusion (in [src/hybrid_search/core.py](src/hybrid_search/core.py)):
 1. carries each leg's real score (BM25 `SCORE`, cosine similarity),
 2. **gates** a leg out when its best score is below a threshold (a near-random
    leg contributes nothing — e.g. vectors whose top cosine similarity `< 0.30`),
@@ -174,19 +160,25 @@ Instead, the fusion (in [scripts/hybrid_core.py](scripts/hybrid_core.py)):
 A document found by *both* legs is reinforced; a noisy leg is muted. The gates,
 weights, and candidate-pool size are `.env`-tunable (`HYBRID_*`).
 
+### 3. `3_stop-services.sh` — stop the services
+
+```bash
+./scripts/3_stop-services.sh          # stops the embedding server, OpenSearch, and Db2
+```
+
 ### Measuring quality — `eval.py`
 
 ```bash
-DB2_HOST=local python scripts/eval.py
+DB2_HOST=local PYTHONPATH=src python scripts/eval.py   # or: pip install -e . && DB2_HOST=local python scripts/eval.py
 ```
 
-Runs a small golden set (query → known-relevant chunks, in
-[scripts/eval.py](scripts/eval.py)) and reports **MRR, Recall@5, and Hits@1** for
-each leg and the fusion, plus a per-query table of where the first relevant
-result landed. Run it after any change to chunking, the embedding model, or the
-fusion knobs and judge the change by the numbers rather than by eyeballing one
-query. On the sample corpus the fusion beats both legs on every metric (e.g.
-hybrid MRR ≈ 0.89 vs vector 0.68 vs lexical 0.51).
+Scores a **golden eval set** (JSON of query → gold id(s), resolved from `$GOLDEN_SET`,
+argv, or the newest `~/out/eval/golden_set.draft.v*.json`) against all three legs:
+**known_item** queries → **MRR / Hits@1**; **topical** queries → **Recall@5 / nDCG@5**.
+Results are reported for the **held-out** slice (never tuned on), TRAIN, and ALL, plus a
+per-query-type diagnostic. Run it after any change to the corpus, embedding model, or
+`HYBRID_*` knobs and judge by the numbers. Tune the knobs on TRAIN, confirm on HELDOUT.
+See [docs/eval-results.md](docs/eval-results.md).
 
 ## Demo UI
 
@@ -211,14 +203,14 @@ for the layout, the acceptance walk-through, and color/design notes.
 
 ## Example queries to try
 
-These are written for the IBM Db2 12.1.5 LLM-integration reference PDF this project
-was built around — adapt them to your own document. The principle is general:
-**exact terms favor keyword search, paraphrases favor vectors, and a mix favors
-hybrid.** To try one, put it into the query text in `scripts/5_search.sql`
+These are written for the IBM Db2 12.1.5 LLM-integration reference content in the
+included `data/sample_chunks.csv` — adapt them to your own corpus. The principle is
+general: **exact terms favor keyword search, paraphrases favor vectors, and a mix
+favors hybrid.** To try one, put it into the query text in `scripts/2_search.sql`
 (both the raw and `word OR word …` forms), then:
 
 ```bash
-db2 -tvf scripts/5_search.sql
+db2 -tvf scripts/2_search.sql
 ```
 
 **Keyword search wins** — an exact **SQLSTATE error code** is just digits with no
@@ -239,9 +231,9 @@ contribute to the fused ranking:
 
 ## Configuration
 
-Everything is configured via `.env`: Db2 connection, schema/table names, chunk
-token cap, and vector dimension. (Embeddings are local — no API keys; the
-embedding model/endpoint is set in `4_ingest.sql`.) The fusion knobs
+Everything is configured via `.env`: Db2 connection, schema/table names, and
+vector dimension. (Embeddings are local — no API keys; the embedding
+model/endpoint is set in `1_ingest.sql`.) The fusion knobs
 (`HYBRID_W_LEX`, `HYBRID_W_VEC`, `HYBRID_VEC_GATE`, `HYBRID_LEX_GATE`,
 `HYBRID_POOL`) are optional — tune them against `eval.py`. See
 [.env.example](.env.example).
@@ -249,12 +241,16 @@ embedding model/endpoint is set in `4_ingest.sql`.) The fusion knobs
 ## Repository layout
 
 ```
-scripts/   install:   0_docling-install.sh · 0_llamacpp-install.sh · 0_opensearch-install.sh · 0_db2-install.sh
-           services:  1_start-services.sh · stop-services.sh
-           pipeline:  2_extract.py · 3_chunk.py · 4_ingest.sql · 5_search.sql
-           other:     hybrid_core.py (engine+fusion, used by eval.py + UI) · eval.py · pipeline-2-5.sh
+src/hybrid_search/   core.py — the search engine + fusion (import: from hybrid_search import core)
+scripts/   install/   opensearch-install.sh · db2-install.sh · llamacpp-install.sh  (install · verify · stop)
+           services:  0_start-services.sh · 3_stop-services.sh
+           pipeline:  1_ingest.sql · 2_search.sql
+           eval:      eval.py
+data/      sample_chunks.csv — the demo corpus (bring your own, same shape)
+tests/     test_backend.py — in-process UI backend test
 ui/        run.sh · build_fixtures.sh · api.py · queries.json · static/ (the demo)
-docs/      Db2, OpenSearch, and local-embeddings setup notes
+docs/      Db2, OpenSearch, llama.cpp, and local-embeddings setup notes
+pyproject.toml · requirements.txt
 ```
 
 ## Docs
@@ -262,6 +258,7 @@ docs/      Db2, OpenSearch, and local-embeddings setup notes
 - [docs/setup-and-run.md](docs/setup-and-run.md) — full end-to-end setup & run runbook (with real-VM gotchas).
 - [docs/db2-setup.md](docs/db2-setup.md) — install and prepare Db2 12.1.5.
 - [docs/opensearch-setup.md](docs/opensearch-setup.md) — install OpenSearch and wire it to Db2 Text Search.
+- [docs/llamacpp-setup.md](docs/llamacpp-setup.md) — install llama.cpp and download the bge-small-en-v1.5 model.
 - [docs/local-embeddings.md](docs/local-embeddings.md) — serve bge-small-en-v1.5 locally via llama.cpp for `TO_EMBEDDING`.
 - [docs/eval-results.md](docs/eval-results.md) — search-quality evaluation results from `eval.py`.
 - [ui/README.md](ui/README.md) — the demo UI: one-command run, acceptance walk-through, design notes.

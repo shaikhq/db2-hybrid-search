@@ -1,5 +1,5 @@
 """
-hybrid_core.py — the hybrid-search engine, used by eval.py (metrics) and the
+hybrid_search/core.py — the hybrid-search engine, used by eval.py (metrics) and the
 live UI (ui/api.py). It has no command line of its own.
 
 Three retrieval legs, all in Db2:
@@ -26,7 +26,7 @@ import ibm_db
 # SQL sent to Db2 is logged here at INFO. Callers decide where it goes: the live
 # UI (ui/api.py) routes this to the uvicorn console; the CLI/eval leave it
 # unconfigured, so nothing is printed unless you opt in.
-log = logging.getLogger("hybrid_core")
+log = logging.getLogger("hybrid_search")
 
 
 def _log_sql(sql, params=(), level=logging.INFO):

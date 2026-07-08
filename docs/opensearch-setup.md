@@ -3,7 +3,8 @@
 OpenSearch is the backend for Db2 Text Search (the lexical/BM25 leg). This sets it
 up locally on Red Hat Linux 10 — about 10 minutes. Run each block in order.
 
-> **Shortcut:** `./scripts/0_opensearch-install.sh` automates all of the steps below.
+> **Shortcut:** `./scripts/install/opensearch-install.sh` automates all
+> of the steps below — install, verify it starts, then leave it stopped.
 
 > [!WARNING]
 > This turns OFF OpenSearch security/passwords to keep local setup simple. Use it
@@ -62,10 +63,10 @@ curl "http://localhost:9200"     # JSON showing node-1 / db2-text-search-cluster
 
 ## Using it with this project
 
-You don't query OpenSearch directly — **Db2 Text Search owns the index**.
-`0_db2-install.sh` enables Text Search and registers OpenSearch as the Db2 backend;
-then `4_ingest.sql` builds and fills the keyword index. See the main
-[README](../README.md).
+You don't query OpenSearch directly — **Db2 Text Search owns the index**. Enable
+Text Search and register OpenSearch as the Db2 backend (see
+[db2-setup.md](db2-setup.md)); then `1_ingest.sql` builds and fills the keyword
+index. See the main [README](../README.md).
 
 ## Start / stop
 

@@ -1,20 +1,14 @@
-# Dependencies for the ingestion + search pipeline (scripts/ingest.py, scripts/search.py).
+# Dependencies for the hybrid-search engine (src/hybrid_search) + eval + UI.
 # Target: IBM Db2 12.1.5, Python 3.12, CPU-only.
 #
-# Install CPU-only torch/torchvision FIRST so pip doesn't pull large CUDA wheels:
+# Install the project (which reads this file) in editable mode:
 #
-#   pip install --index-url https://download.pytorch.org/whl/cpu torch==2.12.1 torchvision==0.27.1
+#   pip install -e .
+#
+# or just these packages directly:
+#
 #   pip install -r requirements.txt
-#
-# SYSTEM REQUIREMENT: Docling's OpenCV dependency needs libGL.so.1:
-#   RHEL / Fedora:   sudo dnf install -y libglvnd-glx
-#   Debian / Ubuntu: sudo apt-get install -y libgl1
 
-docling==2.105.0           # PDF -> Markdown extraction + HybridChunker
-transformers==5.12.0       # tokenizer for token-aware chunking
-torch==2.12.1              # CPU build (see --index-url note above); required by Docling
-torchvision==0.27.1        # CPU build; pulled in by Docling models
-opencv-python==4.13.0.92   # Docling models dependency (needs libGL.so.1)
 ibm_db==3.2.9              # Db2 driver (table load, model registration, vector + search)
 
 # --- demo UI, LIVE mode only (./ui/run.sh --live); the offline demo needs none of these ---

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# stop-services.sh — stop the llama.cpp embedding server, OpenSearch, and Db2.
+# 3_stop-services.sh — stop the llama.cpp embedding server, OpenSearch, and Db2.
 # Run as the Db2 instance owner. Tries each even if one isn't running.
 # (Db2 won't stop while a client holds a connection — close those first.)
 set -uo pipefail

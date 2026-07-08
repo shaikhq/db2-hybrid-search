@@ -18,25 +18,22 @@ Db2  TO_EMBEDDING(text USING MYSCHEMA.CHUNKS_EMBED)
 llama-server  (bge-small-en-v1.5, --embedding --pooling cls)  →  384-dim vector
 ```
 
-## One-time setup — `0_llamacpp-install.sh`
+## One-time setup — install llama.cpp + model
+
+Run `scripts/install/llamacpp-install.sh` (build, download, verify
+384-dim, then stop), or do it by hand: build llama.cpp and download the
+bge-small-en-v1.5 GGUF (~37 MB, q8_0) into `~/models/bge-small-en-v1.5/`. Full
+steps and troubleshooting are in [llamacpp-setup.md](llamacpp-setup.md).
+
+## Run the embedding server — `0_start-services.sh`
 
 ```bash
-./scripts/0_llamacpp-install.sh
-```
-
-Builds llama.cpp into `~/llama.cpp` (installs `cmake` if missing), downloads the
-GGUF (~37 MB, q8_0) into `~/models/bge-small-en-v1.5/`, and verifies a 384-dim
-embedding. Idempotent; leaves nothing running. Override with `LLAMA_CPP_DIR`, `BGE_DIR`.
-
-## Run the embedding server — `1_start-services.sh`
-
-```bash
-./scripts/1_start-services.sh              # starts Db2, OpenSearch + the embedding server (:8085)
+./scripts/0_start-services.sh              # starts Db2, OpenSearch + the embedding server (:8085)
 ```
 
 The embedding server must be up for **both** ingest (embedding every chunk) and
-search (embedding each query, via `hybrid_core.py`'s vector leg). Overridable via
-env: `LLAMA_CPP_DIR`, `BGE_GGUF`, `EMBED_PORT`. Stop with `./scripts/stop-services.sh`.
+search (embedding each query, via `hybrid_search.core`'s vector leg). Overridable via
+env: `LLAMA_CPP_DIR`, `BGE_GGUF`, `EMBED_PORT`. Stop with `./scripts/3_stop-services.sh`.
 
 Smoke test:
 
@@ -50,7 +47,7 @@ curl -s http://127.0.0.1:8085/v1/embeddings \
 
 ## How Db2 is wired to it
 
-`4_ingest.sql` registers the model:
+`1_ingest.sql` registers the model:
 
 ```sql
 CREATE EXTERNAL MODEL MYSCHEMA.CHUNKS_EMBED PROVIDER OPENAI
@@ -70,7 +67,7 @@ search leg embeds queries through the same model.
   degrades quality.)
 - **Query instruction**: queries are embedded with bge's retrieval prefix
   ("Represent this sentence for searching relevant passages: ") via
-  `hybrid_core.py`'s `embed_query` (env `EMBED_QUERY_PREFIX`); passages stay raw.
+  `hybrid_search.core`'s `embed_query` (env `EMBED_QUERY_PREFIX`); passages stay raw.
 - **Fusion gate**: `HYBRID_VEC_GATE` (default 0.30) was tuned against the previous
   model's cosine distribution. Re-tune it against `eval.py` for bge if you want to
   squeeze back MRR.

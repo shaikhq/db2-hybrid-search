@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """In-process backend tests (no server/port): call the api route functions and
-hybrid_core directly against a local Db2 connection. Exits non-zero on failure."""
+hybrid_search.core directly against a local Db2 connection. Exits non-zero on failure."""
 
 import sys
 import ibm_db
-import hybrid_core as h
+from hybrid_search import core as h
 import build_fixtures as bf
 import api
 
@@ -34,7 +34,7 @@ def result_shape_ok(results):
 
 
 def main():
-    print("== hybrid_core: connection + retrieval legs ==")
+    print("== hybrid_search.core: connection + retrieval legs ==")
     conn = h.connect()
     check("connect() opens a connection", conn is not None)
 

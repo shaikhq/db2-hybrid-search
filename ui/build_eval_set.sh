@@ -15,8 +15,11 @@ REPO="$(dirname "$HERE")"
 OWNER="${DB2_INSTANCE_OWNER:-db2inst1}"
 
 # Stage files the instance owner can read (it can't read /home/<you>).
-cp "$HERE/build_eval_set.py" "$HERE/queries.json" "$REPO/scripts/hybrid_core.py" /tmp/
-chmod 644 /tmp/build_eval_set.py /tmp/queries.json /tmp/hybrid_core.py
+rm -rf /tmp/hybrid_search
+cp "$HERE/build_eval_set.py" "$HERE/queries.json" /tmp/
+cp -r "$REPO/src/hybrid_search" /tmp/           # the search engine package
+chmod 644 /tmp/build_eval_set.py /tmp/queries.json
+chmod -R a+rX /tmp/hybrid_search
 rm -f /tmp/eval_set.json
 
 sudo -iu "$OWNER" bash -lc 'DB2_HOST=local python3 /tmp/build_eval_set.py'

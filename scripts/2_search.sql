@@ -1,5 +1,5 @@
 -- Hybrid search demo (for testing) — runs the three legs for one hardcoded query.
--- Run as the Db2 instance owner:  db2 -tvf scripts/5_search.sql
+-- Run as the Db2 instance owner:  db2 -tvf scripts/2_search.sql
 -- To search something else, replace the query text in all three statements: the
 -- raw form (vector leg) and the 'word OR word ...' form (keyword leg).
 -- Knobs are inlined: POOL 50, weights 0.5/0.5, vector gate 0.30, lexical gate 0.

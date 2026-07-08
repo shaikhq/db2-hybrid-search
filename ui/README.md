@@ -66,7 +66,7 @@ static/             index.html · styles.css · app.js · fixtures.json · queri
 ```
 
 The search engine and the gated, score-normalized fusion live in
-`../scripts/hybrid_core.py`. The fusion is **not** RRF — each leg's score is
+`../src/hybrid_search/core.py`. The fusion is **not** RRF — each leg's score is
 normalized and low-confidence legs are gated out before a weighted sum.
 
 ## Honesty

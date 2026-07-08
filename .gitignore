@@ -9,19 +9,13 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+build/
+dist/
 .ipynb_checkpoints/
 
 # --- Runtime / cache artifacts ---
 cache/
 *.npy
-
-# --- Source documents & their extracted markdown are not committed ---
-# (bring your own PDF; ingest.py writes <pdf>.md next to it)
-*.pdf
-
-# --- Archived third-party content: kept on disk, never committed ---
-backup/sample-doc/
-backup/cache/
 
 # --- OS noise ---
 .DS_Store

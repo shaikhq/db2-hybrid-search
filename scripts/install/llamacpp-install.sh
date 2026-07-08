@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 0_llamacpp-install.sh — build llama.cpp and download bge-small-en-v1.5, then verify
-# it serves 384-dim embeddings. Does NOT leave a server running (1_start-services.sh
+# llamacpp-install.sh — build llama.cpp and download bge-small-en-v1.5, then verify
+# it serves 384-dim embeddings. Does NOT leave a server running (0_start-services.sh
 # does that). One-time. Idempotent: skips build/download if already present.
 set -euo pipefail
 

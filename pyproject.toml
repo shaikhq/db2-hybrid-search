@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hybrid-search"
+version = "0.1.0"
+description = "Hybrid (BM25 + vector) search inside IBM Db2 12.1.5, with a local llama.cpp embedding server."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]

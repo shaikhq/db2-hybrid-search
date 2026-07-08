@@ -12,10 +12,10 @@ from fastapi import FastAPI, Query
 from fastapi.staticfiles import StaticFiles
 import ibm_db
 
-import hybrid_core as h
+from hybrid_search import core as h
 import build_fixtures as bf   # responses_for()
 
-# Log hybrid_core's SQL to the uvicorn console (reuse uvicorn's handler; fall
+# Log hybrid_search.core's SQL to the uvicorn console (reuse uvicorn's handler; fall
 # back to a basic one if run standalone).
 _uvicorn_handlers = logging.getLogger("uvicorn").handlers
 if _uvicorn_handlers:
