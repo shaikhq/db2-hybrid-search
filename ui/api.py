@@ -14,6 +14,7 @@ import ibm_db
 
 from hybrid_search import core as h
 import build_fixtures as bf   # responses_for()
+import demo_view as dv         # outcome-translation (verdicts + book labels)
 
 # Log hybrid_search.core's SQL to the uvicorn console (reuse uvicorn's handler; fall
 # back to a basic one if run standalone).
@@ -30,6 +31,14 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(HERE, "queries.json")) as f:
     DECK = json.load(f)
 GOLD = {item["query"]: set(item["gold_chunk_ids"]) for item in DECK}
+
+# Demo view (additive): its own deck + a book-id -> title/author lookup.
+with open(os.path.join(HERE, "demo_queries.json")) as f:
+    DEMO_DECK = json.load(f)
+DEMO_GOLD = {d["query"]: set(d["gold_chunk_ids"]) for d in DEMO_DECK}
+DEMO_ITEM = {d["query"]: d for d in DEMO_DECK}
+_CORPUS = os.path.join(os.path.dirname(HERE), "data", "corpus.csv")
+BOOK_LOOKUP = dv.load_book_lookup(_CORPUS) if os.path.exists(_CORPUS) else {}
 
 app = FastAPI(title="Db2 Hybrid Search Demo", docs_url="/docs")
 
@@ -51,6 +60,28 @@ def search(q: str = Query(..., description="search text"), k: int = bf.K):
     finally:
         ibm_db.close(conn)
     return {"query": q, "gold_chunk_ids": sorted(gold), **modes}
+
+
+@app.get("/api/demo_deck")
+def demo_deck():
+    """The curated demo deck (query, type, gold ids, scenario)."""
+    return DEMO_DECK
+
+
+@app.get("/api/demo")
+def demo(q: str = Query(..., description="search text")):
+    """Demo view model for a query: each strategy translated to a verdict
+    (found / wrong / nothing) with the shown book's title + author."""
+    gold = DEMO_GOLD.get(q, set())
+    item = DEMO_ITEM.get(q, {"id": 0, "query": q, "query_type": None,
+                             "query_class": "known_item", "scenario": "",
+                             "gold_chunk_ids": sorted(gold)})
+    conn = h.connect()
+    try:
+        responses = bf.responses_for(conn, q, gold)
+    finally:
+        ibm_db.close(conn)
+    return dv.view_model(responses, item, BOOK_LOOKUP, k=bf.K)
 
 
 # Serve the same static UI; API routes above take precedence over this mount.

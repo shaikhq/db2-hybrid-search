@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hybrid Search on Db2 12.1.5</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=8" />
 </head>
 <body>
   <header class="topbar">
@@ -21,42 +21,26 @@
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="pages">
     <button class="tab" data-page="search" role="tab" aria-selected="true">Search</button>
+    <button class="tab" data-page="demo" role="tab" aria-selected="false">Demo</button>
     <button class="tab" data-page="eval" role="tab" aria-selected="false">Golden eval set</button>
   </nav>
 
-  <main class="layout" id="page-search">
-    <!-- LEFT: the demo deck -->
-    <aside class="deck" aria-label="curated queries">
-      <h2>Eval queries</h2>
-      <ul id="deck-list"></ul>
-    </aside>
-
-    <!-- CENTER: search + results -->
-    <section class="stage">
-      <div class="controls">
-        <input id="searchbox" type="text" placeholder="Pick a query on the left…"
-               autocomplete="off" spellcheck="false" />
-        <div class="modes" id="modes" role="radiogroup" aria-label="search strategy">
-          <button class="mode" data-mode="lexical" role="radio">Lexical</button>
-          <button class="mode" data-mode="vector" role="radio">Vector</button>
-          <button class="mode" data-mode="hybrid" role="radio">Hybrid</button>
-        </div>
-        <button id="run" class="run">Search</button>
-      </div>
-      <p class="fused-hint" id="fused-hint" hidden>
-        Hybrid <strong>subsumes</strong> Lexical&nbsp;⊕&nbsp;Vector — it reuses both, then fuses.
-      </p>
-
-      <div class="toggles">
-        <label><input type="checkbox" id="t-scores" /> Show scores</label>
-        <label><input type="checkbox" id="t-agg" /> Show hit-rate across all queries</label>
-      </div>
-      <div id="agg" class="agg" hidden></div>
-
-      <div id="output" class="output">
-        <p class="placeholder">Choose a query from the left, pick a strategy, and hit Search.</p>
-      </div>
-    </section>
+  <main class="searchpage" id="page-search">
+    <div class="search-intro">
+      <h2>Search the library</h2>
+      <p>Type anything — a title, an author, a vibe, a narrator — and see the top&nbsp;3 results
+        from all three strategies side by side: <b>Lexical</b> (keywords), <b>Vector</b> (meaning),
+        and <b>Hybrid</b> (both fused).</p>
+    </div>
+    <div class="controls">
+      <input id="searchbox" type="text" placeholder="Search your library — type anything…"
+             autocomplete="off" spellcheck="false" aria-label="search the library" />
+      <button id="run" class="run">Search</button>
+      <label class="search-toggle"><input type="checkbox" id="t-scores" /> Show scores</label>
+    </div>
+    <div id="output" class="output">
+      <p class="placeholder">Type a query and hit Search to see the top 3 results from each strategy.</p>
+    </div>
   </main>
 
   <!-- SECOND PAGE: the golden eval set, explained for newcomers -->
@@ -64,14 +48,38 @@
     <div class="eval-intro">
       <h2>Golden eval set</h2>
       <p>These are the test questions behind the demo. For each question, the
-        <b>gold passage</b> is the exact chunk of the Db2 docs we expect search to
-        return. We grade each strategy (Lexical, Vector, Hybrid) by how close to the
-        top it surfaces these gold passages — that's where the hit-rate and MRR
-        numbers come from.</p>
+        <b>gold answer</b> is the exact book (or books) we expect search to return.
+        We grade each strategy (Lexical, Vector, Hybrid) by how close to the top it
+        surfaces these gold answers — that's where the hit-rate and MRR numbers come from.</p>
     </div>
     <div id="eval-list" class="eval-list"></div>
   </section>
 
-  <script src="app.js"></script>
+  <!-- THIRD PAGE (additive): mixed-audience demo — "will search find my book?" -->
+  <section class="demopage" id="page-demo" hidden aria-label="will search find my book">
+    <div class="demo-intro">
+      <h2>Will search find my book?</h2>
+      <p>Type a rough memory of a book — a nickname, a vibe, a narrator — and watch three
+        strategies at once. <b>Keyword</b> matches words; <b>Semantic</b> matches ideas;
+        <b>Hybrid</b> blends both. Each single strategy has a blind spot; hybrid covers them.</p>
+    </div>
+    <div class="demo-controls">
+      <input id="demo-search" type="text" placeholder="Tap an example below, or type your own…"
+             autocomplete="off" spellcheck="false" aria-label="search your library" />
+      <button id="demo-run" class="run">Search</button>
+      <button id="demo-shuffle" class="demo-shuffle" type="button" aria-label="Shuffle the example queries">🔀 Shuffle</button>
+      <button id="demo-representative" class="demo-shuffle" type="button" aria-label="Load a representative set of eval queries">Representative set</button>
+      <label class="demo-toggle"><input type="checkbox" id="demo-tech" /> Technical details</label>
+    </div>
+    <div id="demo-chips" class="demo-chips" role="group" aria-label="example queries"></div>
+    <p id="demo-scenario" class="demo-scenario" aria-live="polite"></p>
+    <div id="demo-panels" class="demo-panels">
+      <p class="placeholder">Tap an example query above to see all three strategies at once.</p>
+    </div>
+    <div id="demo-scoreboard" class="demo-scoreboard" aria-live="polite"></div>
+  </section>
+
+  <script src="app.js?v=8"></script>
+  <script src="demo.js?v=8"></script>
 </body>
 </html>

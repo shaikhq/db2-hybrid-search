@@ -1,15 +1,14 @@
 "use strict";
 
-// Reads the frozen fixtures by default (offline). For queries not in the frozen
-// set, it falls back to the live API (/api/search) when running ./ui/run.sh --live.
+// Search tab = open-ended search: type anything, see the top 3 results from all
+// three strategies side by side. Needs the live backend (./ui/run.sh --live) since
+// arbitrary queries must hit Db2. The Golden-eval tab reads the frozen eval_set.json.
 
-const state = { qid: null, mode: "lexical", showScores: false, record: null, query: "" };
-let DATA = null;       // fixtures.json (by_query results + meta)
-let DECK = [];         // featured queries shown in the rail
-let DECK_ALL = [];     // full curated set (so typed queries still resolve)
-let LIVE = false;      // true under ./ui/run.sh --live: every search hits Db2
-let EVAL = null;       // eval_set.json (featured queries + their gold passages)
+const state = { showScores: false, record: null };
+let LIVE = false;      // /api/search reachable (live backend up)?
+let EVAL = null;       // eval_set.json (featured queries + their gold answers)
 
+const TOP = 3;         // results shown per strategy
 const $ = (sel) => document.querySelector(sel);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -21,49 +20,12 @@ const legChip = (leg) => leg === "bm25"
 
 /* ---------- boot ---------- */
 async function boot() {
-  DATA = await (await fetch("fixtures.json", { cache: "no-store" })).json();
-  DECK_ALL = await (await fetch("queries.json", { cache: "no-store" })).json();
-  DECK = DECK_ALL.filter((q) => q.featured);
-  // The live backend (ui/api.py) serves /api/queries; the offline static server
-  // doesn't. Probe once so live mode runs every search against Db2, while the
-  // offline talk path keeps using the frozen fixtures.
   try { LIVE = (await fetch("/api/queries", { cache: "no-store" })).ok; }
   catch (_) { LIVE = false; }
   try { EVAL = await (await fetch("eval_set.json", { cache: "no-store" })).json(); }
   catch (_) { EVAL = null; }
-  renderDeck();
-  renderAgg();
   renderEval();
-  setMode("lexical");
   wire();
-}
-
-function renderDeck() {
-  $("#deck-list").innerHTML = DECK.map((q) => `
-    <li class="qrow" data-id="${q.id}">
-      <div class="qtop">
-        <span class="qtext">${esc(q.query)}</span>
-        <span class="type type-${q.query_type}">${TYPE_LABEL[q.query_type] || q.query_type}</span>
-      </div>
-      <div class="gold-id">gold: <b>${q.gold_chunk_ids.map((c) => "#" + c).join(" ")}</b></div>
-    </li>`).join("");
-}
-
-function renderAgg() {
-  const k = DATA.meta.k, modes = ["lexical", "vector", "hybrid"];
-  const label = { lexical: "BM25", vector: "Vector", hybrid: "Hybrid" };
-  const cls = { lexical: "chip-bm25", vector: "chip-vector", hybrid: "chip-both" };
-  const hit = { lexical: 0, vector: 0, hybrid: 0 };
-  const mrr = { lexical: 0, vector: 0, hybrid: 0 };
-  DECK.forEach((q) => {
-    const rec = DATA.by_query[q.id];
-    modes.forEach((m) => { const gr = rec[m].gold_rank; if (gr) { hit[m]++; mrr[m] += 1 / gr; } });
-  });
-  const n = DECK.length;
-  $("#agg").innerHTML =
-    `<span class="a-title">Gold answer in top ${k}, across ${n} eval queries</span>` +
-    modes.map((m) => `<span class="a-item"><span class="chip ${cls[m]}">${label[m]}</span> <b>${hit[m]}/${n}</b></span>`).join("") +
-    `<span class="a-note">MRR (illustrative): ${modes.map((m) => `${label[m]} ${(mrr[m] / n).toFixed(2)}`).join(" · ")}</span>`;
 }
 
 /* ---------- golden eval set page ---------- */
@@ -98,17 +60,23 @@ function renderEval() {
       </div>
       ${q.note ? `<p class="eval-why">${esc(q.note)}</p>` : ""}
       <div class="eval-gold-head">Gold answer${n > 1 ? "s" : ""}
-        <span>· the passage${n > 1 ? "s" : ""} search should find</span></div>
+        <span>· the book${n > 1 ? "s" : ""} search should find</span></div>
       ${passages}
     </article>`;
   }).join("");
 }
 
+/* ---------- nav ---------- */
 function setPage(page) {
   document.querySelectorAll("#tabs .tab").forEach((t) =>
     t.setAttribute("aria-selected", String(t.dataset.page === page)));
-  $("#page-search").hidden = page !== "search";
-  $("#page-eval").hidden = page !== "eval";
+  // Generic: show #page-<page>, hide the rest. Force display too, so hiding works
+  // even if an older/cached stylesheet lacks the [hidden] override.
+  document.querySelectorAll('[id^="page-"]').forEach((sec) => {
+    const on = sec.id === "page-" + page;
+    sec.hidden = !on;
+    sec.style.display = on ? "" : "none";
+  });
 }
 
 /* ---------- controls ---------- */
@@ -120,93 +88,70 @@ function wire() {
   $("#eval-list").addEventListener("click", (e) => {
     const gp = e.target.closest(".gold-passage"); if (gp) gp.classList.toggle("open");
   });
-  $("#deck-list").addEventListener("click", (e) => {
-    const li = e.target.closest(".qrow"); if (!li) return;
-    const item = DECK_ALL.find((q) => String(q.id) === li.dataset.id);
-    document.querySelectorAll(".qrow").forEach((r) => r.classList.toggle("active", r === li));
-    state.qid = item.id; state.query = item.query;
-    $("#searchbox").value = item.query;
-    run();
-  });
-  $("#modes").addEventListener("click", (e) => {
-    const b = e.target.closest(".mode"); if (!b) return;
-    setMode(b.dataset.mode);
-    if (state.record) render();        // re-render same query in the new strategy
-  });
   $("#run").addEventListener("click", run);
   $("#searchbox").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
-  $("#t-scores").addEventListener("change", (e) => { state.showScores = e.target.checked; if (state.record) render(); });
-  $("#t-agg").addEventListener("change", (e) => { $("#agg").hidden = !e.target.checked; });
+  $("#t-scores").addEventListener("change", (e) => {
+    state.showScores = e.target.checked; if (state.record) render();
+  });
   $("#output").addEventListener("click", (e) => {
     const row = e.target.closest(".row"); if (row) row.classList.toggle("open");
   });
-}
-
-function setMode(mode) {
-  state.mode = mode;
-  document.querySelectorAll(".mode").forEach((b) =>
-    b.setAttribute("aria-checked", String(b.dataset.mode === mode)));
-  $("#modes").classList.toggle("hybrid", mode === "hybrid");
-  $("#fused-hint").hidden = mode !== "hybrid";
 }
 
 /* ---------- run + render ---------- */
 async function run() {
   const text = $("#searchbox").value.trim();
   if (!text) return;
-  let record = null;
-
-  // Live mode: always query Db2 (so every search shows up in the app log).
-  if (LIVE) {
-    try {
-      const r = await fetch("/api/search?q=" + encodeURIComponent(text));
-      if (r.ok) record = await r.json();
-    } catch (_) { /* fall back to fixtures below */ }
-  }
-  // Offline (or a live miss): use the frozen fixtures for curated queries.
-  if (!record) {
-    const item = DECK_ALL.find((q) => q.query === text);
-    record = item ? DATA.by_query[item.id] : null;
-  }
-  if (!record) {
-    $("#output").innerHTML = `<p class="placeholder">This query isn't in the frozen demo set.
-      Pick one on the left, or run <code>./ui/run.sh --live</code> for ad-hoc search.</p>`;
+  if (!LIVE) {
+    $("#output").innerHTML = `<p class="placeholder">Open-ended search needs the live backend —
+      run <code>./ui/run.sh --live</code>, then search any query here.</p>`;
     state.record = null; return;
   }
-  state.record = record;
-  render();
+  $("#output").innerHTML = `<p class="placeholder">Searching…</p>`;
+  try {
+    const r = await fetch("/api/search?q=" + encodeURIComponent(text));
+    if (!r.ok) throw new Error("bad status");
+    state.record = await r.json();
+    render();
+  } catch (_) {
+    $("#output").innerHTML = `<p class="placeholder">Search failed — is the live backend running?</p>`;
+    state.record = null;
+  }
 }
 
 function render() {
   const rec = state.record;
-  $("#output").innerHTML = state.mode === "hybrid"
-    ? comparisonHtml(rec)
-    : heroBadge(rec[state.mode]) + rowsHtml(rec[state.mode].results, false) + scoreNote();
+  if (!rec) return;
+  $("#output").innerHTML = comparisonHtml(rec);
 }
 
-function heroBadge(resp) {
-  const k = resp.k, gold = resp.gold_chunk_ids.map((c) => "#" + c).join(" ");
-  if (resp.gold_rank) {
-    return `<div class="hero found">✓ Gold answer at <span class="rank-num">#${resp.gold_rank}</span>
-      <small>(${gold})</small></div>`;
-  }
-  return `<div class="hero missed">✕ Gold answer — not in top ${k} <small>(${gold})</small></div>`;
+function comparisonHtml(rec) {
+  const col = (title, dot, cls, resp, prov) => `
+    <div class="col ${cls}">
+      <h3><span class="dot ${dot}"></span>${title}</h3>
+      ${rowsHtml((resp.results || []).slice(0, TOP), prov)}
+    </div>`;
+  return `<div class="compare">
+    ${col("Lexical", "bm25", "col-lexical", rec.lexical, false)}
+    ${col("Vector", "vec", "col-vector", rec.vector, false)}
+    ${col("Hybrid", "hyb", "col-hybrid", rec.hybrid, true)}
+  </div>${scoreNote()}`;
 }
 
 function rowsHtml(results, showProvenance) {
+  if (!results.length) return `<p class="col-empty">No results.</p>`;
   return `<div class="rows">${results.map((r) => rowHtml(r, showProvenance)).join("")}</div>`;
 }
 
 function rowHtml(r, showProvenance) {
   const tags = showProvenance && r.found_by && r.found_by.length
     ? `<span class="tags">${r.found_by.map(legChip).join("")}</span>` : "";
-  const goldFlag = r.is_gold ? `<span class="gold-flag">★ gold</span>` : "";
-  return `<div class="row ${r.is_gold ? "gold" : ""}">
+  return `<div class="row">
     <div class="rline">
       <span class="rank">${r.rank}</span>
       <span class="cid">#${r.chunk_id}</span>
       <span class="snip">${esc(r.snippet)}</span>
-      ${tags}${goldFlag}
+      ${tags}
     </div>
     ${scoresHtml(r)}
     <div class="full">${esc(r.text)}</div>
@@ -234,20 +179,6 @@ function scoreNote() {
   return `<p class="score-note">BM25 and cosine are different scales, so each leg is normalized
     (score ÷ its best) and a low-confidence leg is gated out before the weighted sum.
     The fusion ranks by normalized score, not raw score.</p>`;
-}
-
-function comparisonHtml(rec) {
-  const col = (title, dot, cls, resp, prov) => `
-    <div class="col ${cls}">
-      <h3><span class="dot ${dot}"></span>${title}</h3>
-      ${heroBadge(resp)}
-      ${rowsHtml(resp.results, prov)}
-    </div>`;
-  return `<div class="compare">
-    ${col("Lexical", "bm25", "col-lexical", rec.lexical, false)}
-    ${col("Vector", "vec", "col-vector", rec.vector, false)}
-    ${col("Hybrid", "hyb", "col-hybrid", rec.hybrid, true)}
-  </div>${scoreNote()}`;
 }
 
 boot();

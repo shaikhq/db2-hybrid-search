@@ -108,11 +108,11 @@ def main():
     with open(os.path.join(here, "fixtures.json"), "w") as f:
         json.dump(out, f, indent=2)
 
-    # Acceptance check (query id 1 = "42615").
+    # Acceptance check on the first deck query.
     a = by_query["1"]
     print(f"wrote fixtures.json — {n} queries x 3 modes")
     print(f"aggregate hit@5: {out['aggregate']['hit_at_5']}")
-    print("ACCEPTANCE 42615 ->",
+    print("ACCEPTANCE q1 ->",
           "lexical gold_rank:", a["lexical"]["gold_rank"],
           "| vector gold_rank:", a["vector"]["gold_rank"],
           "| hybrid gold_rank:", a["hybrid"]["gold_rank"],
