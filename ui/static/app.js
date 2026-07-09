@@ -13,10 +13,23 @@ const $ = (sel) => document.querySelector(sel);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-const TYPE_LABEL = { keyword: "Keyword", semantic: "Semantic", mixed: "Mixed" };
+const TYPE_LABEL = { keyword: "Lexical", semantic: "Semantic", mixed: "Mixed" };
 const legChip = (leg) => leg === "bm25"
-  ? '<span class="chip chip-bm25">BM25</span>'
-  : '<span class="chip chip-vector">Vector</span>';
+  ? '<span class="chip chip-bm25">Lexical</span>'
+  : '<span class="chip chip-vector">Semantic</span>';
+
+// Highlight the query's terms inside an already-escaped chunk (lexical results).
+const HL_STOP = new Set(("the a an of to in on and or for with your you how what is are do it this that " +
+  "by we our not into out up who i be").split(" "));
+function queryTerms(q) {
+  return [...new Set(String(q || "").toLowerCase().match(/[a-z0-9]+/g) || [])]
+    .filter((w) => w.length > 2 && !HL_STOP.has(w));
+}
+function highlight(escaped, terms) {
+  if (!terms || !terms.length) return escaped;
+  const re = new RegExp("(" + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+  return escaped.replace(re, "<mark>$1</mark>");
+}
 
 /* ---------- boot ---------- */
 async function boot() {
@@ -126,49 +139,50 @@ function render() {
 }
 
 function comparisonHtml(rec) {
-  const col = (title, dot, cls, resp, prov) => `
+  const terms = queryTerms(rec.query);   // highlight these in the Lexical column only
+  const col = (title, dot, cls, resp, prov, hl) => `
     <div class="col ${cls}">
       <h3><span class="dot ${dot}"></span>${title}</h3>
-      ${rowsHtml((resp.results || []).slice(0, TOP), prov)}
+      ${rowsHtml((resp.results || []).slice(0, TOP), prov, hl)}
     </div>`;
   return `<div class="compare">
-    ${col("Lexical", "bm25", "col-lexical", rec.lexical, false)}
-    ${col("Vector", "vec", "col-vector", rec.vector, false)}
-    ${col("Hybrid", "hyb", "col-hybrid", rec.hybrid, true)}
+    ${col("Lexical", "bm25", "col-lexical", rec.lexical, false, terms)}
+    ${col("Semantic", "vec", "col-vector", rec.vector, false, null)}
+    ${col("Hybrid", "hyb", "col-hybrid", rec.hybrid, true, null)}
   </div>${scoreNote()}`;
 }
 
-function rowsHtml(results, showProvenance) {
+function rowsHtml(results, showProvenance, hl) {
   if (!results.length) return `<p class="col-empty">No results.</p>`;
-  return `<div class="rows">${results.map((r) => rowHtml(r, showProvenance)).join("")}</div>`;
+  return `<div class="rows">${results.map((r) => rowHtml(r, showProvenance, hl)).join("")}</div>`;
 }
 
-function rowHtml(r, showProvenance) {
+function rowHtml(r, showProvenance, hl) {
   const tags = showProvenance && r.found_by && r.found_by.length
     ? `<span class="tags">${r.found_by.map(legChip).join("")}</span>` : "";
   return `<div class="row">
     <div class="rline">
       <span class="rank">${r.rank}</span>
       <span class="cid">#${r.chunk_id}</span>
-      <span class="snip">${esc(r.snippet)}</span>
+      <span class="snip">${highlight(esc(r.snippet), hl)}</span>
       ${tags}
     </div>
     ${scoresHtml(r)}
-    <div class="full">${esc(r.text)}</div>
+    <div class="full">${highlight(esc(r.text), hl)}</div>
   </div>`;
 }
 
 function scoresHtml(r) {
   if (!state.showScores) return "";
   const parts = [];
-  if (r.score_type === "bm25") parts.push(`BM25 <b>${r.score}</b>`);
-  else if (r.score_type === "cosine") parts.push(`cosine <b>${r.score}</b>`);
+  if (r.score_type === "bm25") parts.push(`Lexical <b>${r.score}</b>`);
+  else if (r.score_type === "cosine") parts.push(`Semantic <b>${r.score}</b>`);
   else {
     parts.push(`fused <b>${r.score}</b>`);
     if (r.per_leg) {
       const b = r.per_leg.bm25, v = r.per_leg.vector;
-      parts.push(`BM25${b.gated ? " (gated)" : ""} raw ${b.score ?? "—"} · norm ${b.norm} → +${r.contribution.bm25}`);
-      parts.push(`Vector${v.gated ? " (gated)" : ""} raw ${v.score ?? "—"} · norm ${v.norm} → +${r.contribution.vector}`);
+      parts.push(`Lexical${b.gated ? " (gated)" : ""} raw ${b.score ?? "—"} · norm ${b.norm} → +${r.contribution.bm25}`);
+      parts.push(`Semantic${v.gated ? " (gated)" : ""} raw ${v.score ?? "—"} · norm ${v.norm} → +${r.contribution.vector}`);
     }
   }
   return `<div class="scores">${parts.map((p) => `<span>${p}</span>`).join("")}</div>`;
@@ -176,8 +190,8 @@ function scoresHtml(r) {
 
 function scoreNote() {
   if (!state.showScores) return "";
-  return `<p class="score-note">BM25 and cosine are different scales, so each leg is normalized
-    (score ÷ its best) and a low-confidence leg is gated out before the weighted sum.
+  return `<p class="score-note">The Lexical and Semantic scores are on different scales, so each leg is
+    normalized (score ÷ its best) and a low-confidence leg is gated out before the weighted sum.
     The fusion ranks by normalized score, not raw score.</p>`;
 }
 

@@ -16,10 +16,12 @@ OWNER="${DB2_INSTANCE_OWNER:-db2inst1}"
 
 STAGE=/tmp/hybrid-uitest
 rm -rf "$STAGE"; mkdir -p "$STAGE"
-cp "$HERE/api.py" "$HERE/build_fixtures.py" "$REPO/tests/test_backend.py" \
-   "$HERE/queries.json" "$STAGE/"
+cp "$HERE/api.py" "$HERE/build_fixtures.py" "$HERE/demo_view.py" "$REPO/tests/test_backend.py" \
+   "$HERE/queries.json" "$HERE/demo_queries.json" "$STAGE/"
 cp -r "$REPO/src/hybrid_search" "$STAGE/"       # the search engine package
 cp -r "$HERE/static" "$STAGE/static"           # api.py mounts static/ at import
 chmod -R a+rX "$STAGE"
 
-sudo -iu "$OWNER" bash -lc "cd '$STAGE' && DB2_HOST=local python3 test_backend.py"
+# fastapi/ibm_db live in the repo venv, not the system python.
+PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
+sudo -iu "$OWNER" bash -lc "cd '$STAGE' && DB2_HOST=local '$PY' test_backend.py"

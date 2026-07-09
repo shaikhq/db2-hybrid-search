@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hybrid Search on Db2 12.1.5</title>
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
   <header class="topbar">
@@ -13,9 +13,9 @@
       <p class="sub">Each retriever has a blind spot — hybrid covers both.</p>
     </div>
     <div class="legend" aria-label="color legend">
-      <span class="chip chip-bm25">Lexical · BM25</span>
-      <span class="chip chip-vector">Vector · semantic</span>
-      <span class="chip chip-both">Hybrid · both</span>
+      <span class="chip chip-bm25">Lexical</span>
+      <span class="chip chip-vector">Semantic</span>
+      <span class="chip chip-both">Hybrid</span>
     </div>
   </header>
 
@@ -29,7 +29,7 @@
     <div class="search-intro">
       <h2>Search the library</h2>
       <p>Type anything — a title, an author, a vibe, a narrator — and see the top&nbsp;3 results
-        from all three strategies side by side: <b>Lexical</b> (keywords), <b>Vector</b> (meaning),
+        from all three strategies side by side: <b>Lexical</b> (matches words), <b>Semantic</b> (matches meaning),
         and <b>Hybrid</b> (both fused).</p>
     </div>
     <div class="controls">
@@ -49,7 +49,7 @@
       <h2>Golden eval set</h2>
       <p>These are the test questions behind the demo. For each question, the
         <b>gold answer</b> is the exact book (or books) we expect search to return.
-        We grade each strategy (Lexical, Vector, Hybrid) by how close to the top it
+        We grade each strategy (Lexical, Semantic, Hybrid) by how close to the top it
         surfaces these gold answers — that's where the hit-rate and MRR numbers come from.</p>
     </div>
     <div id="eval-list" class="eval-list"></div>
@@ -60,7 +60,7 @@
     <div class="demo-intro">
       <h2>Will search find my book?</h2>
       <p>Type a rough memory of a book — a nickname, a vibe, a narrator — and watch three
-        strategies at once. <b>Keyword</b> matches words; <b>Semantic</b> matches ideas;
+        strategies at once. <b>Lexical</b> matches words; <b>Semantic</b> matches ideas;
         <b>Hybrid</b> blends both. Each single strategy has a blind spot; hybrid covers them.</p>
     </div>
     <div class="demo-controls">
@@ -79,7 +79,7 @@
     <div id="demo-scoreboard" class="demo-scoreboard" aria-live="polite"></div>
   </section>
 
-  <script src="app.js?v=9"></script>
-  <script src="demo.js?v=9"></script>
+  <script src="app.js?v=10"></script>
+  <script src="demo.js?v=10"></script>
 </body>
 </html>

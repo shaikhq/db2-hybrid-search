@@ -48,6 +48,14 @@ check("matrix (queries x methods) rendered for narrow view", "dsb-matrix" in dem
 check("demo has a Shuffle control", 'id="demo-shuffle"' in idx and "shuffleDeck" in demojs)
 check("shuffle resets the scoreboard", "resetSession" in demojs and "D.seen.clear()" in demojs)
 check("demo has a Representative-set control", 'id="demo-representative"' in idx and "loadRepresentative" in demojs)
+# terminology: consistent Lexical/Semantic leg names; no Keyword/BM25/Vector as leg labels
+appjs = read(os.path.join(STATIC, "app.js"))
+for bad in (">BM25<", ">Vector<", ">Keyword<", '"BM25"', '"Vector"', '"Keyword"'):
+    check(f"no leg label {bad!r} in app.js/demo.js/index.html",
+          bad not in appjs and bad not in demojs and bad not in idx, bad)
+check("lexical results are highlighted (highlight+queryTerms wired)",
+      "function highlight" in appjs and "queryTerms" in appjs and "highlight(esc(r.snippet)" in appjs)
+check("<mark> styled for highlights", "mark {" in css or "mark{" in css)
 # honesty in the renderer: no 'hybrid ranked best' language, no per-query hardcoding
 check("no 'ranked best' language in demo.js", "ranked best" not in demojs.lower())
 check("demo.js has no hardcoded book titles (renders from data)",

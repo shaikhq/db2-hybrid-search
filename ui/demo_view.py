@@ -17,8 +17,8 @@ import re
 
 K_DEFAULT = 5
 STRATS = ("lexical", "vector", "hybrid")
-STRAT_LABEL = {"lexical": "Keyword", "vector": "Semantic", "hybrid": "Hybrid"}
-LEG_WORD = {"bm25": "keyword", "vector": "semantic"}
+STRAT_LABEL = {"lexical": "Lexical", "vector": "Semantic", "hybrid": "Hybrid"}
+LEG_WORD = {"bm25": "lexical", "vector": "semantic"}
 
 VERDICT_FOUND = "found"       # gold within top k
 VERDICT_WRONG = "wrong"       # gold absent, but a confident non-gold top result exists

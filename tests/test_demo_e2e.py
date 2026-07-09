@@ -109,7 +109,7 @@ try:
         types = [c.inner_text().strip().lower() for c in page.query_selector_all(".dchip .dchip-t")]
         check("shuffle keeps 9 chips", len(newset) == 9, len(newset))
         check("shuffle pulls a NEW set of queries", newset != base, "same set after shuffle")
-        check("shuffle keeps 3 per type", sorted(types) == ["keyword"] * 3 + ["mixed"] * 3 + ["semantic"] * 3, types)
+        check("shuffle keeps 3 per type", sorted(types) == ["lexical"] * 3 + ["mixed"] * 3 + ["semantic"] * 3, types)
         check("shuffle resets the scoreboard", len(page.query_selector_all(".dsb-matrix tbody tr")) == 0)
         page.query_selector_all(".dchip")[0].click(); page.wait_for_selector(".dpanel")
         check("chips still work after shuffle", len(page.query_selector_all(".dpanel")) == 3)

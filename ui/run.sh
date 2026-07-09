@@ -22,10 +22,13 @@ if [ "${1:-}" = "--live" ]; then
     # Stage everything the instance owner can read (it can't read /home/<you>).
     STAGE=/tmp/hybrid-ui
     rm -rf "$STAGE"; mkdir -p "$STAGE"
-    cp "$HERE/api.py" "$HERE/build_fixtures.py" "$HERE/queries.json" "$STAGE/"
+    cp "$HERE/api.py" "$HERE/build_fixtures.py" "$HERE/demo_view.py" \
+       "$HERE/queries.json" "$HERE/demo_queries.json" "$STAGE/"
     cp -r "$REPO/src/hybrid_search" "$STAGE/"      # the search engine package
     cp -r "$HERE/static" "$STAGE/static"
     chmod -R a+rX "$STAGE"
+    # uvicorn/fastapi/ibm_db live in the repo venv, not the system python.
+    PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
     # A previous server orphaned by a closed terminal keeps holding the port and
     # would block the bind ("address already in use"). It runs as $OWNER, so free
     # the port as $OWNER before starting.
@@ -36,7 +39,7 @@ if [ "${1:-}" = "--live" ]; then
     fi
     echo "LIVE  → http://127.0.0.1:$PORT   (real Db2 search as $OWNER; docs at /docs)"
     sudo -iu "$OWNER" bash -lc \
-        "cd '$STAGE' && DB2_HOST=local python3 -m uvicorn api:app --host 127.0.0.1 --port $PORT"
+        "cd '$STAGE' && DB2_HOST=local '$PY' -m uvicorn api:app --host 127.0.0.1 --port $PORT"
 else
     [ -f "$HERE/static/fixtures.json" ] || {
         echo "No fixtures yet — run ./ui/build_fixtures.sh first." >&2; exit 1; }

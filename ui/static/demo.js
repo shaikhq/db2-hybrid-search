@@ -22,7 +22,8 @@ const desc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 const STRATS = ["lexical", "vector", "hybrid"];
-const SLABEL = { lexical: "Keyword", vector: "Semantic", hybrid: "Hybrid" };
+const SLABEL = { lexical: "Lexical", vector: "Semantic", hybrid: "Hybrid" };
+const SCORE_LABEL = { bm25: "lexical", cosine: "semantic", fused: "fused" };
 const SDOT = { lexical: "bm25", vector: "vec", hybrid: "hyb" };
 const VERDICT = {
   found:   { icon: "✓", label: "Found it" },
@@ -45,7 +46,8 @@ async function demoBoot() {
 function vmById(id) { return D.fx && D.fx.view_models[id]; }
 function allVMs() { return D.fx ? Object.values(D.fx.view_models) : []; }
 function displayVMs() { return D.order.map(vmById).filter(Boolean); }
-function SLABEL_TYPE(t) { return ({ keyword: "keyword", semantic: "semantic", mixed: "mixed" })[t] || t; }
+// query_type "keyword" is shown as "lexical" for consistent leg naming
+function SLABEL_TYPE(t) { return ({ keyword: "lexical", semantic: "semantic", mixed: "mixed" })[t] || t; }
 
 function sampleK(arr, k) {
   const a = arr.slice();
@@ -166,10 +168,10 @@ function techHtml(strat, st) {
   const b = st.shown;
   if (b) {
     const sc = b.score == null ? "—" : b.score;
-    const st_ = b.score_type || "";
+    const st_ = SCORE_LABEL[b.score_type] || b.score_type || "";
     parts.push(`shown: #${b.chunk_id} @ rank ${b.rank} · ${st_} <b>${sc}</b>${b.is_gold ? " · ★gold" : ""}`);
     if (strat === "hybrid" && b.found_by && b.found_by.length) {
-      parts.push(`provenance: ${b.found_by.map((x) => ({ bm25: "keyword", vector: "semantic" })[x] || x).join(" + ")}`);
+      parts.push(`provenance: ${b.found_by.map((x) => ({ bm25: "lexical", vector: "semantic" })[x] || x).join(" + ")}`);
     }
   }
   if (strat === "hybrid" && st.fusion_note) parts.push(desc(st.fusion_note));
