@@ -181,14 +181,56 @@ def hybrid(conn, query, limit=10):
     return _rows(conn, sql, [embed_query(query), kw, kw])
 
 
-def hybrid_explain(conn, query, limit=10):
-    """Like hybrid(), but also returns each leg's normalized contribution so the
-    UI can show *why* a result ranked where it did. Same fusion SQL as hybrid()
-    — no behavior change — just additional columns.
+def hybrid_split(conn, lexical_q, semantic_q, limit=10,
+                 w_lex=None, w_vec=None, lex_gate=None, vec_gate=None):
+    """Same gated fusion as hybrid(), but the keyword leg searches `lexical_q` and
+    the vector leg embeds `semantic_q` — so a query-understanding gate can feed the
+    two legs distinct queries. Behavior identical to hybrid() when both args equal.
+
+    The fusion knobs default to the tuned globals but can be overridden per call, so
+    the query-understanding router can adapt them per query (e.g. drop the lexical
+    weight for a semantic paraphrase where keyword noise would demote the true hit)."""
+    w_lex = W_LEX if w_lex is None else w_lex
+    w_vec = W_VEC if w_vec is None else w_vec
+    lex_gate = LEX_GATE if lex_gate is None else lex_gate
+    vec_gate = VEC_GATE if vec_gate is None else vec_gate
+    sql = f"""
+        WITH
+        q (qv) AS (VALUES TO_EMBEDDING(CAST(? AS VARCHAR(4000)) USING {MODEL})),
+        lex0 AS (
+            SELECT chunk_id, SCORE(chunk_text, CAST(? AS VARCHAR(4000))) AS s
+            FROM {T} WHERE CONTAINS(chunk_text, CAST(? AS VARCHAR(4000))) = 1
+            ORDER BY s DESC FETCH FIRST {POOL} ROWS ONLY),
+        vec0 AS (
+            SELECT c.chunk_id, (1 - VECTOR_DISTANCE(c.embedding, q.qv, COSINE)) AS s
+            FROM {T} c, q
+            ORDER BY VECTOR_DISTANCE(c.embedding, q.qv, COSINE)
+            FETCH APPROX FIRST {POOL} ROWS ONLY),
+        lex AS (SELECT chunk_id, {_normalized(lex_gate)} AS n FROM lex0),
+        vec AS (SELECT chunk_id, {_normalized(vec_gate)} AS n FROM vec0)
+        SELECT COALESCE(lex.chunk_id, vec.chunk_id) AS chunk_id,
+               {w_lex} * COALESCE(lex.n, 0) + {w_vec} * COALESCE(vec.n, 0) AS score
+        FROM lex FULL OUTER JOIN vec ON lex.chunk_id = vec.chunk_id
+        ORDER BY score DESC, chunk_id ASC
+        FETCH FIRST {int(limit)} ROWS ONLY
+    """
+    kw = keywords(lexical_q) or keywords(semantic_q)   # guard: never send an empty CONTAINS
+    return _rows(conn, sql, [embed_query(semantic_q), kw, kw])
+
+
+def hybrid_explain(conn, query, limit=10, lexical_q=None, semantic_q=None):
+    """Like hybrid()/hybrid_split(), but also returns each leg's normalized
+    contribution so the UI can show *why* a result ranked where it did. Same fusion
+    SQL — no behavior change — just additional columns.
+
+    Pass lexical_q/semantic_q to explain a split search (keyword leg on lexical_q,
+    vector leg on semantic_q); both default to `query` for the single-query case.
 
     Returns [{chunk_id, lex_norm, vec_norm, fused}], best first. lex_norm/vec_norm
     are the max-normalized leg scores (0 if the leg was gated out or absent);
     fused = W_LEX*lex_norm + W_VEC*vec_norm (the value hybrid() orders by)."""
+    lexical_q = query if lexical_q is None else lexical_q
+    semantic_q = query if semantic_q is None else semantic_q
     sql = f"""
         WITH
         q (qv) AS (VALUES TO_EMBEDDING(CAST(? AS VARCHAR(4000)) USING {MODEL})),
@@ -211,8 +253,8 @@ def hybrid_explain(conn, query, limit=10):
         ORDER BY fused DESC, chunk_id ASC
         FETCH FIRST {int(limit)} ROWS ONLY
     """
-    kw = keywords(query)
-    params = [embed_query(query), kw, kw]
+    kw = keywords(lexical_q) or keywords(semantic_q)
+    params = [embed_query(semantic_q), kw, kw]
     _log_sql(sql, params)
     stmt = ibm_db.prepare(conn, sql)
     for i, value in enumerate(params, start=1):
@@ -226,10 +268,11 @@ def hybrid_explain(conn, query, limit=10):
     return out
 
 
-def gates(conn, query):
+def gates(conn, query, lexical_q=None):
     """Which legs are gated out for this query (best score below threshold).
-    Returns {'vector_gated': bool, 'lexical_gated': bool}."""
-    lex = lexical(conn, query, 1)
+    Returns {'vector_gated': bool, 'lexical_gated': bool}. Pass lexical_q to probe
+    the keyword leg with the cleaned query (what the split search actually runs)."""
+    lex = lexical(conn, query if lexical_q is None else lexical_q, 1)
     vec = vector(conn, query, 1)
     return {
         "lexical_gated": (not lex) or lex[0][1] < LEX_GATE,

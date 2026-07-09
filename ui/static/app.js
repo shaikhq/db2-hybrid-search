@@ -20,7 +20,7 @@ const legChip = (leg) => leg === "bm25"
 
 // Highlight the query's terms inside an already-escaped chunk (lexical results).
 const HL_STOP = new Set(("the a an of to in on and or for with your you how what is are do it this that " +
-  "by we our not into out up who i be").split(" "));
+  "by we our not into out up who i be book books looking find need want about one").split(" "));
 function queryTerms(q) {
   return [...new Set(String(q || "").toLowerCase().match(/[a-z0-9]+/g) || [])]
     .filter((w) => w.length > 2 && !HL_STOP.has(w));
@@ -139,7 +139,9 @@ function render() {
 }
 
 function comparisonHtml(rec) {
-  const terms = queryTerms(rec.query);   // highlight these in the Lexical column only
+  // Highlight exactly the terms the keyword leg searched (the cleaned rare-word
+  // query when the backend provides it), not the raw query's common words.
+  const terms = queryTerms((rec.lexical && rec.lexical.lex_query) || rec.query);
   const col = (title, dot, cls, resp, prov, hl) => `
     <div class="col ${cls}">
       <h3><span class="dot ${dot}"></span>${title}</h3>

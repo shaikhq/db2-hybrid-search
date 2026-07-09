@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 import ibm_db
 
 from hybrid_search import core as h
+from hybrid_search import understanding as qu   # adaptive query-understanding layer
 import build_fixtures as bf   # responses_for()
 import demo_view as dv         # outcome-translation (verdicts + book labels)
 
@@ -60,6 +61,21 @@ def search(q: str = Query(..., description="search text"), k: int = bf.K):
     finally:
         ibm_db.close(conn)
     return {"query": q, "gold_chunk_ids": sorted(gold), **modes}
+
+
+@app.get("/api/smart_search")
+def smart_search(q: str = Query(..., description="search text"), k: int = bf.K):
+    """The shipped canonical path: extractive lexical cleaning always on, generative
+    expansion gated by QU_MODE (default 'off'). Returns the ranked results plus the
+    understanding metadata (route, whether the LLM fired, the two leg queries)."""
+    conn = h.connect()
+    try:
+        ranked, meta = qu.smart_search(conn, q, k)
+        results = [{"chunk_id": cid, "score": score,
+                    "snippet": h.snippet(conn, cid)} for cid, score in ranked]
+    finally:
+        ibm_db.close(conn)
+    return {"query": q, "mode": qu.MODE, "understanding": meta, "results": results}
 
 
 @app.get("/api/demo_deck")

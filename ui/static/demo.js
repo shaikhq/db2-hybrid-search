@@ -64,7 +64,7 @@ function resetSession() {
   D.current = null;
   dq("#demo-scenario").innerHTML = "";
   dq("#demo-panels").innerHTML =
-    `<p class="placeholder">Tap an example query above to see all three strategies at once.</p>`;
+    `<p class="placeholder">Tap an example query on the left to see all three strategies at once.</p>`;
   document.querySelectorAll(".dchip").forEach((x) => x.classList.remove("active"));
   renderScoreboard();
 }
@@ -124,7 +124,7 @@ async function demoSearch(text) {
   if (!vm) {
     dq("#demo-scenario").textContent = "";
     dq("#demo-panels").innerHTML =
-      `<p class="placeholder">That query isn't in the frozen demo set. Tap an example above,
+      `<p class="placeholder">That query isn't in the frozen demo set. Tap an example on the left,
        or run <code>./ui/run.sh --live</code> for ad-hoc search.</p>`;
     return;
   }

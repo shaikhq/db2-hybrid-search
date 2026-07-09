@@ -8,6 +8,7 @@ import json
 import os
 import ibm_db
 from hybrid_search import core as h
+from hybrid_search import understanding as qu   # extractive lexical cleaner (rare words)
 
 K = 5  # results shown per strategy (and the "in top K?" cutoff)
 
@@ -17,13 +18,16 @@ def texts(conn, cid):
     return full[:100], full          # (one-line snippet, full text for click-to-expand)
 
 
-def build_response(conn, query, mode, gold, lex_pool, vec_pool, expl, g):
+def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g):
+    # lexical/hybrid keyword leg searches the CLEANED query (rare words: filler and
+    # common words like "book"/"looking for" dropped); vector leg keeps the raw
+    # natural-language query for meaning.
     if mode == "lexical":
-        ranked, score_type = h.lexical(conn, query, K), "bm25"
+        ranked, score_type = h.lexical(conn, lex_q, K), "bm25"
     elif mode == "vector":
         ranked, score_type = h.vector(conn, query, K), "cosine"
     else:
-        ranked, score_type = h.hybrid(conn, query, K), "fused"
+        ranked, score_type = h.hybrid_split(conn, lex_q, query, K), "fused"
 
     results, gold_rank = [], None
     for rank, (cid, score) in enumerate(ranked, start=1):
@@ -58,18 +62,26 @@ def build_response(conn, query, mode, gold, lex_pool, vec_pool, expl, g):
 
     resp = {"query": query, "mode": mode, "k": K,
             "gold_chunk_ids": sorted(gold), "gold_rank": gold_rank, "results": results}
+    if mode == "lexical":
+        resp["lex_query"] = lex_q   # cleaned terms actually searched (for UI highlighting)
     if mode == "hybrid":
         resp["gates"] = g
     return resp
 
 
 def responses_for(conn, query, gold):
-    """All three strategy responses for one query. Shared by fixtures + live API."""
-    lex_pool = {cid: (i + 1, s) for i, (cid, s) in enumerate(h.lexical(conn, query, h.POOL))}
+    """All three strategy responses for one query. Shared by fixtures + live API.
+
+    The keyword leg (lexical + hybrid's lexical half) searches an EXTRACTIVE cleaned
+    query — filler phrases and common words ("book", "looking for", "a", "on") are
+    stripped so it focuses on the rare, meaningful tokens. The vector leg embeds the
+    raw natural-language query. This is the shipped smart_search(mode=off) behavior."""
+    lex_q = qu.lexical_of(conn, query)
+    lex_pool = {cid: (i + 1, s) for i, (cid, s) in enumerate(h.lexical(conn, lex_q, h.POOL))}
     vec_pool = {cid: (i + 1, s) for i, (cid, s) in enumerate(h.vector(conn, query, h.POOL))}
-    expl = {e["chunk_id"]: e for e in h.hybrid_explain(conn, query, K)}
-    g = h.gates(conn, query)
-    return {m: build_response(conn, query, m, gold, lex_pool, vec_pool, expl, g)
+    expl = {e["chunk_id"]: e for e in h.hybrid_explain(conn, query, K, lexical_q=lex_q, semantic_q=query)}
+    g = h.gates(conn, query, lexical_q=lex_q)
+    return {m: build_response(conn, query, lex_q, m, gold, lex_pool, vec_pool, expl, g)
             for m in ("lexical", "vector", "hybrid")}
 
 
