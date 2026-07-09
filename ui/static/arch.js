@@ -132,7 +132,7 @@ function archIngestView() {
       <div class="arch-flow">${stepboxes(prep)}</div>
     </div>
     <div class="arch-rowgroup">
-      <div class="arch-rowlabel">B &middot; Build indexes in Db2 &mdash; text index (BM25) and the vector (ANN) index</div>
+      <div class="arch-rowlabel">B &middot; Build indexes in <span class="brandcase">Db2</span> &mdash; text index (BM25) and the vector (ANN) index</div>
       <div class="arch-flow">${stepboxes(build)}</div>
     </div>
   </figure>
@@ -173,8 +173,92 @@ function archSearchView() {
   ])}`;
 }
 
+/* ---------- view 4: SQL — the Db2 steps, with real SQL ---------- */
+function sqlStep(n, title, sub, sql) {
+  return `<div class="sql-step">
+    <div class="sql-h"><span class="sql-n">${n}</span>${title}${sub ? ` <span class="sql-sub">${sub}</span>` : ""}</div>
+    <pre class="sql">${sql}</pre>
+  </div>`;
+}
+
+function archSqlView() {
+  // Real SQL from 1_ingest.sql · 2_search.sql · hybrid_search.core / qu_gate.sql.
+  const ingest = [
+    ["1", "Create the table", "one row per book",
+`CREATE TABLE MYSCHEMA.CHUNKS (
+  chunk_id   INTEGER NOT NULL PRIMARY KEY,
+  chunk_text CLOB(1M),        -- title + authors + narrators + description
+  ...                          -- + book metadata columns
+);`],
+    ["2", "Load the corpus", "positional CSV import",
+`IMPORT FROM data/corpus.csv OF DEL MODIFIED BY delprioritychar SKIPCOUNT 1
+  INSERT INTO MYSCHEMA.CHUNKS (chunk_id, ..., chunk_text);`],
+    ["3", "Build the text index", "BM25, OpenSearch-backed",
+`CALL SYSPROC.SYSTS_CREATE('MYSCHEMA','CHUNKS_TEXT_IDX',
+     'MYSCHEMA.CHUNKS(CHUNK_TEXT)','SERVERID 1','en_US',?);
+CALL SYSPROC.SYSTS_UPDATE('MYSCHEMA','CHUNKS_TEXT_IDX','','en_US',?);`],
+    ["4", "Register the embedding model", "PROVIDER OPENAI, local llama.cpp",
+`CREATE EXTERNAL MODEL MYSCHEMA.CHUNKS_EMBED PROVIDER OPENAI
+  ID 'bge-small-en-v1.5'
+  URL 'http://127.0.0.1:8085/v1/embeddings'
+  TYPE TEXT_EMBEDDING RETURNING VECTOR(384, FLOAT32)
+  KEY 'sk-noauth';`],
+    ["5", "Embed every row", "one set-based UPDATE",
+`ALTER TABLE MYSCHEMA.CHUNKS ADD COLUMN embedding VECTOR(384, FLOAT32);
+UPDATE MYSCHEMA.CHUNKS
+   SET embedding = TO_EMBEDDING(chunk_text USING MYSCHEMA.CHUNKS_EMBED);`],
+    ["6", "Build the vector (ANN) index", "cosine; table read-only after",
+`CREATE VECTOR INDEX MYSCHEMA.CHUNKS_VEC_IDX
+  ON MYSCHEMA.CHUNKS(embedding) WITH DISTANCE COSINE EXCLUDE NULL KEYS;`],
+  ];
+  const search = [
+    ["1", "Clean the keyword query", "SQL UDF, no model",
+`VALUES MYSCHEMA.QU_LEXICAL(?);
+-- 'find me a book on public speaking'  ->  'public speaking'`],
+    ["2", "Lexical leg", "BM25 over the full pool",
+`SELECT chunk_id, SCORE(chunk_text, ?) AS s      -- ? = 'public OR speaking'
+FROM MYSCHEMA.CHUNKS
+WHERE CONTAINS(chunk_text, ?) = 1
+ORDER BY s DESC FETCH FIRST 97 ROWS ONLY;`],
+    ["3", "Vector leg", "cosine via the ANN index",
+`WITH q (qv) AS (VALUES TO_EMBEDDING(? USING MYSCHEMA.CHUNKS_EMBED))
+SELECT c.chunk_id, (1 - VECTOR_DISTANCE(c.embedding, q.qv, COSINE)) AS s
+FROM MYSCHEMA.CHUNKS c, q                         -- ? = retrieval-prefix + full query
+ORDER BY VECTOR_DISTANCE(c.embedding, q.qv, COSINE)
+FETCH APPROX FIRST 97 ROWS ONLY;`],
+    ["4", "Fuse", "normalize + gate + weighted sum (one statement)",
+`WITH
+  q    (qv) AS (VALUES TO_EMBEDDING(? USING MYSCHEMA.CHUNKS_EMBED)),
+  lex0 AS (SELECT chunk_id, SCORE(chunk_text, ?) AS s FROM MYSCHEMA.CHUNKS
+           WHERE CONTAINS(chunk_text, ?)=1 ORDER BY s DESC FETCH FIRST 97 ROWS ONLY),
+  vec0 AS (SELECT c.chunk_id, (1 - VECTOR_DISTANCE(c.embedding,q.qv,COSINE)) AS s
+           FROM MYSCHEMA.CHUNKS c, q
+           ORDER BY VECTOR_DISTANCE(c.embedding,q.qv,COSINE) FETCH APPROX FIRST 97 ROWS ONLY),
+  lex  AS (SELECT chunk_id, s / MAX(s) OVER () AS n FROM lex0),   -- max-normalize (+ gate)
+  vec  AS (SELECT chunk_id, s / MAX(s) OVER () AS n FROM vec0)
+SELECT COALESCE(lex.chunk_id, vec.chunk_id) AS chunk_id,
+       0.1 * COALESCE(lex.n,0) + 0.9 * COALESCE(vec.n,0) AS score   -- weighted sum
+FROM lex FULL OUTER JOIN vec ON lex.chunk_id = vec.chunk_id
+ORDER BY score DESC FETCH FIRST 3 ROWS ONLY;`],
+  ];
+  return `<figure class="arch-fig">
+    <div class="arch-rowgroup">
+      <div class="arch-rowlabel">Ingestion &mdash; in <span class="brandcase">Db2</span> (once)</div>
+      <div class="sql-list">${ingest.map((s) => sqlStep(s[0], s[1], s[2], s[3])).join("")}</div>
+    </div>
+    <div class="arch-rowgroup">
+      <div class="arch-rowlabel">Search &mdash; in <span class="brandcase">Db2</span> (per query)</div>
+      <div class="sql-list">${search.map((s) => sqlStep(s[0], s[1], s[2], s[3])).join("")}</div>
+    </div>
+  </figure>
+  ${archNotes([
+    ["One statement", "search steps 2–4 run as a single Db2 SQL query (hybrid_split); shown split for clarity."],
+    ["Not in Db2", "reranking is an app-layer cross-encoder (returns a score only) — no SQL."],
+  ])}`;
+}
+
 /* ---------- render + wire ---------- */
-const VIEWS = { component: archComponentView, ingest: archIngestView, search: archSearchView };
+const VIEWS = { component: archComponentView, ingest: archIngestView, search: archSearchView, sql: archSqlView };
 
 function renderArch() {
   const host = aq("#arch-canvas");

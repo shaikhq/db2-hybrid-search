@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=21" />
+  <link rel="stylesheet" href="styles.css?v=30" />
 </head>
 <body>
   <header class="topbar">
@@ -37,16 +37,22 @@
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="pages">
+    <button class="tab" data-page="start" role="tab" aria-selected="false">Start here</button>
     <button class="tab" data-page="search" role="tab" aria-selected="true">Search</button>
     <button class="tab" data-page="demo" role="tab" aria-selected="false">Demo</button>
     <button class="tab" data-page="eval" role="tab" aria-selected="false">Golden eval set</button>
     <button class="tab" data-page="arch" role="tab" aria-selected="false">Architecture</button>
   </nav>
 
+  <!-- FIRST TAB (leftmost): the "Start here" doorway. Search stays the default landing. -->
+  <section class="startpage" id="page-start" hidden aria-label="start here">
+    <div id="start-canvas"></div>
+  </section>
+
   <main class="searchpage" id="page-search">
     <div class="search-intro">
       <h2>Search the library</h2>
-      <p>Top 3 <b>Hybrid</b> results, each tagged with which strategy found it and at what rank.</p>
+      <p>The top 3 <b>Hybrid</b> results. Turn on <b>Explain</b> to see which strategy found each and how reranking changed the order.</p>
     </div>
     <div class="controls">
       <input id="searchbox" type="text" placeholder="Search your library — type anything…"
@@ -54,6 +60,10 @@
       <button id="run" class="run">Search</button>
       <label class="search-toggle" title="Re-score the fused candidates with a cross-encoder (bge-reranker-v2-m3) and reorder">
         <input type="checkbox" id="t-rerank" /> Rerank</label>
+      <label class="search-toggle" id="cmp-label" hidden title="Show the fusion top 3 next to the reranked top 3">
+        <input type="checkbox" id="t-compare" /> Compare</label>
+      <label class="search-toggle" title="Show which strategy found each result and how reranking changed the order">
+        <input type="checkbox" id="t-explain" /> Explain</label>
       <label class="search-toggle"><input type="checkbox" id="t-scores" /> Show scores</label>
     </div>
     <div id="output" class="output">
@@ -91,8 +101,8 @@
       </aside>
       <div class="demo-main">
         <div class="demo-controls">
-          <input id="demo-search" type="text" placeholder="Tap an example on the left, or type your own…"
-                 autocomplete="off" spellcheck="false" aria-label="search your library" />
+          <input id="demo-search" type="text" placeholder="Tap an example on the left" readonly
+                 autocomplete="off" spellcheck="false" aria-label="selected example query" />
           <button id="demo-run" class="run">Search</button>
           <label class="demo-toggle"><input type="checkbox" id="demo-tech" /> Technical details</label>
         </div>
@@ -115,12 +125,14 @@
       <button type="button" data-view="component" aria-pressed="true">Components</button>
       <button type="button" data-view="ingest" aria-pressed="false">Ingestion</button>
       <button type="button" data-view="search" aria-pressed="false">Search</button>
+      <button type="button" data-view="sql" aria-pressed="false">SQL</button>
     </div>
     <div id="arch-canvas" class="arch-canvas"></div>
   </section>
 
-  <script src="app.js?v=21"></script>
-  <script src="demo.js?v=21"></script>
-  <script src="arch.js?v=21"></script>
+  <script src="app.js?v=30"></script>
+  <script src="demo.js?v=30"></script>
+  <script src="arch.js?v=30"></script>
+  <script src="start.js?v=30"></script>
 </body>
 </html>

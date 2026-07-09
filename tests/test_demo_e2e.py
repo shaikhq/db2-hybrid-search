@@ -56,7 +56,7 @@ try:
 
         # nav tabs do not overlap each other (the reported bug)
         boxes = [t.bounding_box() for t in page.query_selector_all("#tabs .tab")]
-        check("4 nav tabs present", len(boxes) == 4, len(boxes))
+        check("5 nav tabs present", len(boxes) == 5, len(boxes))
         pairwise_ok = all(not overlap(boxes[i], boxes[j])
                           for i in range(len(boxes)) for j in range(i + 1, len(boxes)))
         check("nav tabs do not overlap each other", pairwise_ok, boxes)
@@ -122,12 +122,11 @@ try:
               len(page.query_selector_all(".dsb-matrix tbody tr")) == 9)
         check("representative shows scoreboard only (no breakdown)", page.query_selector(".rep") is None)
 
-        # no-result path: a query not in the frozen set -> placeholder, not a crash
-        page.fill("#demo-search", "zzz nonexistent qwerty book")
-        page.click("#demo-run")
-        page.wait_for_timeout(150)
-        check("unknown query renders a placeholder (no crash)",
-              "isn't in the frozen demo set" in page.inner_text("#demo-panels"))
+        # demo search box is display-only: no typing; selecting a chip fills it
+        check("demo search box is readonly (no typing)",
+              page.eval_on_selector("#demo-search", "e => e.readOnly") is True)
+        page.query_selector_all(".dchip")[0].click(); page.wait_for_timeout(120)
+        check("selecting a chip fills the search box", page.input_value("#demo-search") != "")
 
         # regression: other tabs still work (Search is now open-ended — no eval deck)
         page.click('.tab[data-page="search"]')

@@ -79,7 +79,7 @@ every removal is a reversible `git mv` into `backup/`.
 | Item | Status |
 |---|---|
 | One path: clone → prereqs → install → configure → verify | ✅ README quickstart points at `install/README.md` |
-| Single externalized config | ✅ `.env.example` (DB2 · HYBRID · QU · RERANK · serving paths/ports) |
+| Single externalized config | ✅ `.env.example` (Db2 · HYBRID · QU · RERANK · serving paths/ports) |
 | Secrets stripped from scripts/docs | ✅ none in tracked files (placeholder key archived with `sample_chunks.csv`) |
 | Setup smoke test | ✅ `scripts/smoke-test.sh` → **PASS** (services + end-to-end search) |
 | Idempotent / re-runnable installs | ✅ `0_start-services.sh` idempotent; `1_ingest.sql` re-runnable (drops+rebuilds); installers self-skip |

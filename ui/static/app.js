@@ -4,7 +4,7 @@
 // three strategies side by side. Needs the live backend (./ui/run.sh --live) since
 // arbitrary queries must hit Db2. The Golden-eval tab reads the frozen eval_set.json.
 
-const state = { showScores: false, rerank: false, record: null };
+const state = { showScores: false, explain: false, rerank: false, compare: false, record: null, recordFusion: null };
 let LIVE = false;      // /api/search reachable (live backend up)?
 let EVAL = null;       // eval_set.json (featured queries + their gold answers)
 
@@ -106,8 +106,19 @@ function wire() {
   $("#t-scores").addEventListener("change", (e) => {
     state.showScores = e.target.checked; if (state.record) render();
   });
+  $("#t-explain").addEventListener("change", (e) => {
+    state.explain = e.target.checked; if (state.record) render();   // labels are in the payload; just re-render
+  });
   $("#t-rerank").addEventListener("change", (e) => {
-    state.rerank = e.target.checked; if (state.record) run();   // re-search with the new setting
+    state.rerank = e.target.checked;
+    const cmp = $("#cmp-label");
+    if (!state.rerank) {                         // hide + reset Compare when rerank is off
+      state.compare = false; $("#t-compare").checked = false; if (cmp) cmp.hidden = true;
+    } else if (cmp) { cmp.hidden = false; }
+    if (state.record) run();                     // re-search with the new setting
+  });
+  $("#t-compare").addEventListener("change", (e) => {
+    state.compare = e.target.checked; if (state.record) run();
   });
   $("#output").addEventListener("click", (e) => {
     const row = e.target.closest(".row"); if (row) row.classList.toggle("open");
@@ -124,10 +135,20 @@ async function run() {
     state.record = null; return;
   }
   $("#output").innerHTML = `<p class="placeholder">Searching…</p>`;
+  const enc = encodeURIComponent(text);
   try {
-    const r = await fetch("/api/search?q=" + encodeURIComponent(text) + "&rerank=" + (state.rerank ? "1" : "0"));
-    if (!r.ok) throw new Error("bad status");
-    state.record = await r.json();
+    if (state.rerank && state.compare) {
+      // fetch both orderings of the same query: reranked and plain fusion
+      const [rr, fu] = await Promise.all([
+        fetch(`/api/search?q=${enc}&rerank=1`).then((r) => { if (!r.ok) throw 0; return r.json(); }),
+        fetch(`/api/search?q=${enc}&rerank=0`).then((r) => { if (!r.ok) throw 0; return r.json(); }),
+      ]);
+      state.record = rr; state.recordFusion = fu;
+    } else {
+      const r = await fetch(`/api/search?q=${enc}&rerank=${state.rerank ? "1" : "0"}`);
+      if (!r.ok) throw new Error("bad status");
+      state.record = await r.json(); state.recordFusion = null;
+    }
     render();
   } catch (_) {
     $("#output").innerHTML = `<p class="placeholder">Search failed — is the live backend running?</p>`;
@@ -138,7 +159,33 @@ async function run() {
 function render() {
   const rec = state.record;
   if (!rec) return;
-  $("#output").innerHTML = hybridHtml(rec);
+  $("#output").innerHTML = (state.rerank && state.compare && state.recordFusion)
+    ? compareHtml(state.recordFusion, rec)
+    : hybridHtml(rec);
+}
+
+// Rerank vs fusion, side by side — same query, two orderings of the same candidates.
+function compareHtml(fu, rr) {
+  const lexq = (rr.lexical && rr.lexical.lex_query) || (fu.lexical && fu.lexical.lex_query);
+  const terms = queryTerms(lexq || rr.query);
+  const lexNote = (state.explain && lexq)
+    ? `<p class="lex-note">Lexical leg searched <code>${esc(lexq)}</code>
+         <span>· semantic leg uses your full query</span></p>` : "";
+  const fuAll = (fu.hybrid && fu.hybrid.results) || [];
+  const fuTop = fuAll.slice(0, TOP);
+  const rrTop = ((rr.hybrid && rr.hybrid.results) || []).slice(0, TOP);
+  const fusionRankById = {};
+  fuAll.forEach((r, i) => { fusionRankById[r.chunk_id] = i + 1; });   // fusion rank of each candidate
+  const col = (title, rows, ranks) => `
+    <div class="cmp-col">
+      <h3 class="results-h"><span class="dot hyb"></span>${title}</h3>
+      <div class="rows">${rows.map((r) => hybRowHtml(r, terms, ranks)).join("")}</div>
+    </div>`;
+  return `${lexNote}
+    <div class="cmp-grid">
+      ${col("Hybrid · fusion", fuTop, null)}
+      ${col("Reranked", rrTop, fusionRankById)}
+    </div>${scoreNote()}`;
 }
 
 // Search tab shows only the Hybrid top-3. Each result is annotated with which
@@ -146,7 +193,7 @@ function render() {
 function hybridHtml(rec) {
   // highlight the cleaned rare-word terms the lexical leg actually searched
   const lexq = rec.lexical && rec.lexical.lex_query;
-  const lexNote = lexq
+  const lexNote = (state.explain && lexq)
     ? `<p class="lex-note">Lexical leg searched <code>${esc(lexq)}</code>
          <span>· semantic leg uses your full query</span></p>`
     : "";
@@ -171,13 +218,22 @@ function provenanceHtml(r) {
   return `<div class="prov"><span class="prov-label">found by</span>${legs.join("")}</div>`;
 }
 
-function hybRowHtml(r, hl) {
+function hybRowHtml(r, hl, fusionRankById) {
+  // Explain OFF (default): just rank + result. ON: per-leg provenance + rank-delta labels.
+  let delta = "";
+  if (state.explain && fusionRankById) {   // reranked compare column: how it moved vs fusion
+    const fr = fusionRankById[r.chunk_id];
+    if (fr == null)        delta = `<span class="delta up">↑ promoted from the fusion pool</span>`;
+    else if (fr > r.rank)  delta = `<span class="delta up">↑ fusion #${fr} → #${r.rank}</span>`;
+    else if (fr < r.rank)  delta = `<span class="delta down">↓ fusion #${fr} → #${r.rank}</span>`;
+    else                   delta = `<span class="delta same">unchanged · #${fr}</span>`;
+  }
   return `<div class="row">
     <div class="rline">
       <span class="rank">${r.rank}</span>
       <span class="snip">${highlight(esc(r.snippet), hl)}</span>
     </div>
-    ${provenanceHtml(r)}
+    ${state.explain ? provenanceHtml(r) : ""}${delta}
     ${scoresHtml(r)}
     <div class="full">${highlight(esc(r.text), hl)}</div>
   </div>`;
