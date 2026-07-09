@@ -369,6 +369,10 @@ body { margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg)
 .search-toggle { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); }
 .col-empty { color: var(--muted); font-size: .9rem; margin: 4px 0; }
 #output { max-width: 840px; }
+.lex-note { margin: 0 0 12px; font-size: .85rem; color: var(--muted); }
+.lex-note code { background: var(--bm25-soft); color: var(--bm25); border: 1px solid var(--bm25);
+  border-radius: 4px; padding: 1px 6px; font-size: .82rem; }
+.lex-note span { color: #99a1b0; }
 .results-h { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: .98rem; color: var(--hyb); }
 .rerank-tag { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
   color: var(--hyb); background: var(--hyb-soft); border: 1px solid var(--hyb); border-radius: 999px; padding: 1px 8px; }

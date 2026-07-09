@@ -145,11 +145,16 @@ function render() {
 // strategy found it and at what rank within that strategy.
 function hybridHtml(rec) {
   // highlight the cleaned rare-word terms the lexical leg actually searched
-  const terms = queryTerms((rec.lexical && rec.lexical.lex_query) || rec.query);
+  const lexq = rec.lexical && rec.lexical.lex_query;
+  const lexNote = lexq
+    ? `<p class="lex-note">Lexical leg searched <code>${esc(lexq)}</code>
+         <span>· semantic leg uses your full query</span></p>`
+    : "";
+  const terms = queryTerms(lexq || rec.query);
   const results = ((rec.hybrid && rec.hybrid.results) || []).slice(0, TOP);
-  if (!results.length) return `<p class="placeholder">No results.</p>`;
+  if (!results.length) return lexNote + `<p class="placeholder">No results.</p>`;
   const tag = rec.reranked ? ` <span class="rerank-tag">reranked</span>` : "";
-  return `<h3 class="results-h"><span class="dot hyb"></span>Top ${results.length} · Hybrid${tag}</h3>
+  return `${lexNote}<h3 class="results-h"><span class="dot hyb"></span>Top ${results.length} · Hybrid${tag}</h3>
     <div class="rows">${results.map((r) => hybRowHtml(r, terms)).join("")}</div>${scoreNote()}`;
 }
 
