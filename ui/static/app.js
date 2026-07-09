@@ -4,7 +4,7 @@
 // three strategies side by side. Needs the live backend (./ui/run.sh --live) since
 // arbitrary queries must hit Db2. The Golden-eval tab reads the frozen eval_set.json.
 
-const state = { showScores: false, record: null };
+const state = { showScores: false, rerank: false, record: null };
 let LIVE = false;      // /api/search reachable (live backend up)?
 let EVAL = null;       // eval_set.json (featured queries + their gold answers)
 
@@ -106,6 +106,9 @@ function wire() {
   $("#t-scores").addEventListener("change", (e) => {
     state.showScores = e.target.checked; if (state.record) render();
   });
+  $("#t-rerank").addEventListener("change", (e) => {
+    state.rerank = e.target.checked; if (state.record) run();   // re-search with the new setting
+  });
   $("#output").addEventListener("click", (e) => {
     const row = e.target.closest(".row"); if (row) row.classList.toggle("open");
   });
@@ -122,7 +125,7 @@ async function run() {
   }
   $("#output").innerHTML = `<p class="placeholder">Searching…</p>`;
   try {
-    const r = await fetch("/api/search?q=" + encodeURIComponent(text));
+    const r = await fetch("/api/search?q=" + encodeURIComponent(text) + "&rerank=" + (state.rerank ? "1" : "0"));
     if (!r.ok) throw new Error("bad status");
     state.record = await r.json();
     render();
@@ -135,40 +138,41 @@ async function run() {
 function render() {
   const rec = state.record;
   if (!rec) return;
-  $("#output").innerHTML = comparisonHtml(rec);
+  $("#output").innerHTML = hybridHtml(rec);
 }
 
-function comparisonHtml(rec) {
-  // Highlight exactly the terms the keyword leg searched (the cleaned rare-word
-  // query when the backend provides it), not the raw query's common words.
+// Search tab shows only the Hybrid top-3. Each result is annotated with which
+// strategy found it and at what rank within that strategy.
+function hybridHtml(rec) {
+  // highlight the cleaned rare-word terms the lexical leg actually searched
   const terms = queryTerms((rec.lexical && rec.lexical.lex_query) || rec.query);
-  const col = (title, dot, cls, resp, prov, hl) => `
-    <div class="col ${cls}">
-      <h3><span class="dot ${dot}"></span>${title}</h3>
-      ${rowsHtml((resp.results || []).slice(0, TOP), prov, hl)}
-    </div>`;
-  return `<div class="compare">
-    ${col("Lexical", "bm25", "col-lexical", rec.lexical, false, terms)}
-    ${col("Semantic", "vec", "col-vector", rec.vector, false, null)}
-    ${col("Hybrid", "hyb", "col-hybrid", rec.hybrid, true, null)}
-  </div>${scoreNote()}`;
+  const results = ((rec.hybrid && rec.hybrid.results) || []).slice(0, TOP);
+  if (!results.length) return `<p class="placeholder">No results.</p>`;
+  const tag = rec.reranked ? ` <span class="rerank-tag">reranked</span>` : "";
+  return `<h3 class="results-h"><span class="dot hyb"></span>Top ${results.length} · Hybrid${tag}</h3>
+    <div class="rows">${results.map((r) => hybRowHtml(r, terms)).join("")}</div>${scoreNote()}`;
 }
 
-function rowsHtml(results, showProvenance, hl) {
-  if (!results.length) return `<p class="col-empty">No results.</p>`;
-  return `<div class="rows">${results.map((r) => rowHtml(r, showProvenance, hl)).join("")}</div>`;
+// "found by Lexical (rank N) · Semantic (rank M)" — the ranks are each strategy's
+// own ranking of this result (a strategy is listed only if it surfaced it).
+function provenanceHtml(r) {
+  const pl = r.per_leg || {};
+  const legs = [];
+  if (pl.bm25 && pl.bm25.rank != null)
+    legs.push(`<span class="chip chip-bm25">Lexical &middot; rank ${pl.bm25.rank}${pl.bm25.gated ? " &middot; gated" : ""}</span>`);
+  if (pl.vector && pl.vector.rank != null)
+    legs.push(`<span class="chip chip-vector">Semantic &middot; rank ${pl.vector.rank}${pl.vector.gated ? " &middot; gated" : ""}</span>`);
+  if (!legs.length) return "";
+  return `<div class="prov"><span class="prov-label">found by</span>${legs.join("")}</div>`;
 }
 
-function rowHtml(r, showProvenance, hl) {
-  const tags = showProvenance && r.found_by && r.found_by.length
-    ? `<span class="tags">${r.found_by.map(legChip).join("")}</span>` : "";
+function hybRowHtml(r, hl) {
   return `<div class="row">
     <div class="rline">
       <span class="rank">${r.rank}</span>
-      <span class="cid">#${r.chunk_id}</span>
       <span class="snip">${highlight(esc(r.snippet), hl)}</span>
-      ${tags}
     </div>
+    ${provenanceHtml(r)}
     ${scoresHtml(r)}
     <div class="full">${highlight(esc(r.text), hl)}</div>
   </div>`;
@@ -180,7 +184,7 @@ function scoresHtml(r) {
   if (r.score_type === "bm25") parts.push(`Lexical <b>${r.score}</b>`);
   else if (r.score_type === "cosine") parts.push(`Semantic <b>${r.score}</b>`);
   else {
-    parts.push(`fused <b>${r.score}</b>`);
+    parts.push(`${r.score_type === "rerank" ? "rerank" : "fused"} <b>${r.score}</b>`);
     if (r.per_leg) {
       const b = r.per_leg.bm25, v = r.per_leg.vector;
       parts.push(`Lexical${b.gated ? " (gated)" : ""} raw ${b.score ?? "—"} · norm ${b.norm} → +${r.contribution.bm25}`);

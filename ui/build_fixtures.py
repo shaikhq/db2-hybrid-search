@@ -9,6 +9,7 @@ import os
 import ibm_db
 from hybrid_search import core as h
 from hybrid_search import understanding as qu   # extractive lexical cleaner (rare words)
+from hybrid_search import rerank as rr          # optional post-fusion cross-encoder stage
 
 K = 5  # results shown per strategy (and the "in top K?" cutoff)
 
@@ -18,7 +19,7 @@ def texts(conn, cid):
     return full[:100], full          # (one-line snippet, full text for click-to-expand)
 
 
-def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g):
+def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g, rerank=False):
     # lexical/hybrid keyword leg searches the CLEANED query (rare words: filler and
     # common words like "book"/"looking for" dropped); vector leg keeps the raw
     # natural-language query for meaning.
@@ -26,6 +27,14 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g):
         ranked, score_type = h.lexical(conn, lex_q, K), "bm25"
     elif mode == "vector":
         ranked, score_type = h.vector(conn, query, K), "cosine"
+    elif rerank:
+        # hybrid + post-fusion cross-encoder rerank: take the fusion top-N, re-score
+        # with the reranker, cut to K. Falls back to fusion order inside rr.rerank().
+        fusion = h.hybrid_split(conn, lex_q, query, rr.RERANK_N)
+        pairs = [(cid, h.snippet(conn, cid, rr.RERANK_DOC_CHARS)) for cid, _ in fusion]
+        reordered, _m = rr.rerank(query, pairs, n=rr.RERANK_N, k=K)
+        ranked = [(cid, sc if sc is not None else 0.0) for cid, _t, sc in reordered]
+        score_type = "rerank"
     else:
         ranked, score_type = h.hybrid_split(conn, lex_q, query, K), "fused"
 
@@ -69,19 +78,26 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g):
     return resp
 
 
-def responses_for(conn, query, gold):
+def responses_for(conn, query, gold, rerank=False):
     """All three strategy responses for one query. Shared by fixtures + live API.
 
     The keyword leg (lexical + hybrid's lexical half) searches an EXTRACTIVE cleaned
     query — filler phrases and common words ("book", "looking for", "a", "on") are
     stripped so it focuses on the rare, meaningful tokens. The vector leg embeds the
-    raw natural-language query. This is the shipped smart_search(mode=off) behavior."""
+    raw natural-language query. This is the shipped smart_search(mode=off) behavior.
+
+    rerank=True adds the post-fusion cross-encoder stage to the HYBRID response only
+    (off by default; the /api/search endpoint passes rerank.RERANK_ON). When False the
+    output is identical to before — the reranker is never touched."""
     lex_q = qu.lexical_of(conn, query)
     lex_pool = {cid: (i + 1, s) for i, (cid, s) in enumerate(h.lexical(conn, lex_q, h.POOL))}
     vec_pool = {cid: (i + 1, s) for i, (cid, s) in enumerate(h.vector(conn, query, h.POOL))}
-    expl = {e["chunk_id"]: e for e in h.hybrid_explain(conn, query, K, lexical_q=lex_q, semantic_q=query)}
+    # when reranking, explain the whole candidate pool so per-leg provenance is present
+    # for every reranked result, not just the fusion top-K.
+    depth = rr.RERANK_N if rerank else K
+    expl = {e["chunk_id"]: e for e in h.hybrid_explain(conn, query, depth, lexical_q=lex_q, semantic_q=query)}
     g = h.gates(conn, query, lexical_q=lex_q)
-    return {m: build_response(conn, query, lex_q, m, gold, lex_pool, vec_pool, expl, g)
+    return {m: build_response(conn, query, lex_q, m, gold, lex_pool, vec_pool, expl, g, rerank=rerank)
             for m in ("lexical", "vector", "hybrid")}
 
 

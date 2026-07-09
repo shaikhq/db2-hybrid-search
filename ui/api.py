@@ -7,6 +7,7 @@ this exists for ad-hoc queries during Q&A."""
 import json
 import logging
 import os
+from typing import Optional
 
 from fastapi import FastAPI, Query
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +15,7 @@ import ibm_db
 
 from hybrid_search import core as h
 from hybrid_search import understanding as qu   # adaptive query-understanding layer
+from hybrid_search import rerank as rr          # optional post-fusion cross-encoder stage
 import build_fixtures as bf   # responses_for()
 import demo_view as dv         # outcome-translation (verdicts + book labels)
 
@@ -51,16 +53,21 @@ def queries():
 
 
 @app.get("/api/search")
-def search(q: str = Query(..., description="search text"), k: int = bf.K):
+def search(q: str = Query(..., description="search text"), k: int = bf.K,
+           rerank: Optional[bool] = Query(None, description="override the post-fusion reranker")):
     """All three strategy responses for a query (lexical, vector, hybrid).
-    gold_chunk_ids come from the curated set when the query matches one."""
+    gold_chunk_ids come from the curated set when the query matches one.
+    The Search tab's hybrid results pass through the post-fusion reranker when
+    requested via `rerank` (the tab's toggle); absent that, the RERANK_ON env
+    default applies. The Demo tab never reranks."""
+    do_rerank = rr.RERANK_ON if rerank is None else bool(rerank)
     gold = GOLD.get(q, set())
     conn = h.connect()
     try:
-        modes = bf.responses_for(conn, q, gold)
+        modes = bf.responses_for(conn, q, gold, rerank=do_rerank)
     finally:
         ibm_db.close(conn)
-    return {"query": q, "gold_chunk_ids": sorted(gold), **modes}
+    return {"query": q, "gold_chunk_ids": sorted(gold), "reranked": do_rerank, **modes}
 
 
 @app.get("/api/smart_search")

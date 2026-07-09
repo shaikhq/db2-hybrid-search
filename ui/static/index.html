@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="styles.css?v=20" />
 </head>
 <body>
   <header class="topbar">
@@ -46,18 +46,18 @@
   <main class="searchpage" id="page-search">
     <div class="search-intro">
       <h2>Search the library</h2>
-      <p>Type anything — a title, an author, a vibe, a narrator — and see the top&nbsp;3 results
-        from all three strategies side by side: <b>Lexical</b> (matches words), <b>Semantic</b> (matches meaning),
-        and <b>Hybrid</b> (both fused).</p>
+      <p>Top 3 <b>Hybrid</b> results, each tagged with which strategy found it and at what rank.</p>
     </div>
     <div class="controls">
       <input id="searchbox" type="text" placeholder="Search your library — type anything…"
              autocomplete="off" spellcheck="false" aria-label="search the library" />
       <button id="run" class="run">Search</button>
+      <label class="search-toggle" title="Re-score the fused candidates with a cross-encoder (bge-reranker-v2-m3) and reorder">
+        <input type="checkbox" id="t-rerank" /> Rerank</label>
       <label class="search-toggle"><input type="checkbox" id="t-scores" /> Show scores</label>
     </div>
     <div id="output" class="output">
-      <p class="placeholder">Type a query and hit Search to see the top 3 results from each strategy.</p>
+      <p class="placeholder">Type a query and hit Search to see the top 3 Hybrid results.</p>
     </div>
   </main>
 
@@ -65,10 +65,8 @@
   <section class="evalpage" id="page-eval" hidden>
     <div class="eval-intro">
       <h2>Golden eval set</h2>
-      <p>These are the test questions behind the demo. For each question, the
-        <b>gold answer</b> is the exact book (or books) we expect search to return.
-        We grade each strategy (Lexical, Semantic, Hybrid) by how close to the top it
-        surfaces these gold answers — that's where the hit-rate and MRR numbers come from.</p>
+      <p>The test questions behind the demo. Each has a <b>gold answer</b> — the book search should
+        return — used to grade the strategies (hit-rate, MRR).</p>
     </div>
     <div id="eval-list" class="eval-list"></div>
   </section>
@@ -77,9 +75,8 @@
   <section class="demopage" id="page-demo" hidden aria-label="will search find my book">
     <div class="demo-intro">
       <h2>Will search find my book?</h2>
-      <p>Type a rough memory of a book — a nickname, a vibe, a narrator — and watch three
-        strategies at once. <b>Lexical</b> matches words; <b>Semantic</b> matches ideas;
-        <b>Hybrid</b> blends both. Each single strategy has a blind spot; hybrid covers them.</p>
+      <p>A rough memory of a book, run through three strategies at once. Each has a blind spot;
+        <b>Hybrid</b> covers them.</p>
     </div>
     <div class="demo-layout">
       <aside class="demo-sidebar">
@@ -112,9 +109,7 @@
   <section class="archpage" id="page-arch" hidden aria-label="architecture">
     <div class="arch-intro">
       <h2>Architecture</h2>
-      <p>How it's built: one Db2 database doing vector storage, ANN similarity search, BM25 text
-        search, and the language-model callout — with retrieval and fusion orchestrated in SQL.
-        Pick a view.</p>
+      <p>One Db2 database for retrieval + fusion, with a local model-serving layer. Pick a view.</p>
     </div>
     <div class="arch-subnav" id="arch-subnav" role="group" aria-label="architecture views">
       <button type="button" data-view="component" aria-pressed="true">Components</button>
@@ -124,8 +119,8 @@
     <div id="arch-canvas" class="arch-canvas"></div>
   </section>
 
-  <script src="app.js?v=15"></script>
-  <script src="demo.js?v=15"></script>
-  <script src="arch.js?v=15"></script>
+  <script src="app.js?v=20"></script>
+  <script src="demo.js?v=20"></script>
+  <script src="arch.js?v=20"></script>
 </body>
 </html>
