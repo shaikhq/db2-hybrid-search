@@ -56,7 +56,7 @@ try:
 
         # nav tabs do not overlap each other (the reported bug)
         boxes = [t.bounding_box() for t in page.query_selector_all("#tabs .tab")]
-        check("3 nav tabs present", len(boxes) == 3, len(boxes))
+        check("4 nav tabs present", len(boxes) == 4, len(boxes))
         pairwise_ok = all(not overlap(boxes[i], boxes[j])
                           for i in range(len(boxes)) for j in range(i + 1, len(boxes)))
         check("nav tabs do not overlap each other", pairwise_ok, boxes)

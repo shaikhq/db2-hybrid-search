@@ -275,6 +275,89 @@ body { margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg)
 /* Fix: the [hidden] attribute must beat .layout/.demopage display rules */
 [hidden] { display: none !important; }
 
+/* ================= Architecture tab (own dark diagrammatic theme) =================
+   Flat navy engineering-document look: flat fills, no gradients/shadows/icons.
+   All rules scoped under .archpage so the rest of the app's light theme is untouched. */
+.archpage { background: #0a0a1a; color: #e7eaf3; padding: 22px 26px 52px; min-height: 70vh; }
+.archpage .arch-intro h2 { margin: 0 0 6px; color: #fff; }
+.archpage .arch-intro p { color: #aab0c6; max-width: 82ch; }
+
+.arch-subnav { display: flex; gap: 8px; margin: 16px 0 20px; flex-wrap: wrap; }
+.arch-subnav button { font: inherit; font-weight: 600; color: #c7cce0; background: #12142b;
+  border: 1px solid #262a48; border-radius: 8px; padding: 7px 15px; cursor: pointer; }
+.arch-subnav button:hover { border-color: #3b4670; }
+.arch-subnav button[aria-pressed="true"] { color: #fff; border-color: #3b82f6; background: #152046; }
+.arch-subnav button:focus-visible { outline: 3px solid #3b82f6; outline-offset: 2px; }
+
+.arch-thesis { border: 1px dashed #3b4670; border-radius: 8px; padding: 11px 15px; margin: 0 0 20px;
+  color: #c7cce0; font-size: 13px; background: #0c1024; max-width: 100%; }
+.arch-thesis b { color: #fff; }
+
+.arch-fig { margin: 0; }
+.arch-layer { display: flex; justify-content: center; }
+
+/* generic box */
+.abox { border: 1px solid #333a5c; background: #101430; border-radius: 8px; padding: 12px 16px; }
+.abox-h { font-weight: 700; color: #fff; }
+.abox-s { font-size: 12px; color: #9aa1bd; margin-top: 3px; }
+.abox-ui { border-color: #8b93b5; min-width: 300px; text-align: center; }
+.abox-serve { border-color: #f59e0b; flex: 1 1 340px; max-width: 460px; }
+.abox-os { border-color: #E8552B; flex: 1 1 220px; max-width: 320px; }
+
+/* connectors */
+.aconn { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 3px 0; }
+.aconn svg { display: block; }
+.aconn-label { font-size: 11px; color: #7f87a6; letter-spacing: .02em; }
+
+/* Db2 umbrella */
+.arch-db2 { border: 2px solid #3b82f6; border-radius: 12px; padding: 14px; background: #0c1024; }
+.arch-db2-h { font-weight: 700; color: #7da9ff; margin-bottom: 11px; font-size: 14px; letter-spacing: .01em; }
+.arch-caps { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 8px; }
+.cap { border: 1px solid #2a3358; border-radius: 6px; padding: 9px 11px; font-size: 13px; font-weight: 600; }
+.cap span { display: block; font-weight: 400; font-size: 11px; color: #8790b0; margin-top: 3px; }
+.cap-used { border-color: #3b82f6; background: #12183a; color: #e6ecff; }
+.cap-used.cap-text { border-color: #E8552B; }
+.cap-used.cap-vec { border-color: #2dd4bf; }
+.cap-muted { border-color: #23263f; background: #0d0f22; color: #6a7092; }
+.cap-callout { grid-column: 1 / -1; }
+.cap-callout .cap-sub { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 11px; font-weight: 500; }
+.cap-callout .on { color: #8fe0c9; }
+.cap-callout .off { color: #8790b0; }
+
+/* external dependency row */
+.arch-deps { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.serve-models { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 9px; }
+.mini { font-size: 11px; font-weight: 600; border: 1px solid #2a3358; border-radius: 5px; padding: 4px 9px; color: #c7cce0; }
+.mini-emb { border-color: #2dd4bf; color: #bff3e8; }
+.mini-off { border-style: dashed; color: #8790b0; }
+
+/* numbered workflow steps */
+.arch-rowgroup { margin-bottom: 16px; }
+.arch-rowlabel { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #7f87a6;
+  margin: 0 0 8px; font-weight: 700; }
+.arch-flow { display: flex; align-items: center; overflow-x: auto; padding-bottom: 8px; }
+.step { flex: 0 0 auto; min-width: 138px; max-width: 168px; border: 1px solid #333a5c; background: #101430;
+  border-radius: 8px; padding: 10px 12px; align-self: stretch; }
+.step-n { font-size: 10.5px; color: #7f87a6; font-weight: 700; letter-spacing: .06em; }
+.step-h { font-weight: 700; color: #fff; font-size: 13.5px; margin-top: 3px; }
+.step-s { font-size: 11px; color: #9aa1bd; margin-top: 5px; line-height: 1.4; }
+.step-arrow { flex: 0 0 auto; align-self: center; color: #5b6488; padding: 0 7px; font-size: 18px; }
+.step.text { border-color: #E8552B; }
+.step.vec { border-color: #2dd4bf; }
+.step.fuse { border-color: #a78bfa; }
+.step-branch { display: flex; flex-direction: column; gap: 8px; justify-content: center; align-self: stretch; }
+.step-branch .step { align-self: auto; flex: 1 1 auto; }
+
+/* legend + notes */
+.arch-legend { display: flex; gap: 14px 18px; flex-wrap: wrap; margin-top: 18px; font-size: 12px; color: #aab0c6; }
+.arch-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.arch-legend .swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid #556; display: inline-block; }
+.arch-notes { margin-top: 18px; border-top: 1px solid #23263f; padding-top: 13px; }
+.arch-notes h4 { margin: 0 0 7px; color: #c7cce0; font-size: 13px; }
+.arch-notes ul { margin: 0; padding-left: 18px; }
+.arch-notes li { margin: 4px 0; color: #9aa1bd; font-size: 12.5px; line-height: 1.5; }
+.arch-notes li b { color: #d7dcf0; }
+
 /* ---- Search page (open-ended, 3-column top-3) ---- */
 .searchpage { max-width: 1180px; margin: 0 auto; padding: 24px 28px 40px; }
 .search-intro h2 { margin: 0 0 6px; }
