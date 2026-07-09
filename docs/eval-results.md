@@ -6,7 +6,7 @@ corpus (one row per book; `chunk_text` = title + authors + narrators + descripti
 - **Reproduce:** `DB2_HOST=local PYTHONPATH=src python scripts/eval.py` (or `pip install -e .` then drop `PYTHONPATH`)
 - **Golden eval set:** `~/out/eval/golden_set.draft.v*.json` — **112 silver queries** (`needs_review`), 96/96 book coverage, stratified into TRAIN (90) / **HELDOUT (22, ~20%)**. known_item queries have one gold book; topical queries list all qualifying books.
 - **Corpus:** 97 audiobooks in Db2 `MYSCHEMA.CHUNKS` (book [45] "Your First Listen" excluded — placeholder).
-- **Embeddings:** local **bge-small-en-v1.5** (384-dim) via llama.cpp / Db2 `PROVIDER OPENAI` — see [local-embeddings.md](local-embeddings.md). Queries carry bge's retrieval instruction; passages embedded raw.
+- **Embeddings:** local **bge-small-en-v1.5** (384-dim) via llama.cpp / Db2 `PROVIDER OPENAI` — see [../install/README.md](../install/README.md). Queries carry bge's retrieval instruction; passages embedded raw.
 - **Fusion knobs:** tuned on TRAIN (`HYBRID_W_LEX=0.1 W_VEC=0.9 VEC_GATE=0.0 LEX_GATE=0.0 POOL=97`).
 - **Date:** 2026-07-08
 

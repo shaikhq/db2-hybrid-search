@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # db2-install.sh — install Db2, create the db2inst1 instance + SAMPLE database,
 # enable Db2 Text Search + register OpenSearch, then leave Db2 STOPPED.
-# Scripts the steps in docs/db2-setup.md (+ the former 3_enable_text_search.sql).
+# Scripts the steps in install/README.md (+ the former 3_enable_text_search.sql).
 #
 # RUN AS ROOT, with the install media already extracted:
-#   sudo ./scripts/install/db2-install.sh /path/to/server_dec     # dir containing db2_install
+#   sudo ./install/db2-install.sh /path/to/server_dec     # dir containing db2_install
 #
 # Caveats (Db2 install is inherently multi-context and media-specific):
 #   - `db2_install` may be interactive or need a response file on your media.
@@ -13,7 +13,7 @@
 #     so OpenSearch need only be installed here, not running).
 set -euo pipefail
 
-MEDIA="${1:?Usage: sudo ./scripts/install/db2-install.sh /path/to/server_dec}"
+MEDIA="${1:?Usage: sudo ./install/db2-install.sh /path/to/server_dec}"
 INSTANCE="${DB2_INSTANCE:-db2inst1}"
 DB2_DIR="${DB2_INSTALL_DIR:-/opt/ibm/db2/V12.1}"
 PORT="${DB2_PORT:-50000}"
