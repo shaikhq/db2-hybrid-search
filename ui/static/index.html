@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=30" />
+  <link rel="stylesheet" href="styles.css?v=40" />
 </head>
 <body>
   <header class="topbar">
@@ -37,31 +37,37 @@
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="pages">
-    <button class="tab" data-page="start" role="tab" aria-selected="false">Start here</button>
-    <button class="tab" data-page="search" role="tab" aria-selected="true">Search</button>
+    <button class="tab" data-page="start" role="tab" aria-selected="true">Start here</button>
+    <button class="tab" data-page="search" role="tab" aria-selected="false">Search</button>
     <button class="tab" data-page="demo" role="tab" aria-selected="false">Demo</button>
     <button class="tab" data-page="eval" role="tab" aria-selected="false">Golden eval set</button>
     <button class="tab" data-page="arch" role="tab" aria-selected="false">Architecture</button>
   </nav>
 
-  <!-- FIRST TAB (leftmost): the "Start here" doorway. Search stays the default landing. -->
-  <section class="startpage" id="page-start" hidden aria-label="start here">
+  <!-- FIRST TAB (leftmost): the "Start here" doorway — the default landing. -->
+  <section class="startpage" id="page-start" aria-label="start here">
     <div id="start-canvas"></div>
   </section>
 
-  <main class="searchpage" id="page-search">
+  <main class="searchpage" id="page-search" hidden>
     <div class="search-intro">
       <h2>Search the library</h2>
-      <p>The top 3 <b>Hybrid</b> results. Turn on <b>Explain</b> to see which strategy found each and how reranking changed the order.</p>
+      <p>The top 3 <b>Hybrid</b> results. Toggle <b>Lexical</b> or <b>Semantic</b> to compare the legs side by side, or <b>Explain</b> for details.</p>
     </div>
     <div class="controls">
       <input id="searchbox" type="text" placeholder="Search your library — type anything…"
              autocomplete="off" spellcheck="false" aria-label="search the library" />
       <button id="run" class="run">Search</button>
-      <label class="search-toggle" title="Re-score the fused candidates with a cross-encoder (bge-reranker-v2-m3) and reorder">
-        <input type="checkbox" id="t-rerank" /> Rerank</label>
-      <label class="search-toggle" id="cmp-label" hidden title="Show the fusion top 3 next to the reranked top 3">
-        <input type="checkbox" id="t-compare" /> Compare</label>
+      <button id="btn-rerank" class="mode-btn" type="button" aria-pressed="false"
+        title="Rerank the fused candidates with a cross-encoder, then compare Hybrid vs Hybrid reranked side by side">Rerank</button>
+      <button id="btn-reset" class="reset-btn" type="button"
+        title="Clear the query, results, and all toggles">Reset</button>
+    </div>
+    <div class="toggles" aria-label="result options">
+      <label class="search-toggle" title="Show the keyword (BM25) leg's own top 3, side by side">
+        <input type="checkbox" id="t-lexical" /> Lexical</label>
+      <label class="search-toggle" title="Show the semantic (vector) leg's own top 3, side by side">
+        <input type="checkbox" id="t-semantic" /> Semantic</label>
       <label class="search-toggle" title="Show which strategy found each result and how reranking changed the order">
         <input type="checkbox" id="t-explain" /> Explain</label>
       <label class="search-toggle"><input type="checkbox" id="t-scores" /> Show scores</label>
@@ -130,9 +136,9 @@
     <div id="arch-canvas" class="arch-canvas"></div>
   </section>
 
-  <script src="app.js?v=30"></script>
-  <script src="demo.js?v=30"></script>
-  <script src="arch.js?v=30"></script>
-  <script src="start.js?v=30"></script>
+  <script src="app.js?v=40"></script>
+  <script src="demo.js?v=40"></script>
+  <script src="arch.js?v=40"></script>
+  <script src="start.js?v=40"></script>
 </body>
 </html>

@@ -39,15 +39,32 @@ def _log_sql(sql, params=(), level=logging.INFO):
         log.log(level, "Db2 SQL: %s", flat)
 
 # --- settings (.env best-effort; defaults work for local mode) ---------------
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-for _env in (os.path.join(ROOT, ".env"), ".env"):
+# Find the nearest .env by walking up from this module AND from cwd. The dirname
+# depth to the repo root differs between the normal layout (repo/src/hybrid_search)
+# and the staged live layout (/tmp/hybrid-ui/hybrid_search), so we can't hard-code a
+# single parent level — we probe several. (Bug history: a fixed 2-level ROOT pointed
+# at src/.env, so .env only loaded when cwd happened to be the repo root, and the
+# fixture builders / staged server silently ran on code defaults instead.)
+def _find_env():
+    seen = set()
+    d = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(5):                       # module dir, then walk up
+        p = os.path.join(d, ".env")
+        if p not in seen:
+            seen.add(p)
+            if os.path.exists(p):
+                return p
+        d = os.path.dirname(d)
+    return ".env" if os.path.exists(".env") else None   # fall back to cwd
+
+_env = _find_env()
+if _env:
     try:
-        if os.path.exists(_env):
-            for _line in open(_env):
-                _line = _line.strip()
-                if _line and not _line.startswith("#") and "=" in _line:
-                    _k, _, _v = _line.partition("=")
-                    os.environ.setdefault(_k.strip(), _v.strip().strip("\"'"))
+        for _line in open(_env):
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _, _v = _line.partition("=")
+                os.environ.setdefault(_k.strip(), _v.strip().strip("\"'"))
     except OSError:
         pass
 

@@ -1,11 +1,101 @@
 [
-  {"id": 1, "query": "an editor's hands-on techniques for sharper storytelling and prose", "query_type": "semantic", "query_class": "known_item", "featured": true, "gold_chunk_ids": [24], "scenario": "A plain-language description using none of the book's own words. Keyword search grabs an unrelated title; semantic and hybrid both recover Stein on Writing."},
-  {"id": 2, "query": "teddy hamilton", "query_type": "keyword", "query_class": "known_item", "featured": true, "gold_chunk_ids": [97], "scenario": "Just the narrator's name. Semantic search has nothing to latch onto and wanders off; keyword nails it — and hybrid keeps it."},
-  {"id": 3, "query": "the goggins one", "query_type": "keyword", "query_class": "known_item", "featured": true, "gold_chunk_ids": [67], "scenario": "A nickname for the author (Goggins). With a strong exact clue, every strategy agrees."},
-  {"id": 4, "query": "why we so often misjudge people we've just met", "query_type": "semantic", "query_class": "known_item", "featured": true, "gold_chunk_ids": [69], "scenario": "The idea of Talking to Strangers in your own words — keyword lands a different communication book, semantic finds it."},
-  {"id": 5, "query": "jason fung on reversing blood-sugar disease", "query_type": "mixed", "query_class": "known_item", "featured": true, "gold_chunk_ids": [61], "scenario": "An author's name plus a paraphrased topic — combine to The Diabetes Code, not his Obesity Code."},
-  {"id": 6, "query": "learning to say no to almost everything so you focus on the vital few", "query_type": "semantic", "query_class": "known_item", "featured": true, "gold_chunk_ids": [39], "scenario": "The gist of Essentialism, worded around the book's own vocabulary — keyword drifts to a different productivity book."},
-  {"id": 7, "query": "cal newport's book about accomplishing without burning out", "query_type": "mixed", "query_class": "known_item", "featured": true, "gold_chunk_ids": [91], "scenario": "Author plus a concept picks Slow Productivity over his other title, Deep Work."},
-  {"id": 8, "query": "pragmatic programmer", "query_type": "keyword", "query_class": "known_item", "featured": true, "gold_chunk_ids": [72], "scenario": "An exact title — straightforward for every strategy."},
-  {"id": 9, "query": "matthews strength training book for women", "query_type": "mixed", "query_class": "known_item", "featured": true, "gold_chunk_ids": [20], "scenario": "Author plus 'for women' picks Thinner Leaner Stronger over the men's edition."}
+  {
+    "id": 1,
+    "query": "an editor's hands-on techniques for sharper storytelling and prose",
+    "query_type": "semantic",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      24
+    ],
+    "scenario": "A plain-language description using none of the book's own words. Keyword search grabs an unrelated title; semantic and hybrid both recover Stein on Writing."
+  },
+  {
+    "id": 2,
+    "query": "charles kahlenberg",
+    "query_type": "keyword",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      11
+    ],
+    "scenario": "Just the narrator's name. Semantic search has nothing to latch onto and wanders off; keyword nails it \u2014 and hybrid keeps it."
+  },
+  {
+    "id": 3,
+    "query": "the goggins one",
+    "query_type": "keyword",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      67
+    ],
+    "scenario": "A nickname for the author (Goggins). With a strong exact clue, every strategy agrees."
+  },
+  {
+    "id": 4,
+    "query": "why we so often misjudge people we've just met",
+    "query_type": "semantic",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      69
+    ],
+    "scenario": "The idea of Talking to Strangers in your own words \u2014 keyword lands a different communication book, semantic finds it."
+  },
+  {
+    "id": 5,
+    "query": "jason fung on reversing blood-sugar disease",
+    "query_type": "mixed",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      61
+    ],
+    "scenario": "An author's name plus a paraphrased topic \u2014 combine to The Diabetes Code, not his Obesity Code."
+  },
+  {
+    "id": 6,
+    "query": "learning to say no to almost everything so you focus on the vital few",
+    "query_type": "semantic",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      39
+    ],
+    "scenario": "The gist of Essentialism, worded around the book's own vocabulary \u2014 keyword drifts to a different productivity book."
+  },
+  {
+    "id": 7,
+    "query": "cal newport's book about accomplishing without burning out",
+    "query_type": "mixed",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      91
+    ],
+    "scenario": "Author plus a concept picks Slow Productivity over his other title, Deep Work."
+  },
+  {
+    "id": 8,
+    "query": "pragmatic programmer",
+    "query_type": "keyword",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      72
+    ],
+    "scenario": "An exact title \u2014 straightforward for every strategy."
+  },
+  {
+    "id": 9,
+    "query": "matthews strength training book for women",
+    "query_type": "mixed",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      20
+    ],
+    "scenario": "Author plus 'for women' picks Thinner Leaner Stronger over the men's edition."
+  }
 ]

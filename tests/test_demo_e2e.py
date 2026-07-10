@@ -61,8 +61,9 @@ try:
                           for i in range(len(boxes)) for j in range(i + 1, len(boxes)))
         check("nav tabs do not overlap each other", pairwise_ok, boxes)
 
-        # default: search visible, others hidden
-        check("default page-search visible", page.is_visible("#page-search"))
+        # default: Start here visible, others hidden
+        check("default page-start visible", page.is_visible("#page-start"))
+        check("default page-search hidden", not page.is_visible("#page-search"))
         check("default page-demo hidden", not page.is_visible("#page-demo"))
 
         # switch to Demo — the [hidden]-override fix: search must fully hide

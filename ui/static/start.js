@@ -3,17 +3,17 @@
    Static content; the before/after is a snapshot of a VERIFIED real run — a clean
    "semantic finds, keyword misses" case:
 
-     query : "getting deep focused work done without distraction"
-     before (keyword #1) : Getting to Yes       — matched the word "getting", wrong book
-     after  (hybrid  #1) : Slow Productivity     — the real top hit (chunk 91)
+     query : "inter-personal communication"
+     before (keyword #1) : Getting Things Done   — task management, a miss
+     after  (hybrid  #1) : Getting to Yes        — the real top hit, stable
 
    IMPORTANT — verify against the LIVE /api/search, not a one-off script: the vector
    leg's ANN pool (FETCH APPROX) varies per Db2 session, so a borderline query can
-   rank differently in the live server than in a script. This query is stable on the
-   live API. Re-verify there if the corpus changes.
+   rank differently in the live server than in a script. Both #1s are stable on the
+   live API (4/4). Re-verify there if the corpus changes.
 */
 
-const START_QUERY = "getting deep focused work done without distraction";
+const START_QUERY = "inter-personal communication";
 const sq = (s) => document.querySelector(s);
 
 const HP = `<svg class="glyph-hp" viewBox="0 0 32 32" width="15" height="15" fill="none" aria-hidden="true">
@@ -22,6 +22,8 @@ const HP = `<svg class="glyph-hp" viewBox="0 0 32 32" width="15" height="15" fil
   <rect x="22.4" y="18.4" width="5.2" height="8.2" rx="2.3" stroke="currentColor" stroke-width="2.3" /></svg>`;
 const CHECK = `<svg viewBox="0 0 16 16" width="13" height="13" fill="none" aria-hidden="true">
   <path d="M3 8.5l3.2 3.2L13 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>`;
+const CROSS = `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
+  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>`;
 
 function startView() {
   return `
@@ -33,16 +35,10 @@ function startView() {
     </div>
 
     <div class="door-grid">
-      <div class="door-left">
-        <div class="door-problem">
-          <div class="prob"><span class="kicker">what breaks</span><p>You remember the idea, not the title, and keyword search needs the words you don't have.</p></div>
-          <div class="prob"><span class="kicker">how it feels</span><p>You paid for these. You learned from these. Now they're lost to you.</p></div>
-          <div class="prob"><span class="kicker">why it matters</span><p>In 2026, you should be able to find a book just by describing it.</p></div>
-        </div>
-        <div class="door-ctas">
-          <button id="start-cta-try" class="cta cta-primary" type="button">Try it on your library</button>
-          <button id="start-cta-arch" class="cta cta-secondary" type="button">See how it's built</button>
-        </div>
+      <div class="door-problem">
+        <div class="prob"><span class="kicker">what breaks</span><p>You remember the idea, not the title.</p></div>
+        <div class="prob"><span class="kicker">how it feels</span><p>You paid for these. Now they're lost to you.</p></div>
+        <div class="prob"><span class="kicker">why it matters</span><p>You should find a book just by describing it.</p></div>
       </div>
 
       <div class="door-right">
@@ -51,27 +47,33 @@ function startView() {
           <div class="ba">
             <div class="ba-panel ba-before">
               <div class="ba-label">before &middot; keyword</div>
-              <div class="ba-title">Getting to Yes</div>
-              <div class="ba-verdict miss">not what you meant</div>
+              <div class="ba-title">Getting Things Done</div>
+              <div class="ba-verdict miss">${CROSS} keyword missed</div>
             </div>
             <div class="ba-arrow" aria-hidden="true"></div>
             <div class="ba-panel ba-after">
               <div class="ba-label">after &middot; hybrid</div>
-              <div class="ba-title">${HP} Slow Productivity</div>
-              <div class="ba-by">Cal Newport</div>
+              <div class="ba-title">${HP} Getting to Yes</div>
+              <div class="ba-by">Roger Fisher and William Ury</div>
               <div class="ba-verdict found">${CHECK} found it</div>
             </div>
           </div>
         </div>
         <ol class="door-plan">
           <li><span class="pnum">1</span><span>Describe what you remember.</span></li>
-          <li><span class="pnum">2</span><span>It searches both ways at once, by keyword and by meaning.</span></li>
-          <li><span class="pnum">3</span><span>The match surfaces. It never comes back empty.</span></li>
+          <li><span class="pnum">2</span><span>It searches by keyword and meaning at once.</span></li>
+          <li><span class="pnum">3</span><span>The match surfaces — never empty.</span></li>
         </ol>
       </div>
     </div>
 
-    <p class="door-guide">Built by an AI architect who lost his own library the same way.</p>
+    <div class="door-foot">
+      <div class="door-ctas">
+        <button id="start-cta-try" class="cta cta-primary" type="button">Try it on your library</button>
+        <button id="start-cta-arch" class="cta cta-secondary" type="button">See how it's built</button>
+      </div>
+      <p class="door-guide">Built by an AI architect who lost his own library the same way.</p>
+    </div>
   </div>`;
 }
 

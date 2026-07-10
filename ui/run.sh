@@ -26,6 +26,7 @@ if [ "${1:-}" = "--live" ]; then
        "$HERE/queries.json" "$HERE/demo_queries.json" "$STAGE/"
     cp -r "$REPO/src/hybrid_search" "$STAGE/"      # the search engine package
     cp -r "$HERE/static" "$STAGE/static"
+    [ -f "$REPO/.env" ] && cp "$REPO/.env" "$STAGE/.env"   # fusion weights/gates/pool
     chmod -R a+rX "$STAGE"
     # uvicorn/fastapi/ibm_db live in the repo venv, not the system python.
     PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
