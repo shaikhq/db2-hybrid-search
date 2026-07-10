@@ -470,6 +470,7 @@ mark { background: #fff3bf; color: inherit; padding: 0 1px; border-radius: 2px; 
 /* before = neutral, dimmed — reads as the dead state */
 .ba-before { flex: 1 1 0; opacity: .9; }
 .ba-before .ba-title { color: #9aa1bd; font-size: 1.02rem; }
+.ba-title.ba-empty { font-style: italic; font-weight: 600; color: #6b7192; }
 .ba-verdict.miss { color: #8790b0; background: #141620; border: 1px solid #2a2f45; }
 
 /* after = green, heavier/brighter — reads as the resolution, not an equal option */

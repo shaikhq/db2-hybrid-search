@@ -1,19 +1,19 @@
 "use strict";
 /* "Start here" — a StoryBrand doorway tab. One screen, dark-navy flat, sentence case.
-   Static content; the before/after is a snapshot of a VERIFIED real run — a clean
-   "semantic finds, keyword misses" case:
+   Static content; the before/after illustrates a clean "semantic finds, keyword
+   misses" case:
 
-     query : "inter-personal communication"
-     before (keyword #1) : Getting Things Done   — task management, a miss
-     after  (hybrid  #1) : Getting to Yes        — the real top hit, stable
+     query : "coping with stress"
+     before (keyword) : no results — none of the words match a title/author
+     after  (hybrid)  : How to Stop Worrying and Start Living — Dale Carnegie
 
-   IMPORTANT — verify against the LIVE /api/search, not a one-off script: the vector
-   leg's ANN pool (FETCH APPROX) varies per Db2 session, so a borderline query can
-   rank differently in the live server than in a script. Both #1s are stable on the
-   live API (4/4). Re-verify there if the corpus changes.
+   This example is curated (hand-set per request), not a live-verified snapshot. If
+   you want to guarantee it against the real engine, run it through the LIVE
+   /api/search and adjust — the vector leg's ANN pool (FETCH APPROX) can vary per
+   Db2 session, so a borderline query may rank differently live than in a script.
 */
 
-const START_QUERY = "inter-personal communication";
+const START_QUERY = "coping with stress";
 const sq = (s) => document.querySelector(s);
 
 const HP = `<svg class="glyph-hp" viewBox="0 0 32 32" width="15" height="15" fill="none" aria-hidden="true">
@@ -47,14 +47,14 @@ function startView() {
           <div class="ba">
             <div class="ba-panel ba-before">
               <div class="ba-label">before &middot; keyword</div>
-              <div class="ba-title">Getting Things Done</div>
-              <div class="ba-verdict miss">${CROSS} keyword missed</div>
+              <div class="ba-title ba-empty">No results</div>
+              <div class="ba-verdict miss">${CROSS} keyword found nothing</div>
             </div>
             <div class="ba-arrow" aria-hidden="true"></div>
             <div class="ba-panel ba-after">
               <div class="ba-label">after &middot; hybrid</div>
-              <div class="ba-title">${HP} Getting to Yes</div>
-              <div class="ba-by">Roger Fisher and William Ury</div>
+              <div class="ba-title">${HP} How to Stop Worrying and Start Living</div>
+              <div class="ba-by">Dale Carnegie</div>
               <div class="ba-verdict found">${CHECK} found it</div>
             </div>
           </div>
