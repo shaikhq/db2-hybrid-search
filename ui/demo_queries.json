@@ -1,39 +1,28 @@
 [
   {
     "id": 1,
-    "query": "an editor's hands-on techniques for sharper storytelling and prose",
+    "query": "coping with stress",
     "query_type": "semantic",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
-      24
+      19
     ],
-    "scenario": "A plain-language description using none of the book's own words. Keyword search grabs an unrelated title; semantic and hybrid both recover Stein on Writing."
+    "scenario": "No shared words with \u201cHow to Stop Worrying and Start Living,\u201d so keyword search comes back empty. Meaning-based search knows it\u2019s the same idea \u2014 and hybrid keeps it."
   },
   {
     "id": 2,
-    "query": "charles kahlenberg",
+    "query": "walter dixon",
     "query_type": "keyword",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
-      11
+      2
     ],
-    "scenario": "Just the narrator's name. Semantic search has nothing to latch onto and wanders off; keyword nails it \u2014 and hybrid keeps it."
+    "scenario": "Just the narrator\u2019s name. Meaning-based search has nothing to embed and drifts to the wrong book; keyword matches the name exactly. Hybrid keeps the keyword win."
   },
   {
     "id": 3,
-    "query": "the goggins one",
-    "query_type": "keyword",
-    "query_class": "known_item",
-    "featured": true,
-    "gold_chunk_ids": [
-      67
-    ],
-    "scenario": "A nickname for the author (Goggins). With a strong exact clue, every strategy agrees."
-  },
-  {
-    "id": 4,
     "query": "why we so often misjudge people we've just met",
     "query_type": "semantic",
     "query_class": "known_item",
@@ -41,61 +30,72 @@
     "gold_chunk_ids": [
       69
     ],
-    "scenario": "The idea of Talking to Strangers in your own words \u2014 keyword lands a different communication book, semantic finds it."
+    "scenario": "A paraphrase of the premise. Keyword search latches onto the wrong title; semantic search recognizes the idea behind \u201cTalking to Strangers.\u201d Hybrid surfaces it."
   },
   {
-    "id": 5,
-    "query": "jason fung on reversing blood-sugar disease",
+    "id": 4,
+    "query": "jason fung reversing type 2 diabetes",
     "query_type": "mixed",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
       61
     ],
-    "scenario": "An author's name plus a paraphrased topic \u2014 combine to The Diabetes Code, not his Obesity Code."
+    "scenario": "A name plus a topic. Keyword catches \u201cjason fung,\u201d meaning catches \u201creversing diabetes\u201d \u2014 both land on the same book and hybrid agrees."
+  },
+  {
+    "id": 5,
+    "query": "bob walter",
+    "query_type": "keyword",
+    "query_class": "known_item",
+    "featured": true,
+    "gold_chunk_ids": [
+      29
+    ],
+    "scenario": "Another narrator\u2019s name. The vector leg wanders off; the keyword leg nails it exactly. Hybrid keeps the win."
   },
   {
     "id": 6,
-    "query": "learning to say no to almost everything so you focus on the vital few",
+    "query": "an editor's hands-on techniques for sharper sentences",
     "query_type": "semantic",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
-      39
+      24
     ],
-    "scenario": "The gist of Essentialism, worded around the book's own vocabulary \u2014 keyword drifts to a different productivity book."
+    "scenario": "Describes what the book teaches, not its title. Keyword search finds nothing; semantic search maps it to \u201cStein on Writing.\u201d Hybrid keeps it."
   },
   {
     "id": 7,
-    "query": "cal newport's book about accomplishing without burning out",
+    "query": "cal newport focus without burnout",
     "query_type": "mixed",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
       91
     ],
-    "scenario": "Author plus a concept picks Slow Productivity over his other title, Deep Work."
+    "scenario": "Author plus theme. Keyword catches \u201ccal newport,\u201d meaning catches \u201cfocus without burnout.\u201d Both land on \u201cSlow Productivity\u201d; hybrid confirms."
   },
   {
     "id": 8,
-    "query": "pragmatic programmer",
-    "query_type": "keyword",
+    "query": "getting past procrastination and just starting",
+    "query_type": "mixed",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
-      72
+      23
     ],
-    "scenario": "An exact title \u2014 straightforward for every strategy."
+    "scenario": "Neither leg ranks \u201cEat That Frog\u201d near the top on its own \u2014 keyword drifts, meaning stays fuzzy. Their combined signal lifts it into view. This is hybrid doing what neither leg can alone."
   },
   {
     "id": 9,
-    "query": "matthews strength training book for women",
+    "query": "matthews strength training for women",
     "query_type": "mixed",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
       20
     ],
-    "scenario": "Author plus 'for women' picks Thinner Leaner Stronger over the men's edition."
+    "scenario": "A name and a topic. Both legs agree on \u201cThinner Leaner Stronger\u201d; hybrid keeps it at the top."
   }
 ]
