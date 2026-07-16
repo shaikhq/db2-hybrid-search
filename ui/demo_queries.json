@@ -56,14 +56,14 @@
   },
   {
     "id": 6,
-    "query": "an editor's hands-on techniques for sharper sentences",
-    "query_type": "semantic",
+    "query": "doing fewer things but better",
+    "query_type": "mixed",
     "query_class": "known_item",
     "featured": true,
     "gold_chunk_ids": [
-      24
+      39
     ],
-    "scenario": "Describes what the book teaches, not its title. Keyword search finds nothing; semantic search maps it to \u201cStein on Writing.\u201d Hybrid keeps it."
+    "scenario": "\u201cDoing fewer things but better\u201d is the whole thesis of \u201cEssentialism\u201d \u2014 yet the semantic leg ranks lookalike productivity titles above it and drops it out of the top results. The keyword leg keeps it in view, and fusion lifts it back to the top. Neither leg nails it alone; hybrid does."
   },
   {
     "id": 7,

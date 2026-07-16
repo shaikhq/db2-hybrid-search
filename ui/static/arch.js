@@ -212,11 +212,11 @@ UPDATE MYSCHEMA.CHUNKS
   ON MYSCHEMA.CHUNKS(embedding) WITH DISTANCE COSINE EXCLUDE NULL KEYS;`],
   ];
   const search = [
-    ["1", "Clean the keyword query", "SQL UDF, no model",
-`VALUES MYSCHEMA.QU_LEXICAL(?);
--- 'find me a book on public speaking'  ->  'public speaking'`],
+    ["1", "Build the keyword query", "in the app (Python) — not Db2",
+`-- core.keywords(): drop English stopwords, OR the remaining tokens.
+-- 'coping with stress'  ->  'coping OR stress'   (bound as ? below)`],
     ["2", "Lexical leg", "BM25 over the full pool",
-`SELECT chunk_id, SCORE(chunk_text, ?) AS s      -- ? = 'public OR speaking'
+`SELECT chunk_id, SCORE(chunk_text, ?) AS s      -- ? = 'coping OR stress'
 FROM MYSCHEMA.CHUNKS
 WHERE CONTAINS(chunk_text, ?) = 1
 ORDER BY s DESC FETCH FIRST 97 ROWS ONLY;`],
@@ -237,7 +237,7 @@ FETCH APPROX FIRST 97 ROWS ONLY;`],
   lex  AS (SELECT chunk_id, s / MAX(s) OVER () AS n FROM lex0),   -- max-normalize (+ gate)
   vec  AS (SELECT chunk_id, s / MAX(s) OVER () AS n FROM vec0)
 SELECT COALESCE(lex.chunk_id, vec.chunk_id) AS chunk_id,
-       0.1 * COALESCE(lex.n,0) + 0.9 * COALESCE(vec.n,0) AS score   -- weighted sum
+       0.2 * COALESCE(lex.n,0) + 0.8 * COALESCE(vec.n,0) AS score   -- weighted sum
 FROM lex FULL OUTER JOIN vec ON lex.chunk_id = vec.chunk_id
 ORDER BY score DESC FETCH FIRST 3 ROWS ONLY;`],
   ];

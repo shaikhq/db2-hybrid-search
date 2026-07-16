@@ -208,6 +208,16 @@ function render() {
   $("#output").innerHTML = html;
 }
 
+// The keyword leg searches your query minus English stopwords (core.keywords()).
+// Surface that ONLY when it actually differs from what you typed — i.e. stopwords
+// were dropped — so a filler-free query shows no redundant note. Explain-gated.
+function lexNoteHtml(lexq, fullq) {
+  const a = (lexq || "").trim(), b = (fullq || "").trim();
+  if (!state.explain || !a || a.toLowerCase() === b.toLowerCase()) return "";
+  return `<p class="lex-note">Keyword leg searched <code>${esc(a)}</code>
+    <span>· stopwords dropped; semantic leg uses your full query</span></p>`;
+}
+
 // One result column (any leg). Provenance chips only make sense on the Hybrid column.
 function legColumn(title, dotcls, results, hl, isHybrid) {
   const rows = (results || []).slice(0, TOP).map((r) => `
@@ -227,9 +237,7 @@ function legColumn(title, dotcls, results, hl, isHybrid) {
 function legCompareHtml(rec) {
   const lexq = rec.lexical && rec.lexical.lex_query;
   const terms = queryTerms(lexq || rec.query);
-  const lexNote = (state.explain && lexq)
-    ? `<p class="lex-note">Lexical leg searched <code>${esc(lexq)}</code>
-         <span>· semantic leg uses your full query</span></p>` : "";
+  const lexNote = lexNoteHtml(lexq, rec.query);
   const cols = [];
   if (state.showLexical)  cols.push(legColumn("Lexical", "bm25", rec.lexical && rec.lexical.results, terms, false));
   if (state.showSemantic) cols.push(legColumn("Semantic", "vec", rec.vector && rec.vector.results, terms, false));
@@ -242,9 +250,7 @@ function legCompareHtml(rec) {
 function compareHtml(fu, rr) {
   const lexq = (rr.lexical && rr.lexical.lex_query) || (fu.lexical && fu.lexical.lex_query);
   const terms = queryTerms(lexq || rr.query);
-  const lexNote = (state.explain && lexq)
-    ? `<p class="lex-note">Lexical leg searched <code>${esc(lexq)}</code>
-         <span>· semantic leg uses your full query</span></p>` : "";
+  const lexNote = lexNoteHtml(lexq, rr.query);
   const fuAll = (fu.hybrid && fu.hybrid.results) || [];
   const fuTop = fuAll.slice(0, TOP);
   const rrTop = ((rr.hybrid && rr.hybrid.results) || []).slice(0, TOP);
@@ -265,12 +271,9 @@ function compareHtml(fu, rr) {
 // Search tab shows only the Hybrid top-3. Each result is annotated with which
 // strategy found it and at what rank within that strategy.
 function hybridHtml(rec) {
-  // highlight the cleaned rare-word terms the lexical leg actually searched
+  // highlight the keyword terms the lexical leg actually searched (stopwords dropped)
   const lexq = rec.lexical && rec.lexical.lex_query;
-  const lexNote = (state.explain && lexq)
-    ? `<p class="lex-note">Lexical leg searched <code>${esc(lexq)}</code>
-         <span>· semantic leg uses your full query</span></p>`
-    : "";
+  const lexNote = lexNoteHtml(lexq, rec.query);
   const terms = queryTerms(lexq || rec.query);
   const results = ((rec.hybrid && rec.hybrid.results) || []).slice(0, TOP);
   if (!results.length) return lexNote + `<p class="placeholder">No results.</p>`;

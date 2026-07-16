@@ -102,10 +102,28 @@ def embed_query(query):
     return QUERY_PREFIX + query
 
 
+# Standard English function-word stoplist, applied when building the CONTAINS query.
+# Db2 Text Search does NOT strip stopwords (verified: even a LANGUAGE en_US index keeps
+# "the"/"with"/"and" searchable), so without this, filler OR'd into the keyword query
+# matches broadly and pollutes the BM25 ranking. This is the analyzer stop-filter
+# equivalent, done at query-build time — keywords() is the ONLY place CONTAINS is formed.
+# Pure function words only: the bespoke domain/phrase cleaner (QU_LEXICAL) was removed.
+STOPWORDS = frozenset("""
+a an and are as at be been but by can could did do does for from had has have how
+i if in into is it its me my no not of on or our so than that the their them then
+there these they this to too was we were what when where which who whom why will
+with would you your
+""".split())
+
+
 def keywords(query):
-    """CONTAINS is implicit-AND, so OR the words: any term can match, ranked by
-    SCORE. Without this, a natural-language query matches nothing."""
-    return " OR ".join(query.split()) or query
+    """CONTAINS is implicit-AND, so OR the content words: any term can match, ranked by
+    SCORE. English stopwords are dropped (see STOPWORDS) — Db2 Text Search keeps them
+    searchable and OR-ing filler like "with"/"and" pollutes BM25. Falls back to all
+    tokens when the query is nothing but stopwords, so CONTAINS is never empty."""
+    toks = query.split()
+    kept = [t for t in toks if t.lower().strip(".,!?;:'\"()[]") not in STOPWORDS]
+    return " OR ".join(kept or toks) or query
 
 
 def connect():

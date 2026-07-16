@@ -8,7 +8,6 @@ import json
 import os
 import ibm_db
 from hybrid_search import core as h
-from hybrid_search import understanding as qu   # extractive lexical cleaner (rare words)
 from hybrid_search import rerank as rr          # optional post-fusion cross-encoder stage
 
 K = 5  # results shown per strategy (and the "in top K?" cutoff)
@@ -72,7 +71,9 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g, 
     resp = {"query": query, "mode": mode, "k": K,
             "gold_chunk_ids": sorted(gold), "gold_rank": gold_rank, "results": results}
     if mode == "lexical":
-        resp["lex_query"] = lex_q   # cleaned terms actually searched (for UI highlighting)
+        # what the keyword leg actually searched: the raw query minus English
+        # stopwords (core.keywords()), shown without the CONTAINS "OR" syntax.
+        resp["lex_query"] = h.keywords(lex_q).replace(" OR ", " ")
     if mode == "hybrid":
         resp["gates"] = g
     return resp
@@ -81,15 +82,15 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g, 
 def responses_for(conn, query, gold, rerank=False):
     """All three strategy responses for one query. Shared by fixtures + live API.
 
-    The keyword leg (lexical + hybrid's lexical half) searches an EXTRACTIVE cleaned
-    query — filler phrases and common words ("book", "looking for", "a", "on") are
-    stripped so it focuses on the rare, meaningful tokens. The vector leg embeds the
-    raw natural-language query. This is the shipped smart_search(mode=off) behavior.
+    Both legs receive the RAW query as typed: the keyword leg searches it (core's
+    keywords() ORs the tokens for CONTAINS), the vector leg embeds it. The extractive
+    QU_LEXICAL cleaner was dropped from the search path — stopword handling belongs in
+    the text-index analyzer, not an app-layer UDF.
 
     rerank=True adds the post-fusion cross-encoder stage to the HYBRID response only
     (off by default; the /api/search endpoint passes rerank.RERANK_ON). When False the
     output is identical to before — the reranker is never touched."""
-    lex_q = qu.lexical_of(conn, query)
+    lex_q = query   # no query-understanding cleaner; keyword leg searches the raw query
     lex_pool = {cid: (i + 1, s) for i, (cid, s) in enumerate(h.lexical(conn, lex_q, h.POOL))}
     vec_pool = {cid: (i + 1, s) for i, (cid, s) in enumerate(h.vector(conn, query, h.POOL))}
     # when reranking, explain the whole candidate pool so per-leg provenance is present
