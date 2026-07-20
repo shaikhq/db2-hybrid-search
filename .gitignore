@@ -47,6 +47,10 @@ logs/
 /ui/fixtures.json
 /ui/eval_set.json
 
+# Local-only working artifacts (kept on disk, never shipped).
+backup/
+QA_REPORT.md
+
 # --- OS noise ---
 .DS_Store
 Thumbs.db

@@ -40,7 +40,7 @@ verifies, then leaves the service stopped (`0_start-services.sh` starts them for
 > by default).
 
 ```bash
-git clone <your-repo-url> hybrid-search && cd hybrid-search
+git clone <your-repo-url> db2-hybrid-search && cd db2-hybrid-search
 ```
 
 Install OpenSearch **before** Db2 (Db2 registers it as the Text Search backend).

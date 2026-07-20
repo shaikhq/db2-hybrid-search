@@ -65,7 +65,7 @@ so each leg covers the other's blind spot.
 ## Setup (one-time)
 
 ```bash
-git clone <your-repo-url> hybrid-search && cd hybrid-search
+git clone <your-repo-url> db2-hybrid-search && cd db2-hybrid-search
 ```
 
 Install the prerequisites — the full ordered guide is
@@ -251,7 +251,7 @@ data/      corpus.csv — the audiobook corpus (bring your own, same schema)
 tests/     test_demo_*.py · test_understanding.py · test_rerank.py
 ui/        run.sh · build_fixtures.sh · api.py · demo_view.py · static/ (Search · Demo · Golden eval · Architecture)
 docs/      eval-results.md
-backup/    archived / superseded content (reversible)
+install/   README.md — one-time setup (Db2 · OpenSearch · llama.cpp · Python)
 pyproject.toml · requirements.txt
 ```
 

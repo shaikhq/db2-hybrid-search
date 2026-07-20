@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hybrid-search"
+name = "db2-hybrid-search"
 version = "0.1.0"
 description = "Hybrid (BM25 + vector) search inside IBM Db2 12.1.5, with a local llama.cpp embedding server."
 readme = "README.md"
