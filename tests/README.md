@@ -25,7 +25,7 @@ python -m playwright install chromium   # ~150 MB browser binary
 
 | Test | Needs | What it checks |
 |---|---|---|
-| `test_core_*` *(planned)* | — | `keywords()` stopwords, normalization, config coherence |
+| `test_core_unit.py` | — (ibm_db for parts 1–2) | `keywords()` stopwords + fallback, `embed_query()`, `evalset.resolve()`, and `.env.example`↔`core.py`↔`2_search.sql` config coherence |
 | `test_rerank.py` | — | reranker scoring logic (HTTP monkeypatched) |
 | `test_demo_view.py` | — | outcome→verdict translation (uses committed fixtures) |
 | `test_demo_ui.py` | `.[test]` (httpx) | FastAPI `TestClient` API smoke |
