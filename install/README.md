@@ -56,7 +56,8 @@ OpenSearch is the backend for Db2 Text Search (the lexical/BM25 leg). ~10 minute
 Needs ~2 GB free memory, ~1 GB disk, `curl`. It bundles Java.
 
 > **WARNING** — this turns OFF OpenSearch security/passwords to keep local setup
-> simple. Use only on a machine others can't reach over the network.
+> simple. The config binds it to `127.0.0.1` (localhost only) so it isn't network-
+> reachable; keep it that way, or re-enable security before changing `network.host`.
 
 **1. Raise the memory-map limit** (or OpenSearch won't start):
 
@@ -87,7 +88,7 @@ sudo chown -R opensearch:opensearch /opt/opensearch
 ```yaml
 cluster.name: db2-text-search-cluster
 node.name: node-1
-network.host: 0.0.0.0
+network.host: 127.0.0.1        # localhost only — security is off, so never expose it
 http.port: 9200
 discovery.type: single-node
 plugins.security.disabled: true
@@ -171,7 +172,7 @@ no per-call cost. Prerequisites: `git`, `cmake`, a C/C++ toolchain.
 ```bash
 #   RHEL/Fedora:   sudo dnf install -y git cmake gcc-c++
 #   Debian/Ubuntu: sudo apt-get install -y git cmake build-essential
-git clone --depth 1 https://github.com/ggml-org/llama.cpp.git ~/llama.cpp
+git clone --depth 1 --branch b9913 https://github.com/ggml-org/llama.cpp.git ~/llama.cpp   # pinned; see note below
 cmake -S ~/llama.cpp -B ~/llama.cpp/build \
       -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF -DGGML_NATIVE=ON
 cmake --build ~/llama.cpp/build --target llama-server -j"$(nproc)"
@@ -222,7 +223,9 @@ scripts/rerank/start_rerank_server.sh    # --reranking on :8087; see scripts/rer
 **Generation** — `Qwen2.5-3B-Instruct` (~2 GB), for the query-understanding gated mode:
 
 ```bash
-# download a Qwen2.5-3B-Instruct GGUF (Q4_K_M) into ~/models/qwen2.5-3b-instruct/, then:
+mkdir -p ~/models/qwen2.5-3b-instruct
+curl -fSL -o ~/models/qwen2.5-3b-instruct/Qwen2.5-3B-Instruct-Q4_K_M.gguf \
+  "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf"
 scripts/query-understanding/start_gen_server.sh    # on :8086; see scripts/query-understanding/README.md
 ```
 

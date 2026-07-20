@@ -30,7 +30,10 @@ fi
 sudo -u opensearch tee "$HOME_DIR/config/opensearch.yml" >/dev/null <<YML
 cluster.name: db2-text-search-cluster
 node.name: node-1
-network.host: 0.0.0.0
+# localhost only: security is disabled below, and Db2 talks to OpenSearch on the
+# same box, so it must never be network-reachable. (0.0.0.0 would expose an
+# unauthenticated cluster to anything that can route to this host.)
+network.host: 127.0.0.1
 http.port: ${PORT}
 discovery.type: single-node
 plugins.security.disabled: true

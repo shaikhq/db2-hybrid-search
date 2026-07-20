@@ -11,8 +11,13 @@ MODEL="$MODEL_DIR/bge-small-en-v1.5-q8_0.gguf"
 command -v cmake >/dev/null || sudo dnf install -y cmake
 
 # Build llama-server (CPU).
+# Pinned to a known-good tag: llama.cpp moves fast and has renamed server flags
+# (--pooling, --reranking) that the start scripts depend on. Bump LLAMA_CPP_TAG after
+# verifying the flags still match; unpinned master can build a server they can't drive.
+LLAMA_CPP_TAG="${LLAMA_CPP_TAG:-b9913}"
 if [ ! -x "$LLAMA/build/bin/llama-server" ]; then
-  [ -d "$LLAMA/.git" ] || git clone --depth 1 https://github.com/ggml-org/llama.cpp.git "$LLAMA"
+  [ -d "$LLAMA/.git" ] || git clone --depth 1 --branch "$LLAMA_CPP_TAG" \
+    https://github.com/ggml-org/llama.cpp.git "$LLAMA"
   cmake -S "$LLAMA" -B "$LLAMA/build" -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF -DGGML_NATIVE=ON
   cmake --build "$LLAMA/build" --target llama-server -j"$(nproc)"
 fi

@@ -69,6 +69,9 @@ CALL SYSPROC.SYSTS_UPDATE('MYSCHEMA', 'CHUNKS_TEXT_IDX', '', 'en_US', ?);
 DROP EXTERNAL MODEL MYSCHEMA.CHUNKS_EMBED;
 CREATE EXTERNAL MODEL MYSCHEMA.CHUNKS_EMBED PROVIDER OPENAI
   ID 'bge-small-en-v1.5'
+  -- Port 8085 is FIXED here and must match EMBED_PORT in 0_start-services.sh. If you
+  -- change one, change both — otherwise TO_EMBEDDING calls a dead port and fails at
+  -- search time, not at setup. (0_start-services.sh warns if they diverge.)
   URL 'http://127.0.0.1:8085/v1/embeddings'
   TYPE TEXT_EMBEDDING RETURNING VECTOR(384, FLOAT32)
   KEY 'sk-noauth';

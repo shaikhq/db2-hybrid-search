@@ -7,6 +7,9 @@ set -uo pipefail
 LLAMA="${LLAMA_CPP_DIR:-$HOME/llama.cpp}"
 MODEL="${BGE_GGUF:-$HOME/models/bge-small-en-v1.5/bge-small-en-v1.5-q8_0.gguf}"
 EMBED_PORT="${EMBED_PORT:-8085}"
+# The Db2 embedding model (scripts/1_ingest.sql) hardcodes port 8085. If you override
+# EMBED_PORT here, TO_EMBEDDING will still call 8085 and fail at search time. Warn now.
+[ "$EMBED_PORT" = "8085" ] || echo "WARNING: EMBED_PORT=$EMBED_PORT but 1_ingest.sql's model URL hardcodes 8085 — edit the URL there too, or TO_EMBEDDING will fail." >&2
 OS_HOME="${OPENSEARCH_HOME:-/opt/opensearch}"
 OS_PORT="${OPENSEARCH_PORT:-9200}"
 
