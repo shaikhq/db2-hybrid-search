@@ -24,7 +24,7 @@ rm -f /tmp/eval_set.json
 
 # Stage .env next to the package so core._find_env() picks up the tuned HYBRID_*
 # knobs. Without this the builder silently freezes data using code defaults.
-[ -f "$REPO/.env" ] && { cp "$REPO/.env" /tmp/.env; chmod 600 /tmp/.env; }
+[ -f "$REPO/.env" ] && { cp "$REPO/.env" /tmp/hybrid_search/.env; chmod 600 /tmp/hybrid_search/.env; }
 
 # The repo venv has ibm_db + the engine package; system python3 has neither.
 PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"

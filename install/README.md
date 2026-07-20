@@ -284,8 +284,13 @@ curl -s -o /dev/null -w "embeddings: %{http_code}\n" http://127.0.0.1:8085/healt
 ./scripts/smoke-test.sh
 ```
 
-Then run the pipeline (see the top-level [README](../README.md#usage)): `1_ingest.sql`
-→ `2_search.sql` → `eval.py`, and `3_stop-services.sh` when done.
+Then run the pipeline (see the top-level [README](../README.md#usage)):
+`preflight.sh` → `1_ingest.sql` → `2_search.sql` → `eval.py`, and
+`3_stop-services.sh` when done.
+
+> Always run `./scripts/preflight.sh` before `1_ingest.sql`. `0_start-services.sh`
+> backgrounds OpenSearch and does **not** wait for it; preflight does, and turns
+> the otherwise-cryptic duplicate-key ingest failure (see Gotchas) into one clear line.
 
 ---
 
@@ -293,6 +298,7 @@ Then run the pipeline (see the top-level [README](../README.md#usage)): `1_inges
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| Ingest rejects **every** row: `SQL0803N` duplicate key (preceded by `SQL0601N`, `SQL20536N`) | **OpenSearch is down.** `SYSTS_DROP` fails → the text index survives → it blocks `DROP TABLE` → `CREATE TABLE` fails → `IMPORT` runs against the *old* table, so every row collides. The errors never mention the stopped service. | `./scripts/preflight.sh` before ingesting — it waits for OpenSearch/embeddings and says so plainly |
 | `DB2_PORT` connection fails | `.env.example` may ship a different default; real instances vary | Look up `SVCENAME` in `/etc/services` (§2) |
 | `ModuleNotFoundError: ibm_db` from a wrapper | wrapper `sudo -iu`s into a **system** python lacking `ibm_db` | `pip install -e .` as the instance owner, or run the venv python with `DB2_HOST=local` |
 | `ModuleNotFoundError: hybrid_search` | package not importable in that python | `pip install -e .` |

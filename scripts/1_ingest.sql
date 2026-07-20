@@ -1,10 +1,19 @@
 -- Load data/corpus.csv (book-level corpus, one row per audiobook) into Db2 and
 -- build the text + vector indexes.
--- Run from repo root as the Db2 instance owner:  db2 -tvf scripts/1_ingest.sql
--- Prereqs: db2set DB2_VECTOR_INDEXING=YES -immediate (first run only), and the
--- local embedding server must be up: llama.cpp serving bge-small-en-v1.5 on
--- http://127.0.0.1:8085 (see scripts/0_start-services.sh). Drop the
--- model/embed/vector steps for lexical-only.
+-- Run from repo root as the Db2 instance owner:
+--     ./scripts/preflight.sh && db2 -tvf scripts/1_ingest.sql
+--
+-- ALWAYS run preflight.sh first. If OpenSearch is down, SYSTS_DROP below fails,
+-- which leaves the text index in place, which blocks DROP TABLE, which makes
+-- CREATE TABLE fail — and the IMPORT then runs against the OLD table and rejects
+-- every row as a duplicate key. The output blames duplicate keys, never the
+-- stopped service. preflight.sh catches that in one line.
+--
+-- Prereqs: db2set DB2_VECTOR_INDEXING=YES -immediate (first run only; the
+-- installer sets it), OpenSearch on :9200, and the local embedding server up:
+-- llama.cpp serving bge-small-en-v1.5 on http://127.0.0.1:8085
+-- (see scripts/0_start-services.sh). Drop the model/embed/vector steps for
+-- lexical-only.
 --
 -- The table keeps book metadata (title, authors, narrators, pillar, status, …)
 -- alongside the retrieval columns. Both retrievers operate ONLY on chunk_text

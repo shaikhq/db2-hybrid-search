@@ -3,7 +3,8 @@
 -- To search something else, replace the query text in all three statements: the
 -- raw form (vector leg) and the 'word OR word ...' form (keyword leg).
 -- Knobs are inlined to match the tuned defaults in .env / hybrid_search.core:
--- POOL 97, weights 0.1/0.9, gates 0 (re-tune with scripts/eval.py after corpus changes).
+-- POOL 100, weights 0.1/0.9, gates 0 — matches .env.example and core.py defaults.
+-- (Corpus-specific: re-tune with scripts/eval.py after changing corpus or model.)
 
 CONNECT TO SAMPLE;
 
@@ -29,11 +30,11 @@ lex0 AS (
   SELECT chunk_id, SCORE(chunk_text, 'jason OR fung OR reversing OR blood OR sugar OR disease') AS s
   FROM MYSCHEMA.CHUNKS
   WHERE CONTAINS(chunk_text, 'jason OR fung OR reversing OR blood OR sugar OR disease') = 1
-  ORDER BY s DESC FETCH FIRST 97 ROWS ONLY),
+  ORDER BY s DESC FETCH FIRST 100 ROWS ONLY),
 vec0 AS (
   SELECT c.chunk_id, (1 - VECTOR_DISTANCE(c.embedding, q.qv, COSINE)) AS s
   FROM MYSCHEMA.CHUNKS c, q
-  ORDER BY VECTOR_DISTANCE(c.embedding, q.qv, COSINE) FETCH APPROX FIRST 97 ROWS ONLY),
+  ORDER BY VECTOR_DISTANCE(c.embedding, q.qv, COSINE) FETCH APPROX FIRST 100 ROWS ONLY),
 lex AS (SELECT chunk_id, CASE WHEN MAX(s) OVER () < 0.0 THEN 0 ELSE s / MAX(s) OVER () END AS n FROM lex0),
 vec AS (SELECT chunk_id, CASE WHEN MAX(s) OVER () < 0.0 THEN 0 ELSE s / MAX(s) OVER () END AS n FROM vec0),
 fused AS (

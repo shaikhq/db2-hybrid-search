@@ -23,12 +23,13 @@ rm -f /tmp/fixtures.json
 
 # Stage .env next to the package so core._find_env() picks up the tuned HYBRID_*
 # knobs. Without this the builder silently freezes fixtures using code defaults.
-[ -f "$REPO/.env" ] && { cp "$REPO/.env" /tmp/.env; chmod 600 /tmp/.env; }
+[ -f "$REPO/.env" ] && { cp "$REPO/.env" /tmp/hybrid_search/.env; chmod 600 /tmp/hybrid_search/.env; }
 
 # The repo venv has ibm_db + the engine package; system python3 has neither.
 PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
 
-# Only sudo when we're NOT already the instance owner (sudo -iu to yourself fails).
+# Only sudo when we're NOT already the instance owner — avoids the sudoers
+# dependency (a fresh Db2 owner isn't in sudoers) and sudo -i's env/cwd reset.
 if [ "$(id -un)" = "$OWNER" ]; then
     DB2_HOST=local "$PY" /tmp/build_fixtures.py
 else

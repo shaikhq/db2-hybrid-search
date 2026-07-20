@@ -21,13 +21,15 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ibm_db
 from hybrid_search import core as h
+from hybrid_search import evalset
 import qu
 
 K, RETRIEVE = 5, 10
 
 
 def load_golden():
-    path = sorted(glob.glob(os.path.expanduser("~/out/eval/golden_set.draft.v*.json")))[-1]
+    # was: glob(~/out/eval/...)[-1] -> bare IndexError on a fresh clone
+    path = evalset.resolve()
     return path, json.load(open(path))
 
 

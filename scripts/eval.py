@@ -11,7 +11,7 @@ leg, semantic the vector leg, mixed the fusion).
 
 Golden set: JSON array of items with gold_ids referencing the corpus `id`
 (= table chunk_id). Resolved from, in order: $GOLDEN_SET, argv[1], the newest
-~/out/eval/golden_set.draft.v*.json. If ~/out/eval/gold_core.template.json has a
+data/eval/golden_set.json (shipped). If data/eval/gold_core.template.json has a
 non-empty my_memory_queries, those are merged in.
 
 Run:  DB2_HOST=local PYTHONPATH=src python scripts/eval.py
@@ -25,32 +25,25 @@ import sys
 
 import ibm_db
 from hybrid_search import core as h
+from hybrid_search import evalset
 
 K = 5          # cutoff for Recall@K / nDCG@K (topical)
 RETRIEVE = 10  # depth pulled from each leg (MRR sees ranks up to here)
-EVAL_DIR = os.path.expanduser("~/out/eval")
 
 
 # ---------- load ----------
 def resolve_path():
-    if os.environ.get("GOLDEN_SET"):
-        return os.environ["GOLDEN_SET"]
-    if len(sys.argv) > 1:
-        return sys.argv[1]
-    cands = sorted(glob.glob(os.path.join(EVAL_DIR, "golden_set.draft.v*.json")))
-    if cands:
-        return cands[-1]
-    raise FileNotFoundError(
-        "No golden set. Set $GOLDEN_SET, pass a path, or generate ~/out/eval/golden_set.draft.v*.json")
+    # Ships at data/eval/golden_set.json; $GOLDEN_SET and argv still override.
+    return evalset.resolve(sys.argv[1] if len(sys.argv) > 1 else None)
 
 
 def load_items():
     path = resolve_path()
     items = json.load(open(path))
     # merge personal-memory gold queries, if the user has filled them in
-    tmpl = os.path.join(EVAL_DIR, "gold_core.template.json")
+    tmpl = evalset.template_path()
     merged = 0
-    if os.path.exists(tmpl):
+    if tmpl:
         mine = json.load(open(tmpl)).get("my_memory_queries", [])
         for m in mine:
             m.setdefault("split", "holdout")   # personal gold defaults to heldout

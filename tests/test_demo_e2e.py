@@ -30,6 +30,18 @@ def overlap(a, b):
     return not (a["x"] + a["width"] <= b["x"] or b["x"] + b["width"] <= a["x"] or
                 a["y"] + a["height"] <= b["y"] or b["y"] + b["height"] <= a["y"])
 
+INSTALL_HINT = ('  pip install -e ".[test]" && python -m playwright install chromium')
+
+# Skip cleanly when the optional test deps are absent. Checked BEFORE starting the
+# server so a fresh clone reports a one-line SKIP instead of an unhandled ImportError
+# traceback (which is what happened previously — the import sat inside the try whose
+# finally killed the server).
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:
+    print(f"SKIP — playwright not installed. Install the test extras:\n{INSTALL_HINT}")
+    sys.exit(0)
+
 srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT), "--bind", "127.0.0.1",
                         "--directory", STATIC], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 try:
@@ -39,9 +51,17 @@ try:
         except Exception:
             time.sleep(0.1)
 
-    from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        # playwright the package can be installed while the browser binary is not —
+        # the usual state right after `pip install`. Skip with the fix, don't crash.
+        try:
+            browser = p.chromium.launch()
+        except Exception as e:
+            if "executable doesn't exist" in str(e).lower() or "playwright install" in str(e).lower():
+                print(f"SKIP — chromium not downloaded. Run:\n{INSTALL_HINT}")
+                srv.terminate()
+                sys.exit(0)
+            raise
         page = browser.new_page(viewport={"width": 1200, "height": 900})
         # JS errors (real) vs benign network 404s. app.js/demo.js probe /api/* to
         # detect live-vs-offline; on the static server those 404 by design.

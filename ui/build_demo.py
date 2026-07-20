@@ -19,20 +19,18 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # ui/
 import ibm_db
 from hybrid_search import core as h
+from hybrid_search import evalset
 import build_fixtures as bf
 import demo_view as dv
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
-EVAL = os.path.expanduser("~/out/eval")
 PER_TYPE = 12   # golden queries per type in the shuffle pool
 
 
 def golden_path():
-    cands = sorted(glob.glob(os.path.join(EVAL, "golden_set.draft.v*.json")))
-    if not cands:
-        raise FileNotFoundError("No golden_set.draft.v*.json in ~/out/eval")
-    return cands[-1]
+    # Ships at data/eval/golden_set.json (see hybrid_search.evalset).
+    return evalset.resolve()
 
 
 def main():

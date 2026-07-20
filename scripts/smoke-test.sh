@@ -7,6 +7,10 @@
 #   ./scripts/smoke-test.sh
 set -uo pipefail
 
+# Same overrides 0_start-services.sh honors, so a non-default port still smoke-tests.
+EMBED_PORT="${EMBED_PORT:-8085}"
+OS_PORT="${OPENSEARCH_PORT:-9200}"
+
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(dirname "$HERE")"
 FAIL=0
@@ -19,8 +23,8 @@ if command -v db2gcf >/dev/null && db2gcf -s 2>/dev/null | grep -qi available; t
 else
   bad "Db2 not available — run ./scripts/0_start-services.sh"
 fi
-curl -s -o /dev/null -m3 http://localhost:9200            && ok "OpenSearch :9200"        || bad "OpenSearch down — ./scripts/0_start-services.sh"
-curl -s -o /dev/null -m3 http://127.0.0.1:8085/health     && ok "embedding server :8085"  || bad "embedding server down — ./scripts/0_start-services.sh"
+curl -s -o /dev/null -m3 "http://127.0.0.1:${OS_PORT}"        && ok "OpenSearch :${OS_PORT}"       || bad "OpenSearch down — ./scripts/0_start-services.sh"
+curl -s -o /dev/null -m3 "http://127.0.0.1:${EMBED_PORT}/health" && ok "embedding server :${EMBED_PORT}" || bad "embedding server down — ./scripts/0_start-services.sh"
 
 echo "Search (engine end-to-end):"
 PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY=python3

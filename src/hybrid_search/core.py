@@ -78,16 +78,24 @@ HOST     = setting("DB2_HOST", "localhost")
 PORT     = setting("DB2_PORT", "50000")
 USER     = setting("DB2_USER", "db2inst1")
 PASSWORD = setting("DB2_PASSWORD")
+# NOT user-configurable, despite reading the environment: scripts/1_ingest.sql and
+# 2_search.sql hardcode MYSCHEMA.CHUNKS, and a .sql file cannot read .env. Overriding
+# these would point the engine at a table the SQL never created. Deliberately absent
+# from .env.example for that reason — to rename, edit the .sql scripts and these
+# together. The env read is kept only so both sides can be moved in one place.
 SCHEMA   = setting("DB2_SCHEMA", "myschema")
 TABLE    = setting("DB2_TABLE", "chunks")
 T        = f"{SCHEMA}.{TABLE}"
 MODEL    = f"{SCHEMA}.{TABLE}_embed"
 
 # Fusion knobs — tune these against eval.py, don't hand-pick.
-POOL     = int(setting("HYBRID_POOL", "50"))        # candidates per leg before fusing
-W_LEX    = float(setting("HYBRID_W_LEX", "0.5"))    # weight of the keyword leg
-W_VEC    = float(setting("HYBRID_W_VEC", "0.5"))    # weight of the vector leg
-VEC_GATE = float(setting("HYBRID_VEC_GATE", "0.30"))  # min top cosine similarity to trust vectors
+# Defaults match .env.example and scripts/2_search.sql, so behaviour is identical
+# with or without a .env. Corpus-specific: 0.1/0.9 was picked by the one-standard-
+# error rule over a 5-fold-CV sweep on the shipped corpus (docs/eval-results.md).
+POOL     = int(setting("HYBRID_POOL", "100"))       # candidates per leg before fusing (>= corpus = exhaustive)
+W_LEX    = float(setting("HYBRID_W_LEX", "0.1"))    # weight of the keyword leg (only the ratio matters)
+W_VEC    = float(setting("HYBRID_W_VEC", "0.9"))    # weight of the vector leg
+VEC_GATE = float(setting("HYBRID_VEC_GATE", "0.0"))   # min top cosine to trust vectors (0 = no gating)
 LEX_GATE = float(setting("HYBRID_LEX_GATE", "0.0"))   # min top BM25 score to trust keywords
 
 # bge-small is asymmetric: passages are embedded raw (as ingested), but QUERIES
