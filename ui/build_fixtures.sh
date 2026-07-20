@@ -21,7 +21,19 @@ chmod 644 /tmp/build_fixtures.py /tmp/queries.json
 chmod -R a+rX /tmp/hybrid_search
 rm -f /tmp/fixtures.json
 
-sudo -iu "$OWNER" bash -lc 'DB2_HOST=local python3 /tmp/build_fixtures.py'
+# Stage .env next to the package so core._find_env() picks up the tuned HYBRID_*
+# knobs. Without this the builder silently freezes fixtures using code defaults.
+[ -f "$REPO/.env" ] && { cp "$REPO/.env" /tmp/.env; chmod 600 /tmp/.env; }
+
+# The repo venv has ibm_db + the engine package; system python3 has neither.
+PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
+
+# Only sudo when we're NOT already the instance owner (sudo -iu to yourself fails).
+if [ "$(id -un)" = "$OWNER" ]; then
+    DB2_HOST=local "$PY" /tmp/build_fixtures.py
+else
+    sudo -iu "$OWNER" bash -lc "DB2_HOST=local '$PY' /tmp/build_fixtures.py"
+fi
 
 # Publish the data the static UI serves.
 mkdir -p "$HERE/static"

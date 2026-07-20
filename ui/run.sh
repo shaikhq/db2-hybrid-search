@@ -28,6 +28,9 @@ if [ "${1:-}" = "--live" ]; then
     cp -r "$HERE/static" "$STAGE/static"
     [ -f "$REPO/.env" ] && cp "$REPO/.env" "$STAGE/.env"   # fusion weights/gates/pool
     chmod -R a+rX "$STAGE"
+    # ...but never world-readable: .env holds the Db2 password. Must follow the
+    # recursive chmod above, which would otherwise leave it 0644 in /tmp.
+    [ -f "$STAGE/.env" ] && chmod 600 "$STAGE/.env"
     # uvicorn/fastapi/ibm_db live in the repo venv, not the system python.
     PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
     # A previous server orphaned by a closed terminal keeps holding the port and

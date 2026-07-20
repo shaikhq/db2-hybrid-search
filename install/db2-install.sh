@@ -44,6 +44,9 @@ chmod 644 "$TS_SQL"
 # (No `set -e` here so db2stop always runs and Db2 is left stopped.)
 su - "$INSTANCE" -c "
   db2set DB2COMM=TCPIP
+  # Required for CREATE VECTOR INDEX in scripts/1_ingest.sql — without it,
+  # ingestion fails at the vector-index step on a fresh install.
+  db2set DB2_VECTOR_INDEXING=YES
   db2 update dbm cfg using SVCENAME $PORT
   db2start
   db2sampl

@@ -22,7 +22,20 @@ chmod 644 /tmp/build_eval_set.py /tmp/queries.json
 chmod -R a+rX /tmp/hybrid_search
 rm -f /tmp/eval_set.json
 
-sudo -iu "$OWNER" bash -lc 'DB2_HOST=local python3 /tmp/build_eval_set.py'
+# Stage .env next to the package so core._find_env() picks up the tuned HYBRID_*
+# knobs. Without this the builder silently freezes data using code defaults.
+[ -f "$REPO/.env" ] && { cp "$REPO/.env" /tmp/.env; chmod 600 /tmp/.env; }
+
+# The repo venv has ibm_db + the engine package; system python3 has neither.
+PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
+
+# Only sudo when we're NOT already the instance owner — avoids the sudoers
+# dependency (a fresh Db2 owner isn't in sudoers) and sudo -i's env/cwd reset.
+if [ "$(id -un)" = "$OWNER" ]; then
+    DB2_HOST=local "$PY" /tmp/build_eval_set.py
+else
+    sudo -iu "$OWNER" bash -lc "DB2_HOST=local '$PY' /tmp/build_eval_set.py"
+fi
 
 # Publish the data the static UI serves.
 mkdir -p "$HERE/static"

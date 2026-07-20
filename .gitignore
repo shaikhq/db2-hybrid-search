@@ -1,7 +1,23 @@
 # --- Secrets: never commit real credentials ---
+# NOTE: `.env.*` is the rule that was missing — a `.env.bak.*` copy slipped past a
+# bare `.env` rule and published a live Db2 password to GitHub.
 .env
-.env.local
+.env.*
+!.env.example
 *.key
+*.pem
+*credentials*
+*secret*
+
+# --- Backups / editor & session junk ---
+*.bak
+*.bak.*
+*.orig
+*.rej
+*~
+*.swp
+.idea/
+.vscode/
 
 # --- Python ---
 __pycache__/
@@ -12,10 +28,24 @@ venv/
 build/
 dist/
 .ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# --- Runtime / cache artifacts ---
+# --- Runtime / generated artifacts ---
 cache/
 *.npy
+*.gguf
+out/
+scratch/
+tmp/
+*.log
+logs/
+
+# Generated build residue — rebuild with ui/build_fixtures.sh / build_eval_set.sh.
+# The PUBLISHED copies under ui/static/ ARE tracked: they power the offline demo.
+/ui/fixtures.json
+/ui/eval_set.json
 
 # --- OS noise ---
 .DS_Store
