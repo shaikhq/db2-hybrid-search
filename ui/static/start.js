@@ -1,19 +1,17 @@
 "use strict";
 /* "Start here" — a StoryBrand doorway tab. One screen, dark-navy flat, sentence case.
-   Static content; the before/after illustrates a clean "semantic finds, keyword
-   misses" case:
+   Static content; the before/after illustrates a "you describe the idea, keyword
+   grabs the wrong book, hybrid gets the one you meant" case (verified live):
 
-     query : "coping with stress"
-     before (keyword) : no results — none of the words match a title/author
-     after  (hybrid)  : How to Stop Worrying and Start Living — Dale Carnegie
+     query : "how to build better habits"
+     before (keyword #1) : Rise            — Patty Azzarello, word overlap, wrong book
+     after  (hybrid  #1) : Atomic Habits — James Clear
 
-   This example is curated (hand-set per request), not a live-verified snapshot. If
-   you want to guarantee it against the real engine, run it through the LIVE
-   /api/search and adjust — the vector leg's ANN pool (FETCH APPROX) can vary per
-   Db2 session, so a borderline query may rank differently live than in a script.
+   Re-verify against the LIVE /api/search if the corpus/index changes — the vector
+   leg's ANN pool (FETCH APPROX) can rank a borderline query differently per session.
 */
 
-const START_QUERY = "coping with stress";
+const START_QUERY = "how to build better habits";
 const sq = (s) => document.querySelector(s);
 
 const HP = `<svg class="glyph-hp" viewBox="0 0 32 32" width="15" height="15" fill="none" aria-hidden="true">
@@ -47,18 +45,18 @@ function startView() {
           <div class="ba">
             <div class="ba-panel ba-before">
               <div class="ba-label">before &middot; keyword</div>
-              <div class="ba-title ba-empty">No results</div>
-              <div class="ba-verdict miss">${CROSS} keyword found nothing</div>
+              <div class="ba-title">Rise</div>
+              <div class="ba-verdict miss">${CROSS} not the book you meant</div>
             </div>
             <div class="ba-arrow" aria-hidden="true"></div>
             <div class="ba-panel ba-after">
               <div class="ba-label">after &middot; hybrid</div>
               <div class="ba-found">
-                <img class="ba-cover" src="covers/B071HSJTLG.jpg" loading="lazy"
-                     alt="How to Stop Worrying and Start Living — cover" />
+                <img class="ba-cover" src="covers/B07GBGQJSW.jpg" loading="lazy"
+                     alt="Atomic Habits — cover" />
                 <div class="ba-found-meta">
-                  <div class="ba-title">${HP} How to Stop Worrying and Start Living</div>
-                  <div class="ba-by">Dale Carnegie</div>
+                  <div class="ba-title">${HP} Atomic Habits</div>
+                  <div class="ba-by">James Clear</div>
                   <div class="ba-verdict found">${CHECK} found it</div>
                 </div>
               </div>

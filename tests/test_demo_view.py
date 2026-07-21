@@ -99,12 +99,20 @@ if FX:
     vms = FX["view_models"]
     reps = FX.get("representative", [])
     v = {rid: {s: vms[rid]["strategies"][s]["verdict"] for s in dv.STRATS} for rid in reps}
-    # representative[0] = keyword blind-spot (semantic finance); [1] = vector blind-spot (teddy hamilton)
-    r0, r1id = reps[0], reps[1]
-    check("representative[0]: keyword blind-spot (lexical NOT found, vector+hybrid found)",
-          v[r0]["lexical"] != "found" and v[r0]["vector"] == "found" and v[r0]["hybrid"] == "found", v.get(r0))
-    check("representative[1]: vector blind-spot (vector NOT found, lexical+hybrid found)",
-          v[r1id]["vector"] != "found" and v[r1id]["lexical"] == "found" and v[r1id]["hybrid"] == "found", v.get(r1id))
+    # The two lead slots must jointly demonstrate BOTH complementary blind spots
+    # (one lexical-blind, one vector-blind), and hybrid must save both. Order is
+    # NOT pinned: full-summary indexing made the lexical blind spot rare, so the
+    # deck now leads with the vector blind spot (bare names) — assert the invariant,
+    # not a fixed slot order.
+    def is_lex_blind(d):  # lexical misses, vector + hybrid save
+        return d["lexical"] != "found" and d["vector"] == "found" and d["hybrid"] == "found"
+    def is_vec_blind(d):  # vector misses, lexical + hybrid save
+        return d["vector"] != "found" and d["lexical"] == "found" and d["hybrid"] == "found"
+    lead = [v[reps[0]], v[reps[1]]]
+    check("lead pair covers the lexical blind spot (lexical NOT found, vector+hybrid found)",
+          any(is_lex_blind(d) for d in lead), lead)
+    check("lead pair covers the vector blind spot (vector NOT found, lexical+hybrid found)",
+          any(is_vec_blind(d) for d in lead), lead)
     check("hybrid never blanks across the representative set",
           all(vms[rid]["strategies"]["hybrid"]["verdict"] == "found" for rid in reps),
           {rid: vms[rid]["strategies"]["hybrid"]["verdict"] for rid in reps})

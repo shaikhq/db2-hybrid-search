@@ -3,7 +3,7 @@
 -- To search something else, replace the query text in all three statements: the
 -- raw form (vector leg) and the 'word OR word ...' form (keyword leg).
 -- Knobs are inlined to match the tuned defaults in .env / hybrid_search.core:
--- POOL 100, weights 0.1/0.9, gates 0 — matches .env.example and core.py defaults.
+-- POOL 100, weights 0.3/0.7, gates 0 — matches .env.example and core.py defaults.
 -- (Corpus-specific: re-tune with scripts/eval.py after changing corpus or model.)
 
 CONNECT TO SAMPLE;
@@ -39,7 +39,7 @@ lex AS (SELECT chunk_id, CASE WHEN MAX(s) OVER () < 0.0 THEN 0 ELSE s / MAX(s) O
 vec AS (SELECT chunk_id, CASE WHEN MAX(s) OVER () < 0.0 THEN 0 ELSE s / MAX(s) OVER () END AS n FROM vec0),
 fused AS (
   SELECT COALESCE(lex.chunk_id, vec.chunk_id) AS chunk_id,
-         0.1 * COALESCE(lex.n, 0) + 0.9 * COALESCE(vec.n, 0) AS score
+         0.3 * COALESCE(lex.n, 0) + 0.7 * COALESCE(vec.n, 0) AS score
   FROM lex FULL OUTER JOIN vec ON lex.chunk_id = vec.chunk_id)
 SELECT f.chunk_id, f.score,
        CAST(SUBSTR(c.chunk_text, 1, 70) AS VARCHAR(70)) AS snippet

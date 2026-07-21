@@ -203,10 +203,12 @@ CALL SYSPROC.SYSTS_UPDATE('MYSCHEMA','CHUNKS_TEXT_IDX','','en_US',?);`],
   URL 'http://127.0.0.1:8085/v1/embeddings'
   TYPE TEXT_EMBEDDING RETURNING VECTOR(384, FLOAT32)
   KEY 'sk-noauth';`],
-    ["5", "Embed every row", "one set-based UPDATE",
+    ["5", "Embed every row", "one set-based UPDATE (first 1500 chars)",
 `ALTER TABLE MYSCHEMA.CHUNKS ADD COLUMN embedding VECTOR(384, FLOAT32);
-UPDATE MYSCHEMA.CHUNKS
-   SET embedding = TO_EMBEDDING(chunk_text USING MYSCHEMA.CHUNKS_EMBED);`],
+-- BM25 indexes the FULL chunk_text; the embedding truncates to 1500 chars
+-- (bge-small's 512-token limit — it errors on longer input).
+UPDATE MYSCHEMA.CHUNKS SET embedding =
+  TO_EMBEDDING(CAST(SUBSTR(chunk_text,1,1500) AS VARCHAR(1500)) USING MYSCHEMA.CHUNKS_EMBED);`],
     ["6", "Build the vector (ANN) index", "cosine; table read-only after",
 `CREATE VECTOR INDEX MYSCHEMA.CHUNKS_VEC_IDX
   ON MYSCHEMA.CHUNKS(embedding) WITH DISTANCE COSINE EXCLUDE NULL KEYS;`],
@@ -219,25 +221,25 @@ UPDATE MYSCHEMA.CHUNKS
 `SELECT chunk_id, SCORE(chunk_text, ?) AS s      -- ? = 'coping OR stress'
 FROM MYSCHEMA.CHUNKS
 WHERE CONTAINS(chunk_text, ?) = 1
-ORDER BY s DESC FETCH FIRST 97 ROWS ONLY;`],
+ORDER BY s DESC FETCH FIRST 100 ROWS ONLY;`],
     ["3", "Vector leg", "cosine via the ANN index",
 `WITH q (qv) AS (VALUES TO_EMBEDDING(? USING MYSCHEMA.CHUNKS_EMBED))
 SELECT c.chunk_id, (1 - VECTOR_DISTANCE(c.embedding, q.qv, COSINE)) AS s
 FROM MYSCHEMA.CHUNKS c, q                         -- ? = retrieval-prefix + full query
 ORDER BY VECTOR_DISTANCE(c.embedding, q.qv, COSINE)
-FETCH APPROX FIRST 97 ROWS ONLY;`],
+FETCH APPROX FIRST 100 ROWS ONLY;`],
     ["4", "Fuse", "normalize + gate + weighted sum (one statement)",
 `WITH
   q    (qv) AS (VALUES TO_EMBEDDING(? USING MYSCHEMA.CHUNKS_EMBED)),
   lex0 AS (SELECT chunk_id, SCORE(chunk_text, ?) AS s FROM MYSCHEMA.CHUNKS
-           WHERE CONTAINS(chunk_text, ?)=1 ORDER BY s DESC FETCH FIRST 97 ROWS ONLY),
+           WHERE CONTAINS(chunk_text, ?)=1 ORDER BY s DESC FETCH FIRST 100 ROWS ONLY),
   vec0 AS (SELECT c.chunk_id, (1 - VECTOR_DISTANCE(c.embedding,q.qv,COSINE)) AS s
            FROM MYSCHEMA.CHUNKS c, q
-           ORDER BY VECTOR_DISTANCE(c.embedding,q.qv,COSINE) FETCH APPROX FIRST 97 ROWS ONLY),
+           ORDER BY VECTOR_DISTANCE(c.embedding,q.qv,COSINE) FETCH APPROX FIRST 100 ROWS ONLY),
   lex  AS (SELECT chunk_id, s / MAX(s) OVER () AS n FROM lex0),   -- max-normalize (+ gate)
   vec  AS (SELECT chunk_id, s / MAX(s) OVER () AS n FROM vec0)
 SELECT COALESCE(lex.chunk_id, vec.chunk_id) AS chunk_id,
-       0.2 * COALESCE(lex.n,0) + 0.8 * COALESCE(vec.n,0) AS score   -- weighted sum
+       0.3 * COALESCE(lex.n,0) + 0.7 * COALESCE(vec.n,0) AS score   -- weighted sum
 FROM lex FULL OUTER JOIN vec ON lex.chunk_id = vec.chunk_id
 ORDER BY score DESC FETCH FIRST 3 ROWS ONLY;`],
   ];

@@ -90,11 +90,11 @@ MODEL    = f"{SCHEMA}.{TABLE}_embed"
 
 # Fusion knobs — tune these against eval.py, don't hand-pick.
 # Defaults match .env.example and scripts/2_search.sql, so behaviour is identical
-# with or without a .env. Corpus-specific: 0.1/0.9 was picked by the one-standard-
+# with or without a .env. Corpus-specific: 0.3/0.7 was picked by the one-standard-
 # error rule over a 5-fold-CV sweep on the shipped corpus (docs/eval-results.md).
 POOL     = int(setting("HYBRID_POOL", "100"))       # candidates per leg before fusing (>= corpus = exhaustive)
-W_LEX    = float(setting("HYBRID_W_LEX", "0.1"))    # weight of the keyword leg (only the ratio matters)
-W_VEC    = float(setting("HYBRID_W_VEC", "0.9"))    # weight of the vector leg
+W_LEX    = float(setting("HYBRID_W_LEX", "0.3"))    # weight of the keyword leg (only the ratio matters)
+W_VEC    = float(setting("HYBRID_W_VEC", "0.7"))    # weight of the vector leg
 VEC_GATE = float(setting("HYBRID_VEC_GATE", "0.0"))   # min top cosine to trust vectors (0 = no gating)
 LEX_GATE = float(setting("HYBRID_LEX_GATE", "0.0"))   # min top BM25 score to trust keywords
 

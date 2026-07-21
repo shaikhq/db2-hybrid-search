@@ -46,7 +46,9 @@ blind spot. It uses Db2 12.1.5 features end to end:
   semantic index.
 
 The shipped corpus is a personal audiobook library (92 books; `chunk_text` =
-title + authors + narrators + description). Bring your own by matching that schema.
+title + authors + narrators + full description). Both retrieval legs index this
+text — BM25 over all of it, the vector over the first ~1500 chars (the embedding
+model's 512-token limit). Bring your own by matching that schema.
 
 ## Architecture: one row, two representations
 
@@ -292,7 +294,7 @@ floats up. Instead, the fusion (in [src/hybrid_search/core.py](src/hybrid_search
 1. carries each leg's real score (BM25 `SCORE`, cosine similarity),
 2. **gates** a leg out when its best score is below a threshold (off by default),
 3. **max-normalizes** the survivors to `(0,1]`, and
-4. takes a **weighted sum** (default `0.1·lexical + 0.9·vector`).
+4. takes a **weighted sum** (default `0.3·lexical + 0.7·vector`).
 
 A document found by *both* legs is reinforced; a noisy leg is muted. Weights,
 gates, and pool size are `.env`-tunable (`HYBRID_*`) — and **corpus-specific**;

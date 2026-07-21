@@ -1603,5 +1603,103 @@
     "source": "leg_discriminating",
     "review_status": "verified",
     "rationale": "narrator-only query; lexical #1, vector #40, hybrid #4"
+  },
+  {
+    "id": 118,
+    "query": "getting one percent better every day",
+    "gold_ids": [
+      66
+    ],
+    "query_class": "known_item",
+    "query_type": "semantic",
+    "difficulty": "hard",
+    "split": "train",
+    "source": "summary_content",
+    "review_status": "verified",
+    "rationale": "answer lives in the book's full summary, not the title/short blurb \u2014 tests full-text indexing"
+  },
+  {
+    "id": 119,
+    "query": "the cue routine reward habit loop",
+    "gold_ids": [
+      17
+    ],
+    "query_class": "known_item",
+    "query_type": "mixed",
+    "difficulty": "hard",
+    "split": "train",
+    "source": "summary_content",
+    "review_status": "verified",
+    "rationale": "answer lives in the book's full summary, not the title/short blurb \u2014 tests full-text indexing"
+  },
+  {
+    "id": 120,
+    "query": "keystone habits that ripple into other areas",
+    "gold_ids": [
+      17
+    ],
+    "query_class": "known_item",
+    "query_type": "mixed",
+    "difficulty": "hard",
+    "split": "holdout",
+    "source": "summary_content",
+    "review_status": "verified",
+    "rationale": "answer lives in the book's full summary, not the title/short blurb \u2014 tests full-text indexing"
+  },
+  {
+    "id": 121,
+    "query": "the stanford science of willpower course",
+    "gold_ids": [
+      2
+    ],
+    "query_class": "known_item",
+    "query_type": "mixed",
+    "difficulty": "hard",
+    "split": "train",
+    "source": "summary_content",
+    "review_status": "verified",
+    "rationale": "answer lives in the book's full summary, not the title/short blurb \u2014 tests full-text indexing"
+  },
+  {
+    "id": 122,
+    "query": "reversing type 2 diabetes through intermittent fasting",
+    "gold_ids": [
+      61
+    ],
+    "query_class": "known_item",
+    "query_type": "mixed",
+    "difficulty": "hard",
+    "split": "train",
+    "source": "summary_content",
+    "review_status": "verified",
+    "rationale": "answer lives in the book's full summary, not the title/short blurb \u2014 tests full-text indexing"
+  },
+  {
+    "id": 123,
+    "query": "leaders take total responsibility on the battlefield",
+    "gold_ids": [
+      46
+    ],
+    "query_class": "known_item",
+    "query_type": "semantic",
+    "difficulty": "hard",
+    "split": "holdout",
+    "source": "summary_content",
+    "review_status": "verified",
+    "rationale": "answer lives in the book's full summary, not the title/short blurb \u2014 tests full-text indexing"
+  },
+  {
+    "id": 124,
+    "query": "turning listeners into a paying audience as a speaker",
+    "gold_ids": [
+      73
+    ],
+    "query_class": "known_item",
+    "query_type": "semantic",
+    "difficulty": "hard",
+    "split": "train",
+    "source": "summary_content",
+    "review_status": "verified",
+    "rationale": "answer lives in the book's full summary, not the title/short blurb \u2014 tests full-text indexing"
   }
 ]

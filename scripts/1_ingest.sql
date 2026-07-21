@@ -79,8 +79,16 @@ CREATE EXTERNAL MODEL MYSCHEMA.CHUNKS_EMBED PROVIDER OPENAI
   KEY 'sk-noauth';
 
 -- Embed each book's chunk_text.
+-- The text-search index (above) covers the FULL chunk_text, but the embedding model
+-- (bge-small-en-v1.5) has a 512-token context and ERRORS on longer input (and one
+-- over-long row rolls back the whole UPDATE). So embed a truncated slice: 1500 chars
+-- stays under 512 tokens for even the densest text (~3.3 chars/token). The tail of a
+-- long summary is not vectorized (BM25 still indexes all of it) — an accepted limit;
+-- for full coverage, chunk long summaries into passages (a larger change).
 ALTER TABLE MYSCHEMA.CHUNKS ADD COLUMN embedding VECTOR(384, FLOAT32);
-UPDATE MYSCHEMA.CHUNKS SET embedding = TO_EMBEDDING(chunk_text USING MYSCHEMA.CHUNKS_EMBED);
+UPDATE MYSCHEMA.CHUNKS
+   SET embedding = TO_EMBEDDING(CAST(SUBSTR(chunk_text, 1, 1500) AS VARCHAR(1500))
+                               USING MYSCHEMA.CHUNKS_EMBED);
 
 -- Vector index (last — it makes the table read-only).
 CREATE VECTOR INDEX MYSCHEMA.CHUNKS_VEC_IDX ON MYSCHEMA.CHUNKS(embedding) WITH DISTANCE COSINE EXCLUDE NULL KEYS;
