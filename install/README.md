@@ -127,6 +127,15 @@ sudo dnf install -y libaio libstdc++ ksh pam numactl-libs libnsl libxcrypt-compa
 tar -xvf v12.1.5_linuxx64_server_dec.tar.gz && cd server_dec
 ./db2prereqcheck -v 12.1.5.0                     # confirms all prereqs; install anything it names
 ./db2_install                                    # accept defaults
+```
+
+> **Reading db2prereqcheck output — `E` vs `W`:** a `DBT3507E` (**error**, e.g. the
+> missing `libxcrypt-compat`) aborts the install and must be fixed. `DBT3514W`
+> (**warnings**) for the 32-bit `.i686` libraries (`pam.i686`, `libstdc++.i686`) are
+> *"only required to support 32-bit non-sql routines"* — this stack uses none, so
+> **ignore them**. Don't force with `-f sysreq`; it skips the real errors too.
+
+```bash
 useradd db2inst1 && passwd db2inst1
 cd /opt/ibm/db2/V12.1/instance
 ./db2icrt -u db2inst1 -nosharedgroup db2inst1    # db2inst1 is also the fenced user
