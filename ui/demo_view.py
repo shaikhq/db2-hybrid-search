@@ -57,7 +57,7 @@ def _shown(row, lookup):
     out = {"title": lab["title"], "author": lab["author"],
            "rank": row.get("rank"), "chunk_id": row.get("chunk_id"),
            "score": row.get("score"), "score_type": row.get("score_type"),
-           "is_gold": bool(row.get("is_gold"))}
+           "is_gold": bool(row.get("is_gold")), "cover": row.get("cover", "")}
     if "found_by" in row:
         out["found_by"] = row["found_by"]
     return out

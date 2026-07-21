@@ -50,7 +50,8 @@ CREATE TABLE MYSCHEMA.CHUNKS (
   rating          VARCHAR(10),
   file_path       VARCHAR(1024),
   purchase_date   VARCHAR(40),
-  chunk_text      CLOB(1M)
+  chunk_text      CLOB(1M),
+  cover_url       VARCHAR(200)   -- relative path to the book's cover thumbnail (ui/static/)
 );
 
 -- Rows (SKIPCOUNT skips the header; delprioritychar keeps quoted commas/newlines).
@@ -58,7 +59,8 @@ IMPORT FROM data/corpus.csv OF DEL MODIFIED BY delprioritychar SKIPCOUNT 1
   INSERT INTO MYSCHEMA.CHUNKS
     (chunk_id, asin, title, subtitle, authors, narrators, series_name,
      series_position, publisher, release_year, language, description, genres,
-     pillar, runtime_min, status, rating, file_path, purchase_date, chunk_text);
+     pillar, runtime_min, status, rating, file_path, purchase_date, chunk_text,
+     cover_url);
 
 -- Text-search index on chunk_text (create, then populate).
 CALL SYSPROC.SYSTS_CREATE('MYSCHEMA', 'CHUNKS_TEXT_IDX', 'MYSCHEMA.CHUNKS(CHUNK_TEXT)', 'SERVERID 1', 'en_US', ?);

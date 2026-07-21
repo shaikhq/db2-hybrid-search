@@ -53,9 +53,15 @@ function startView() {
             <div class="ba-arrow" aria-hidden="true"></div>
             <div class="ba-panel ba-after">
               <div class="ba-label">after &middot; hybrid</div>
-              <div class="ba-title">${HP} How to Stop Worrying and Start Living</div>
-              <div class="ba-by">Dale Carnegie</div>
-              <div class="ba-verdict found">${CHECK} found it</div>
+              <div class="ba-found">
+                <img class="ba-cover" src="covers/B071HSJTLG.jpg" loading="lazy"
+                     alt="How to Stop Worrying and Start Living — cover" />
+                <div class="ba-found-meta">
+                  <div class="ba-title">${HP} How to Stop Worrying and Start Living</div>
+                  <div class="ba-by">Dale Carnegie</div>
+                  <div class="ba-verdict found">${CHECK} found it</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

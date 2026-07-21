@@ -228,9 +228,19 @@ body { margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg)
 .dv-found { color: #22543d; background: #e6f4ea; }
 .dv-wrong { color: #7b341e; background: #fbe9e0; }
 .dv-nothing { color: #2d3748; background: #edf2f7; }
-.dbook { display: flex; flex-direction: column; gap: 2px; }
+.dbook { display: flex; flex-direction: row; gap: 12px; align-items: flex-start; }
+.dbook-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .dtitle { font-weight: 600; }
 .dauthor { color: #555; font-size: 13px; }
+
+/* Book cover thumbnails. Path is stored in Db2 (cover_url) and served from
+   ui/static/covers/. A missing cover (or a failed load) shows a neutral placeholder
+   at the same size, so rows never jump. */
+.cover { flex: 0 0 auto; width: 30px; height: 44px; object-fit: cover;
+  border-radius: 3px; background: #e6e8f0; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.cover-missing { box-shadow: none;
+  background: linear-gradient(135deg, #eef0f6, #dbdfea); }
+.dbook .cover { width: 46px; height: 68px; }   /* demo panels have more room */
 .dwrong-tag { align-self: flex-start; margin-top: 4px; font-size: 11px; color: #7b341e;
   background: #fbe9e0; padding: 1px 7px; border-radius: 999px; }
 .dnote { color: #4a5568; font-size: 13px; margin: 2px 0; }
@@ -477,6 +487,11 @@ mark { background: #fff3bf; color: inherit; padding: 0 1px; border-radius: 2px; 
 .ba-after { flex: 1.18 1 0; border: 2px solid #2f855a; background: #0b1a13; }
 .ba-after .ba-title { color: #fff; font-size: 1.15rem; }
 .ba-after .glyph-hp { color: #7ee0a8; }
+/* the hybrid win, made concrete with the real book cover */
+.ba-found { display: flex; gap: 14px; align-items: flex-start; margin-top: 10px; }
+.ba-found-meta { min-width: 0; }
+.ba-cover { flex: 0 0 auto; width: 60px; height: 90px; object-fit: cover;
+  border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
 .ba-verdict.found { color: #7ee0a8; background: #0f2a1c; border: 1px solid #2f855a; }
 
 /* footer — CTAs (after the proof) + guide */

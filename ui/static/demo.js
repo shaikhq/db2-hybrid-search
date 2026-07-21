@@ -146,9 +146,12 @@ function panelHtml(strat, st) {
     const wrongTag = st.verdict === "wrong"
       ? `<span class="dwrong-tag">not what you meant</span>` : "";
     body = `<div class="dbook">
-        <span class="dtitle">${desc(b.title)}</span>
-        ${b.author ? `<span class="dauthor">by ${desc(b.author)}</span>` : ""}
-        ${wrongTag}
+        ${coverImg(b)}
+        <div class="dbook-meta">
+          <span class="dtitle">${desc(b.title)}</span>
+          ${b.author ? `<span class="dauthor">by ${desc(b.author)}</span>` : ""}
+          ${wrongTag}
+        </div>
       </div>`;
   }
   return `<div class="dpanel dpanel-${st.verdict}">

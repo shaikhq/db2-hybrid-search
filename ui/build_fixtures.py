@@ -44,7 +44,8 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g, 
         if is_gold and gold_rank is None:
             gold_rank = rank
         r = {"rank": rank, "chunk_id": cid, "snippet": one, "text": full,
-             "score": round(score, 4), "score_type": score_type, "is_gold": is_gold}
+             "score": round(score, 4), "score_type": score_type, "is_gold": is_gold,
+             "cover": h.cover(conn, cid)}   # cover thumbnail path (from Db2), '' if none
         if mode == "hybrid":
             # Provenance: which legs surfaced this chunk AND were not gated out.
             found_by = []

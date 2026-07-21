@@ -331,3 +331,15 @@ def snippet(conn, chunk_id, width=90):
     ibm_db.execute(stmt)
     row = ibm_db.fetch_tuple(stmt)
     return row[0].strip().replace("\n", " ") if row else ""
+
+
+def cover(conn, chunk_id):
+    """The book's cover-thumbnail path (relative to ui/static/), or '' if none.
+    Stored in Db2 by 1_ingest.sql; the UI renders it beside the title."""
+    sql = f"SELECT cover_url FROM {T} WHERE chunk_id = ?"
+    _log_sql(sql, [chunk_id], level=logging.DEBUG)
+    stmt = ibm_db.prepare(conn, sql)
+    ibm_db.bind_param(stmt, 1, chunk_id)
+    ibm_db.execute(stmt)
+    row = ibm_db.fetch_tuple(stmt)
+    return (row[0] or "").strip() if row else ""

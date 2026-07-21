@@ -219,10 +219,19 @@ function lexNoteHtml(lexq, fullq) {
 }
 
 // One result column (any leg). Provenance chips only make sense on the Hybrid column.
+// The book's cover thumbnail (path from Db2, served under ui/static/). Falls back
+// to a neutral placeholder when a book has no cover or the image fails to load.
+function coverImg(r) {
+  return r && r.cover
+    ? `<img class="cover" src="${esc(r.cover)}" alt="" loading="lazy"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover cover-missing'}))">`
+    : `<span class="cover cover-missing" aria-hidden="true"></span>`;
+}
+
 function legColumn(title, dotcls, results, hl, isHybrid) {
   const rows = (results || []).slice(0, TOP).map((r) => `
     <div class="row">
-      <div class="rline"><span class="rank">${r.rank}</span><span class="snip">${highlight(esc(r.snippet), hl)}</span></div>
+      <div class="rline"><span class="rank">${r.rank}</span>${coverImg(r)}<span class="snip">${highlight(esc(r.snippet), hl)}</span></div>
       ${(isHybrid && state.explain) ? provenanceHtml(r) : ""}
       ${scoresHtml(r)}
       <div class="full">${highlight(esc(r.text), hl)}</div>
@@ -308,6 +317,7 @@ function hybRowHtml(r, hl, fusionRankById) {
   return `<div class="row">
     <div class="rline">
       <span class="rank">${r.rank}</span>
+      ${coverImg(r)}
       <span class="snip">${highlight(esc(r.snippet), hl)}</span>
     </div>
     ${state.explain ? provenanceHtml(r) : ""}${delta}
