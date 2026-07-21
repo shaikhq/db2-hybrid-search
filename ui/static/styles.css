@@ -145,11 +145,22 @@ body { margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg)
 
 /* result rows */
 .rows { display:flex; flex-direction:column; gap:8px; }
-.row { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line);
-  border-radius:10px; padding:10px 13px; cursor:pointer; }
+/* Search result = a card: cover on the left, title/author/description on the right. */
+.row { display:flex; gap:14px; align-items:flex-start;
+  background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line);
+  border-radius:10px; padding:12px 14px; cursor:pointer; }
 .row:hover { border-color:#c9ced8; }
 .row.gold { border-left-color:var(--gold); background:var(--gold-soft); }
-.row .rline { display:flex; align-items:center; gap:11px; min-width:0; }
+.row > .cover { width:60px; height:90px; }          /* a bit larger than the demo thumb */
+.rbody { flex:1; min-width:0; }
+.row .rline { display:flex; align-items:baseline; gap:9px; min-width:0; }
+.rtitle { flex:1; min-width:0; font-weight:600; font-size:1rem; line-height:1.3;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rby { font-size:.85rem; color:var(--muted); margin-top:2px; }
+.rdesc { margin-top:7px; font-size:.9rem; line-height:1.5; color:#444;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.row.open .rdesc { -webkit-line-clamp:unset; overflow:visible; }
+.row.open .rtitle { white-space:normal; }
 .rank { font-family:var(--mono); font-size:.9rem; color:var(--muted); width:1.6em; text-align:right; }
 .cid { font-family:var(--mono); font-size:.82rem; font-weight:600; background:#eef0f4;
   color:#374151; padding:2px 8px; border-radius:6px; white-space:nowrap; }

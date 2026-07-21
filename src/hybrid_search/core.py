@@ -343,3 +343,22 @@ def cover(conn, chunk_id):
     ibm_db.execute(stmt)
     row = ibm_db.fetch_tuple(stmt)
     return (row[0] or "").strip() if row else ""
+
+
+def book_meta(conn, chunk_id):
+    """Structured display fields for a result — title, author, a short description,
+    and the cover path — all read from Db2's own columns. Lets the search UI render
+    a proper card (bold title, author, description) instead of the raw chunk_text."""
+    sql = (f"SELECT title, authors, "
+           f"CAST(SUBSTR(COALESCE(description,''),1,600) AS VARCHAR(600)), "
+           f"COALESCE(cover_url,'') FROM {T} WHERE chunk_id = ?")
+    _log_sql(sql, [chunk_id], level=logging.DEBUG)
+    stmt = ibm_db.prepare(conn, sql)
+    ibm_db.bind_param(stmt, 1, chunk_id)
+    ibm_db.execute(stmt)
+    row = ibm_db.fetch_tuple(stmt)
+    if not row:
+        return {"title": "", "author": "", "description": "", "cover": ""}
+    return {"title": (row[0] or "").strip(), "author": (row[1] or "").strip(),
+            "description": (row[2] or "").strip().replace("\n", " "),
+            "cover": (row[3] or "").strip()}

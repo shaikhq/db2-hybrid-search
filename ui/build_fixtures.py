@@ -43,9 +43,11 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g, 
         is_gold = cid in gold
         if is_gold and gold_rank is None:
             gold_rank = rank
+        m = h.book_meta(conn, cid)   # title/author/description/cover, from Db2 columns
         r = {"rank": rank, "chunk_id": cid, "snippet": one, "text": full,
              "score": round(score, 4), "score_type": score_type, "is_gold": is_gold,
-             "cover": h.cover(conn, cid)}   # cover thumbnail path (from Db2), '' if none
+             "cover": m["cover"], "title": m["title"], "author": m["author"],
+             "description": m["description"]}
         if mode == "hybrid":
             # Provenance: which legs surfaced this chunk AND were not gated out.
             found_by = []

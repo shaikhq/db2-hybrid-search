@@ -135,7 +135,10 @@
             "score": 0.8258,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B07GBGQJSW.jpg"
+            "cover": "covers/B07GBGQJSW.jpg",
+            "title": "Atomic Habits",
+            "author": "James Clear",
+            "description": "No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones...."
           },
           {
             "rank": 2,
@@ -145,7 +148,10 @@
             "score": 0.6544,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B086DN569S.jpg"
+            "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents...."
           },
           {
             "rank": 3,
@@ -155,7 +161,10 @@
             "score": 0.6015,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071HRLJZD.jpg"
+            "cover": "covers/B071HRLJZD.jpg",
+            "title": "The Power of Habit",
+            "author": "Charles Duhigg",
+            "description": "In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed...."
           }
         ],
         "lex_query": "atomic habits"
@@ -177,7 +186,10 @@
             "score": 0.8092,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B07GBGQJSW.jpg"
+            "cover": "covers/B07GBGQJSW.jpg",
+            "title": "Atomic Habits",
+            "author": "James Clear",
+            "description": "No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones...."
           },
           {
             "rank": 2,
@@ -187,7 +199,10 @@
             "score": 0.6325,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071HRLJZD.jpg"
+            "cover": "covers/B071HRLJZD.jpg",
+            "title": "The Power of Habit",
+            "author": "Charles Duhigg",
+            "description": "In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed...."
           },
           {
             "rank": 3,
@@ -197,7 +212,10 @@
             "score": 0.6095,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B086DN569S.jpg"
+            "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents...."
           },
           {
             "rank": 4,
@@ -207,7 +225,10 @@
             "score": 0.5841,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B07198MSCC.jpg"
+            "cover": "covers/B07198MSCC.jpg",
+            "title": "Made to Stick",
+            "author": "Chip Heath; Dan Heath",
+            "description": "In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps...."
           },
           {
             "rank": 5,
@@ -217,7 +238,10 @@
             "score": 0.579,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071HSJTLG.jpg"
+            "cover": "covers/B071HSJTLG.jpg",
+            "title": "How to Stop Worrying and Start Living",
+            "author": "Dale Carnegie",
+            "description": "Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit...."
           }
         ]
       },
@@ -239,6 +263,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B07GBGQJSW.jpg",
+            "title": "Atomic Habits",
+            "author": "James Clear",
+            "description": "No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
             "found_by": [
               "bm25",
               "vector"
@@ -271,6 +298,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071HRLJZD.jpg",
+            "title": "The Power of Habit",
+            "author": "Charles Duhigg",
+            "description": "In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
             "found_by": [
               "bm25",
               "vector"
@@ -303,6 +333,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
             "found_by": [
               "bm25",
               "vector"
@@ -335,6 +368,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B07198MSCC.jpg",
+            "title": "Made to Stick",
+            "author": "Chip Heath; Dan Heath",
+            "description": "In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps....",
             "found_by": [
               "vector"
             ],
@@ -366,6 +402,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071HSJTLG.jpg",
+            "title": "How to Stop Worrying and Start Living",
+            "author": "Dale Carnegie",
+            "description": "Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit....",
             "found_by": [
               "vector"
             ],
@@ -413,7 +452,10 @@
             "score": 0.7942,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B071NRLWFP.jpg"
+            "cover": "covers/B071NRLWFP.jpg",
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "description": "There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything...."
           },
           {
             "rank": 2,
@@ -423,7 +465,10 @@
             "score": 0.6504,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B072HS6BX8.jpg"
+            "cover": "covers/B072HS6BX8.jpg",
+            "title": "Eat to Live",
+            "author": "Joel Fuhrman M.D.",
+            "description": "This is a book that will let you live longer, reduce your need for medications, and improve your health dramatically...."
           }
         ],
         "lex_query": "eat frog"
@@ -445,7 +490,10 @@
             "score": 0.7308,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B071NRLWFP.jpg"
+            "cover": "covers/B071NRLWFP.jpg",
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "description": "There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything...."
           },
           {
             "rank": 2,
@@ -455,7 +503,10 @@
             "score": 0.5828,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B072HS6BX8.jpg"
+            "cover": "covers/B072HS6BX8.jpg",
+            "title": "Eat to Live",
+            "author": "Joel Fuhrman M.D.",
+            "description": "This is a book that will let you live longer, reduce your need for medications, and improve your health dramatically...."
           },
           {
             "rank": 3,
@@ -465,7 +516,10 @@
             "score": 0.5407,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B0723236RZ.jpg"
+            "cover": "covers/B0723236RZ.jpg",
+            "title": "Think and Grow Rich",
+            "author": "Napoleon Hill",
+            "description": "Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history...."
           },
           {
             "rank": 4,
@@ -475,7 +529,10 @@
             "score": 0.5331,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071YW2FDT.jpg"
+            "cover": "covers/B071YW2FDT.jpg",
+            "title": "Bigger Leaner Stronger",
+            "author": "Michael Matthews",
+            "description": "If you want to get bigger, leaner, and stronger without steroids, good genetics, extreme dieting, or wasting ridiculous amounts of time in the gym...you want to listen to this book...."
           },
           {
             "rank": 5,
@@ -485,7 +542,10 @@
             "score": 0.5327,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071RX6Q36.jpg"
+            "cover": "covers/B071RX6Q36.jpg",
+            "title": "The Energy Bus",
+            "author": "Jon Gordon",
+            "description": "The Energy Bus takes listeners on an enlightening and inspiring ride that reveals 10 secrets for approaching life and work with the kind of positive, forward thinking...."
           }
         ]
       },
@@ -507,6 +567,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B071NRLWFP.jpg",
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "description": "There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
             "found_by": [
               "bm25",
               "vector"
@@ -539,6 +602,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B072HS6BX8.jpg",
+            "title": "Eat to Live",
+            "author": "Joel Fuhrman M.D.",
+            "description": "This is a book that will let you live longer, reduce your need for medications, and improve your health dramatically....",
             "found_by": [
               "bm25",
               "vector"
@@ -571,6 +637,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B0723236RZ.jpg",
+            "title": "Think and Grow Rich",
+            "author": "Napoleon Hill",
+            "description": "Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history....",
             "found_by": [
               "vector"
             ],
@@ -602,6 +671,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071YW2FDT.jpg",
+            "title": "Bigger Leaner Stronger",
+            "author": "Michael Matthews",
+            "description": "If you want to get bigger, leaner, and stronger without steroids, good genetics, extreme dieting, or wasting ridiculous amounts of time in the gym...you want to listen to this book....",
             "found_by": [
               "vector"
             ],
@@ -633,6 +705,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071RX6Q36.jpg",
+            "title": "The Energy Bus",
+            "author": "Jon Gordon",
+            "description": "The Energy Bus takes listeners on an enlightening and inspiring ride that reveals 10 secrets for approaching life and work with the kind of positive, forward thinking....",
             "found_by": [
               "vector"
             ],
@@ -680,7 +755,10 @@
             "score": 0.7537,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B07198MSCC.jpg"
+            "cover": "covers/B07198MSCC.jpg",
+            "title": "Made to Stick",
+            "author": "Chip Heath; Dan Heath",
+            "description": "In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps...."
           },
           {
             "rank": 2,
@@ -690,7 +768,10 @@
             "score": 0.6668,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B0C6YNPVP1.jpg"
+            "cover": "covers/B0C6YNPVP1.jpg",
+            "title": "Supercommunicators",
+            "author": "Charles Duhigg",
+            "description": "Come inside a jury room as one juror leads a starkly divided room to consensus. Join a young CIA officer as he recruits a reluctant foreign agent...."
           },
           {
             "rank": 3,
@@ -700,7 +781,10 @@
             "score": 0.6563,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071HRLJZD.jpg"
+            "cover": "covers/B071HRLJZD.jpg",
+            "title": "The Power of Habit",
+            "author": "Charles Duhigg",
+            "description": "In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed...."
           },
           {
             "rank": 4,
@@ -710,7 +794,10 @@
             "score": 0.5823,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B07148BP7Q.jpg"
+            "cover": "covers/B07148BP7Q.jpg",
+            "title": "How to Read a Book",
+            "author": "Mortimer J. Adler; Charles Van Doren",
+            "description": "How to Read a Book, first published in 1940, is the best and most successful guide to reading comprehension. Now it has been completely rewritten and updated...."
           }
         ],
         "lex_query": "charles kahlenberg"
@@ -732,7 +819,10 @@
             "score": 0.5097,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B072LBQZSB.jpg"
+            "cover": "covers/B072LBQZSB.jpg",
+            "title": "Good Leaders Ask Great Questions",
+            "author": "John C. Maxwell",
+            "description": "In Good Leaders Ask Great Questions, John C. Maxwell delves into the process of becoming a successful leader by examining how questions can be used to advantage...."
           },
           {
             "rank": 2,
@@ -742,7 +832,10 @@
             "score": 0.5061,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B072HRYTGH.jpg"
+            "cover": "covers/B072HRYTGH.jpg",
+            "title": "The 5 Levels of Leadership",
+            "author": "John C. Maxwell",
+            "description": "Use this helpful audiobook to learn about the leadership tools to fuel success, grow your team, and become the visionary you were meant to be. True leadership isn't a matter of having a certain job or title. In fact, being chosen for a position is only the first of the five levels every..."
           },
           {
             "rank": 3,
@@ -752,7 +845,10 @@
             "score": 0.4965,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B07198MSCC.jpg"
+            "cover": "covers/B07198MSCC.jpg",
+            "title": "Made to Stick",
+            "author": "Chip Heath; Dan Heath",
+            "description": "In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps...."
           },
           {
             "rank": 4,
@@ -762,7 +858,10 @@
             "score": 0.4938,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B0DJTBCYR2.jpg"
+            "cover": "covers/B0DJTBCYR2.jpg",
+            "title": "Six Thinking Hats",
+            "author": "Edward De Bono",
+            "description": "Used successfully by thousands of business managers, educators, and government leaders around the world, Six Thinking Hats offers a practical and uniquely positive approach to making decisions and exploring new ideas."
           },
           {
             "rank": 5,
@@ -772,7 +871,10 @@
             "score": 0.4931,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B0725N22R7.jpg"
+            "cover": "covers/B0725N22R7.jpg",
+            "title": "Benjamin Franklin: An American Life",
+            "author": "Walter Isaacson",
+            "description": "Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings...."
           }
         ]
       },
@@ -794,6 +896,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B07198MSCC.jpg",
+            "title": "Made to Stick",
+            "author": "Chip Heath; Dan Heath",
+            "description": "In Made to Stick, Chip and Dan Heath reveal the anatomy of ideas that stick and explain ways to make ideas stickier, such as applying the human scale principle, using the Velcro Theory of Memory, and creating curiosity gaps....",
             "found_by": [
               "bm25",
               "vector"
@@ -826,6 +931,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B0C6YNPVP1.jpg",
+            "title": "Supercommunicators",
+            "author": "Charles Duhigg",
+            "description": "Come inside a jury room as one juror leads a starkly divided room to consensus. Join a young CIA officer as he recruits a reluctant foreign agent....",
             "found_by": [
               "bm25",
               "vector"
@@ -858,6 +966,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B072LBQZSB.jpg",
+            "title": "Good Leaders Ask Great Questions",
+            "author": "John C. Maxwell",
+            "description": "In Good Leaders Ask Great Questions, John C. Maxwell delves into the process of becoming a successful leader by examining how questions can be used to advantage....",
             "found_by": [
               "vector"
             ],
@@ -889,6 +1000,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B07148BP7Q.jpg",
+            "title": "How to Read a Book",
+            "author": "Mortimer J. Adler; Charles Van Doren",
+            "description": "How to Read a Book, first published in 1940, is the best and most successful guide to reading comprehension. Now it has been completely rewritten and updated....",
             "found_by": [
               "bm25",
               "vector"
@@ -921,6 +1035,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B072HRYTGH.jpg",
+            "title": "The 5 Levels of Leadership",
+            "author": "John C. Maxwell",
+            "description": "Use this helpful audiobook to learn about the leadership tools to fuel success, grow your team, and become the visionary you were meant to be. True leadership isn't a matter of having a certain job or title. In fact, being chosen for a position is only the first of the five levels every...",
             "found_by": [
               "vector"
             ],
@@ -968,7 +1085,10 @@
             "score": 0.7684,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071L8K79Y.jpg"
+            "cover": "covers/B071L8K79Y.jpg",
+            "title": "The Total Money Makeover",
+            "author": "Dave Ramsey",
+            "description": "Dave Ramsey helps you transform your personal finances with time-tested tools for paying off debt, saving for retirement, and more."
           },
           {
             "rank": 2,
@@ -978,7 +1098,10 @@
             "score": 0.7394,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B09HSTT4XB.jpg"
+            "cover": "covers/B09HSTT4XB.jpg",
+            "title": "How to Take Smart Notes",
+            "author": "Sonke Ahrens",
+            "description": "The key to good and efficient writing lies in the intelligent organization of ideas and notes. This book helps students, academics, and nonfiction writers to get more done, write intelligent texts, and learn for the long run...."
           },
           {
             "rank": 3,
@@ -988,7 +1111,10 @@
             "score": 0.7165,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B072HRYTGH.jpg"
+            "cover": "covers/B072HRYTGH.jpg",
+            "title": "The 5 Levels of Leadership",
+            "author": "John C. Maxwell",
+            "description": "Use this helpful audiobook to learn about the leadership tools to fuel success, grow your team, and become the visionary you were meant to be. True leadership isn't a matter of having a certain job or title. In fact, being chosen for a position is only the first of the five levels every..."
           },
           {
             "rank": 4,
@@ -998,7 +1124,10 @@
             "score": 0.6875,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B07FK46FRF.jpg"
+            "cover": "covers/B07FK46FRF.jpg",
+            "title": "Learning How to Learn",
+            "author": "Barbara Oakley PhD; Terrence Sejnowski PhD; Alistair McConville",
+            "description": "Learning How to Learn teaches students about the importance of both focused concentration and letting their minds wander, how the brain makes connections between different pieces of information, why procrastination is the enemy of problem solving, and much more...."
           },
           {
             "rank": 5,
@@ -1008,7 +1137,10 @@
             "score": 0.6292,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071L3GWV1.jpg"
+            "cover": "covers/B071L3GWV1.jpg",
+            "title": "Thinner Leaner Stronger",
+            "author": "Michael Matthews",
+            "description": "You can get that beautiful \u201cbeach-ready\u201d body without following a bland, boring, bodybuilding diet and without doing exhausting strength training workouts you hate. And this exercise book shows you how...."
           }
         ],
         "lex_query": "doing well finances more about behavior being smart"
@@ -1030,7 +1162,10 @@
             "score": 0.6062,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071L8K79Y.jpg"
+            "cover": "covers/B071L8K79Y.jpg",
+            "title": "The Total Money Makeover",
+            "author": "Dave Ramsey",
+            "description": "Dave Ramsey helps you transform your personal finances with time-tested tools for paying off debt, saving for retirement, and more."
           },
           {
             "rank": 2,
@@ -1040,7 +1175,10 @@
             "score": 0.5951,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B08D9VG9T8.jpg"
+            "cover": "covers/B08D9VG9T8.jpg",
+            "title": "The Psychology of Money",
+            "author": "Morgan Housel",
+            "description": "In The Psychology of Money, award-winning author Morgan Housel shares 19 short stories exploring the strange ways people think about money and teaches you how to make better sense of one of life\u2019s most important topics...."
           },
           {
             "rank": 3,
@@ -1050,7 +1188,10 @@
             "score": 0.595,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B072PDYHQ7.jpg"
+            "cover": "covers/B072PDYHQ7.jpg",
+            "title": "The Millionaire Next Door",
+            "author": "Thomas J. Stanley Ph.D.; William D. Danko Ph.D.",
+            "description": "Who are the rich in this country? What do they do? How do they invest? How did they get rich? Can you ever become one of them?..."
           },
           {
             "rank": 4,
@@ -1060,7 +1201,10 @@
             "score": 0.5932,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B09HSTT4XB.jpg"
+            "cover": "covers/B09HSTT4XB.jpg",
+            "title": "How to Take Smart Notes",
+            "author": "Sonke Ahrens",
+            "description": "The key to good and efficient writing lies in the intelligent organization of ideas and notes. This book helps students, academics, and nonfiction writers to get more done, write intelligent texts, and learn for the long run...."
           },
           {
             "rank": 5,
@@ -1070,7 +1214,10 @@
             "score": 0.5815,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/0593162943.jpg"
+            "cover": "covers/0593162943.jpg",
+            "title": "The Willpower Instinct",
+            "author": "Kelly McGonigal",
+            "description": "Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity...."
           }
         ]
       },
@@ -1092,6 +1239,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071L8K79Y.jpg",
+            "title": "The Total Money Makeover",
+            "author": "Dave Ramsey",
+            "description": "Dave Ramsey helps you transform your personal finances with time-tested tools for paying off debt, saving for retirement, and more.",
             "found_by": [
               "bm25",
               "vector"
@@ -1124,6 +1274,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B09HSTT4XB.jpg",
+            "title": "How to Take Smart Notes",
+            "author": "Sonke Ahrens",
+            "description": "The key to good and efficient writing lies in the intelligent organization of ideas and notes. This book helps students, academics, and nonfiction writers to get more done, write intelligent texts, and learn for the long run....",
             "found_by": [
               "bm25",
               "vector"
@@ -1156,6 +1309,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B08D9VG9T8.jpg",
+            "title": "The Psychology of Money",
+            "author": "Morgan Housel",
+            "description": "In The Psychology of Money, award-winning author Morgan Housel shares 19 short stories exploring the strange ways people think about money and teaches you how to make better sense of one of life\u2019s most important topics....",
             "found_by": [
               "bm25",
               "vector"
@@ -1188,6 +1344,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B082TMK7N4.jpg",
+            "title": "Failing Forward",
+            "author": "John C. Maxwell",
+            "description": "America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential....",
             "found_by": [
               "bm25",
               "vector"
@@ -1220,6 +1379,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B072PDYHQ7.jpg",
+            "title": "The Millionaire Next Door",
+            "author": "Thomas J. Stanley Ph.D.; William D. Danko Ph.D.",
+            "description": "Who are the rich in this country? What do they do? How do they invest? How did they get rich? Can you ever become one of them?...",
             "found_by": [
               "vector"
             ],
@@ -1267,7 +1429,10 @@
             "score": 0.7349,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071NRLWFP.jpg"
+            "cover": "covers/B071NRLWFP.jpg",
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "description": "There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything...."
           },
           {
             "rank": 2,
@@ -1277,7 +1442,10 @@
             "score": 0.6438,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B0848WT54C.jpg"
+            "cover": "covers/B0848WT54C.jpg",
+            "title": "The Successful Speaker",
+            "author": "Grant Baldwin",
+            "description": "Do you have a message you want to get out into the world? Have you ever dreamed of speaking for a living? Is there something you have to say, but you just aren't sure what to do next? The Successful Speaker is a proven, easy-to-follow guide to helping you do just that...."
           },
           {
             "rank": 3,
@@ -1287,7 +1455,10 @@
             "score": 0.6053,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B086DN569S.jpg"
+            "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents...."
           },
           {
             "rank": 4,
@@ -1297,7 +1468,10 @@
             "score": 0.5867,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071HMCHPL.jpg"
+            "cover": "covers/B071HMCHPL.jpg",
+            "title": "How to Win Friends & Influence People",
+            "author": "Dale Carnegie",
+            "description": "For over 60 years the rock-solid, time-tested advice in this audiobook has carried thousands of now-famous people up the ladder of success in their business and personal lives...."
           },
           {
             "rank": 5,
@@ -1307,7 +1481,10 @@
             "score": 0.5805,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B07B6FRFFW.jpg"
+            "cover": "covers/B07B6FRFFW.jpg",
+            "title": "How to Be Heard",
+            "author": "Julian Treasure",
+            "description": "Have you ever felt like you're talking, but nobody is listening? Renowned five-time TED Talk speaker and author Julian Treasure reveals how to speak so that people listen and how to listen so that people feel heard...."
           }
         ],
         "lex_query": "often misjudge people we've just met"
@@ -1329,7 +1506,10 @@
             "score": 0.524,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B07NJJJX8R.jpg"
+            "cover": "covers/B07NJJJX8R.jpg",
+            "title": "Talking to Strangers",
+            "author": "Malcolm Gladwell",
+            "description": "Malcolm Gladwell, host of the podcast Revisionist History and author of the number-one New York Times best seller Outliers, reinvents the audiobook in this immersive production of Talking to Strangers, a powerful examination of our interactions with people...."
           },
           {
             "rank": 2,
@@ -1339,7 +1519,10 @@
             "score": 0.5131,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B086DN569S.jpg"
+            "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents...."
           },
           {
             "rank": 3,
@@ -1349,7 +1532,10 @@
             "score": 0.5121,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B072HS6MQS.jpg"
+            "cover": "covers/B072HS6MQS.jpg",
+            "title": "Influence",
+            "author": "Robert B. Cialdini",
+            "description": "Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings...."
           },
           {
             "rank": 4,
@@ -1359,7 +1545,10 @@
             "score": 0.5011,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B0722ZZZXN.jpg"
+            "cover": "covers/B0722ZZZXN.jpg",
+            "title": "Thinking, Fast and Slow",
+            "author": "Daniel Kahneman",
+            "description": "The guru to the gurus at last shares his knowledge with the rest of us...."
           },
           {
             "rank": 5,
@@ -1369,7 +1558,10 @@
             "score": 0.4951,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B082TMK7N4.jpg"
+            "cover": "covers/B082TMK7N4.jpg",
+            "title": "Failing Forward",
+            "author": "John C. Maxwell",
+            "description": "America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential...."
           }
         ]
       },
@@ -1391,6 +1583,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B07NJJJX8R.jpg",
+            "title": "Talking to Strangers",
+            "author": "Malcolm Gladwell",
+            "description": "Malcolm Gladwell, host of the podcast Revisionist History and author of the number-one New York Times best seller Outliers, reinvents the audiobook in this immersive production of Talking to Strangers, a powerful examination of our interactions with people....",
             "found_by": [
               "bm25",
               "vector"
@@ -1423,6 +1618,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
             "found_by": [
               "bm25",
               "vector"
@@ -1455,6 +1653,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B072HS6MQS.jpg",
+            "title": "Influence",
+            "author": "Robert B. Cialdini",
+            "description": "Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
             "found_by": [
               "bm25",
               "vector"
@@ -1487,6 +1688,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071NRLWFP.jpg",
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "description": "There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
             "found_by": [
               "bm25",
               "vector"
@@ -1519,6 +1723,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/0063097796.jpg",
+            "title": "Influence, New and Expanded",
+            "author": "Robert B. Cialdini",
+            "description": "In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
             "found_by": [
               "bm25",
               "vector"
@@ -1567,7 +1774,10 @@
             "score": 0.6857,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071NRLWFP.jpg"
+            "cover": "covers/B071NRLWFP.jpg",
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "description": "There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything...."
           },
           {
             "rank": 2,
@@ -1577,7 +1787,10 @@
             "score": 0.6544,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B07FK46FRF.jpg"
+            "cover": "covers/B07FK46FRF.jpg",
+            "title": "Learning How to Learn",
+            "author": "Barbara Oakley PhD; Terrence Sejnowski PhD; Alistair McConville",
+            "description": "Learning How to Learn teaches students about the importance of both focused concentration and letting their minds wander, how the brain makes connections between different pieces of information, why procrastination is the enemy of problem solving, and much more...."
           },
           {
             "rank": 3,
@@ -1587,7 +1800,10 @@
             "score": 0.6329,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B072HS6MQS.jpg"
+            "cover": "covers/B072HS6MQS.jpg",
+            "title": "Influence",
+            "author": "Robert B. Cialdini",
+            "description": "Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings...."
           },
           {
             "rank": 4,
@@ -1597,7 +1813,10 @@
             "score": 0.6108,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/0063097796.jpg"
+            "cover": "covers/0063097796.jpg",
+            "title": "Influence, New and Expanded",
+            "author": "Robert B. Cialdini",
+            "description": "In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life."
           },
           {
             "rank": 5,
@@ -1607,7 +1826,10 @@
             "score": 0.6085,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B07FS63X86.jpg"
+            "cover": "covers/B07FS63X86.jpg",
+            "title": "Peak",
+            "author": "Anders Ericsson; Robert Pool",
+            "description": "Anders Ericsson has made a career studying chess champions, violin virtuosos, star athletes, and memory mavens. Peak distills three decades of myth-shattering research into a powerful learning strategy...."
           }
         ],
         "lex_query": "learning say almost everything focus vital few"
@@ -1629,7 +1851,10 @@
             "score": 0.6155,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071422GB4.jpg"
+            "cover": "covers/B071422GB4.jpg",
+            "title": "The Power of Less",
+            "author": "Leo Babauta",
+            "description": "The Power of Less demonstrates how to streamline your life by identifying the essential and eliminating the unnecessary...."
           },
           {
             "rank": 2,
@@ -1639,7 +1864,10 @@
             "score": 0.614,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B072591XFD.jpg"
+            "cover": "covers/B072591XFD.jpg",
+            "title": "Essentialism",
+            "author": "Greg McKeown",
+            "description": "Essentialism is more than a time-management strategy or a productivity technique. It is a systematic discipline for discerning what is absolutely essential, then eliminating everything that is not, so we can make the highest possible contribution toward the things that really matter...."
           },
           {
             "rank": 3,
@@ -1649,7 +1877,10 @@
             "score": 0.5983,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071HSJTLG.jpg"
+            "cover": "covers/B071HSJTLG.jpg",
+            "title": "How to Stop Worrying and Start Living",
+            "author": "Dale Carnegie",
+            "description": "Through Dale Carnegie's seven-million-copy best seller, recently revised, millions of people have been helped to overcome the worry habit...."
           },
           {
             "rank": 4,
@@ -1659,7 +1890,10 @@
             "score": 0.5931,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/0593162943.jpg"
+            "cover": "covers/0593162943.jpg",
+            "title": "The Willpower Instinct",
+            "author": "Kelly McGonigal",
+            "description": "Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity...."
           },
           {
             "rank": 5,
@@ -1669,7 +1903,10 @@
             "score": 0.589,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B082TMK7N4.jpg"
+            "cover": "covers/B082TMK7N4.jpg",
+            "title": "Failing Forward",
+            "author": "John C. Maxwell",
+            "description": "America's expert on leadership helps listeners change their attitudes and beliefs about failure, so they can make positive changes in their lives and achieve their full potential...."
           }
         ]
       },
@@ -1691,6 +1928,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B072591XFD.jpg",
+            "title": "Essentialism",
+            "author": "Greg McKeown",
+            "description": "Essentialism is more than a time-management strategy or a productivity technique. It is a systematic discipline for discerning what is absolutely essential, then eliminating everything that is not, so we can make the highest possible contribution toward the things that really matter....",
             "found_by": [
               "bm25",
               "vector"
@@ -1723,6 +1963,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071NRLWFP.jpg",
+            "title": "Eat That Frog!",
+            "author": "Brian Tracy",
+            "description": "There just isn't enough time for everything on our to-do list - and there never will be. Successful people don't try to do everything....",
             "found_by": [
               "bm25",
               "vector"
@@ -1755,6 +1998,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B0723236RZ.jpg",
+            "title": "Think and Grow Rich",
+            "author": "Napoleon Hill",
+            "description": "Here is the number-one inspirational and motivational classic for individuals who are interested in furthering their lives and reaching their goals by learning from important figures in history....",
             "found_by": [
               "bm25",
               "vector"
@@ -1787,6 +2033,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/0063097796.jpg",
+            "title": "Influence, New and Expanded",
+            "author": "Robert B. Cialdini",
+            "description": "In this science-driven guide to persuasion Robert Cialdini applies the psychology of why people say yes to help you succeed in business and life.",
             "found_by": [
               "bm25",
               "vector"
@@ -1819,6 +2068,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B072HS6MQS.jpg",
+            "title": "Influence",
+            "author": "Robert B. Cialdini",
+            "description": "Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings....",
             "found_by": [
               "bm25",
               "vector"
@@ -1867,7 +2119,10 @@
             "score": 0.9205,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B07BTK8X2K.jpg"
+            "cover": "covers/B07BTK8X2K.jpg",
+            "title": "The Diabetes Code",
+            "author": "Dr. Jason Fung",
+            "description": "Today, most doctors, dietitians, and even diabetes specialists consider type 2 diabetes to be a chronic and progressive disease - a life sentence with no possibility of parole...."
           },
           {
             "rank": 2,
@@ -1877,7 +2132,10 @@
             "score": 0.769,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B076QK5LD9.jpg"
+            "cover": "covers/B076QK5LD9.jpg",
+            "title": "The Obesity Code",
+            "author": "Jason Fung",
+            "description": "We are in the midst of an obesity epidemic, but despite being inundated with diet advice we are only getting fatter. We count calories and exercise regularly, yet still the pounds won't budge...."
           }
         ],
         "lex_query": "jason fung reversing type 2 diabetes"
@@ -1899,7 +2157,10 @@
             "score": 0.8238,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B07BTK8X2K.jpg"
+            "cover": "covers/B07BTK8X2K.jpg",
+            "title": "The Diabetes Code",
+            "author": "Dr. Jason Fung",
+            "description": "Today, most doctors, dietitians, and even diabetes specialists consider type 2 diabetes to be a chronic and progressive disease - a life sentence with no possibility of parole...."
           },
           {
             "rank": 2,
@@ -1909,7 +2170,10 @@
             "score": 0.6748,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B076QK5LD9.jpg"
+            "cover": "covers/B076QK5LD9.jpg",
+            "title": "The Obesity Code",
+            "author": "Jason Fung",
+            "description": "We are in the midst of an obesity epidemic, but despite being inundated with diet advice we are only getting fatter. We count calories and exercise regularly, yet still the pounds won't budge...."
           },
           {
             "rank": 3,
@@ -1919,7 +2183,10 @@
             "score": 0.6001,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071LC12SK.jpg"
+            "cover": "covers/B071LC12SK.jpg",
+            "title": "Fat Chance",
+            "author": "Robert H. Lustig",
+            "description": "Compelling, controversial, and completely based in science, Fat Chance debunks the widely held notion to prove \"a calorie is NOT a calorie\", and takes that science to its logical conclusion...."
           },
           {
             "rank": 4,
@@ -1929,7 +2196,10 @@
             "score": 0.5593,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071HRLJZD.jpg"
+            "cover": "covers/B071HRLJZD.jpg",
+            "title": "The Power of Habit",
+            "author": "Charles Duhigg",
+            "description": "In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed...."
           },
           {
             "rank": 5,
@@ -1939,7 +2209,10 @@
             "score": 0.5589,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071YW2FDT.jpg"
+            "cover": "covers/B071YW2FDT.jpg",
+            "title": "Bigger Leaner Stronger",
+            "author": "Michael Matthews",
+            "description": "If you want to get bigger, leaner, and stronger without steroids, good genetics, extreme dieting, or wasting ridiculous amounts of time in the gym...you want to listen to this book...."
           }
         ]
       },
@@ -1961,6 +2234,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B07BTK8X2K.jpg",
+            "title": "The Diabetes Code",
+            "author": "Dr. Jason Fung",
+            "description": "Today, most doctors, dietitians, and even diabetes specialists consider type 2 diabetes to be a chronic and progressive disease - a life sentence with no possibility of parole....",
             "found_by": [
               "bm25",
               "vector"
@@ -1993,6 +2269,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B076QK5LD9.jpg",
+            "title": "The Obesity Code",
+            "author": "Jason Fung",
+            "description": "We are in the midst of an obesity epidemic, but despite being inundated with diet advice we are only getting fatter. We count calories and exercise regularly, yet still the pounds won't budge....",
             "found_by": [
               "bm25",
               "vector"
@@ -2025,6 +2304,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071LC12SK.jpg",
+            "title": "Fat Chance",
+            "author": "Robert H. Lustig",
+            "description": "Compelling, controversial, and completely based in science, Fat Chance debunks the widely held notion to prove \"a calorie is NOT a calorie\", and takes that science to its logical conclusion....",
             "found_by": [
               "vector"
             ],
@@ -2056,6 +2338,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071HRLJZD.jpg",
+            "title": "The Power of Habit",
+            "author": "Charles Duhigg",
+            "description": "In The Power of Habit, award-winning business reporter Charles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed....",
             "found_by": [
               "vector"
             ],
@@ -2087,6 +2372,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071YW2FDT.jpg",
+            "title": "Bigger Leaner Stronger",
+            "author": "Michael Matthews",
+            "description": "If you want to get bigger, leaner, and stronger without steroids, good genetics, extreme dieting, or wasting ridiculous amounts of time in the gym...you want to listen to this book....",
             "found_by": [
               "vector"
             ],
@@ -2134,7 +2422,10 @@
             "score": 0.8299,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B0CB94PP67.jpg"
+            "cover": "covers/B0CB94PP67.jpg",
+            "title": "Slow Productivity",
+            "author": "Cal Newport",
+            "description": "From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload...."
           },
           {
             "rank": 2,
@@ -2144,7 +2435,10 @@
             "score": 0.7776,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B071HFRS4S.jpg"
+            "cover": "covers/B071HFRS4S.jpg",
+            "title": "Deep Work",
+            "author": "Cal Newport",
+            "description": "Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)...."
           },
           {
             "rank": 3,
@@ -2154,7 +2448,10 @@
             "score": 0.6529,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B072856BLJ.jpg"
+            "cover": "covers/B072856BLJ.jpg",
+            "title": "Getting to Yes",
+            "author": "Roger Fisher; William Ury",
+            "description": "Getting to Yes is a straightorward, universally applicable method for negotiating personal and professional disputes without getting taken - and without getting angry...."
           },
           {
             "rank": 4,
@@ -2164,7 +2461,10 @@
             "score": 0.6437,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071L3GWV1.jpg"
+            "cover": "covers/B071L3GWV1.jpg",
+            "title": "Thinner Leaner Stronger",
+            "author": "Michael Matthews",
+            "description": "You can get that beautiful \u201cbeach-ready\u201d body without following a bland, boring, bodybuilding diet and without doing exhausting strength training workouts you hate. And this exercise book shows you how...."
           },
           {
             "rank": 5,
@@ -2174,7 +2474,10 @@
             "score": 0.585,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B07623S2ZF.jpg"
+            "cover": "covers/B07623S2ZF.jpg",
+            "title": "Rise",
+            "author": "Patty Azzarello",
+            "description": "A straight-shooting Silicon Valley executive reveals insider career strategies to becoming a great leader, developing your network, succeeding without wasting time, and managing trade-offs...."
           }
         ],
         "lex_query": "cal newport focusing deeply without distractions"
@@ -2196,7 +2499,10 @@
             "score": 0.7148,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B0CB94PP67.jpg"
+            "cover": "covers/B0CB94PP67.jpg",
+            "title": "Slow Productivity",
+            "author": "Cal Newport",
+            "description": "From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload...."
           },
           {
             "rank": 2,
@@ -2206,7 +2512,10 @@
             "score": 0.6592,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B071HFRS4S.jpg"
+            "cover": "covers/B071HFRS4S.jpg",
+            "title": "Deep Work",
+            "author": "Cal Newport",
+            "description": "Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)...."
           },
           {
             "rank": 3,
@@ -2216,7 +2525,10 @@
             "score": 0.5793,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B09SK5Y1RF.jpg"
+            "cover": "covers/B09SK5Y1RF.jpg",
+            "title": "Discipline Is Destiny",
+            "author": "Ryan Holiday",
+            "description": "In his bestselling book Courage is Calling, author Ryan Holiday made the Stoic case for a bold and brave life. In this much-anticipated second book of his Stoic Virtue series, Holiday celebrates the awesome power of self-discipline and those who have seized it...."
           },
           {
             "rank": 4,
@@ -2226,7 +2538,10 @@
             "score": 0.5768,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B07GBGQJSW.jpg"
+            "cover": "covers/B07GBGQJSW.jpg",
+            "title": "Atomic Habits",
+            "author": "James Clear",
+            "description": "No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones...."
           },
           {
             "rank": 5,
@@ -2236,7 +2551,10 @@
             "score": 0.5746,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B086DN569S.jpg"
+            "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents...."
           }
         ]
       },
@@ -2258,6 +2576,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B0CB94PP67.jpg",
+            "title": "Slow Productivity",
+            "author": "Cal Newport",
+            "description": "From the New York Times bestselling author of Digital Minimalism and Deep Work, a groundbreaking philosophy for pursuing meaningful accomplishment while avoiding overload....",
             "found_by": [
               "bm25",
               "vector"
@@ -2290,6 +2611,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B071HFRS4S.jpg",
+            "title": "Deep Work",
+            "author": "Cal Newport",
+            "description": "Master one of our economy\u2019s most rare skills and achieve groundbreaking results with this \u201cexciting\u201d audiobook (Daniel H. Pink) from an \u201cexceptional\u201d author (New York Times Book Review)....",
             "found_by": [
               "bm25",
               "vector"
@@ -2322,6 +2646,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B09SK5Y1RF.jpg",
+            "title": "Discipline Is Destiny",
+            "author": "Ryan Holiday",
+            "description": "In his bestselling book Courage is Calling, author Ryan Holiday made the Stoic case for a bold and brave life. In this much-anticipated second book of his Stoic Virtue series, Holiday celebrates the awesome power of self-discipline and those who have seized it....",
             "found_by": [
               "vector"
             ],
@@ -2353,6 +2680,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B07GBGQJSW.jpg",
+            "title": "Atomic Habits",
+            "author": "James Clear",
+            "description": "No matter your goals, Atomic Habits offers a proven framework for improving - every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones....",
             "found_by": [
               "vector"
             ],
@@ -2384,6 +2714,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
             "found_by": [
               "vector"
             ],
@@ -2431,7 +2764,10 @@
             "score": 0.8471,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B071Z51HRG.jpg"
+            "cover": "covers/B071Z51HRG.jpg",
+            "title": "Steve Jobs",
+            "author": "Walter Isaacson",
+            "description": "From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs...."
           },
           {
             "rank": 2,
@@ -2441,7 +2777,10 @@
             "score": 0.7572,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B0725N22R7.jpg"
+            "cover": "covers/B0725N22R7.jpg",
+            "title": "Benjamin Franklin: An American Life",
+            "author": "Walter Isaacson",
+            "description": "Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings...."
           },
           {
             "rank": 3,
@@ -2451,7 +2790,10 @@
             "score": 0.5642,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/0593162943.jpg"
+            "cover": "covers/0593162943.jpg",
+            "title": "The Willpower Instinct",
+            "author": "Kelly McGonigal",
+            "description": "Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity...."
           },
           {
             "rank": 4,
@@ -2461,7 +2803,10 @@
             "score": 0.5514,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B071VQNYF6.jpg"
+            "cover": "covers/B071VQNYF6.jpg",
+            "title": "Your Brain at Work",
+            "author": "David Rock",
+            "description": "David Rock knows how the brain works - and more specifically, how it works in a work setting. Rock shows how it's possible to not only to survive in today's overwhelming work environment but succeed in it - and still feel energized and accomplished at the end of the day...."
           }
         ],
         "lex_query": "walter isaacson biography apple founder"
@@ -2483,7 +2828,10 @@
             "score": 0.7393,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B071Z51HRG.jpg"
+            "cover": "covers/B071Z51HRG.jpg",
+            "title": "Steve Jobs",
+            "author": "Walter Isaacson",
+            "description": "From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs...."
           },
           {
             "rank": 2,
@@ -2493,7 +2841,10 @@
             "score": 0.6645,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B0725N22R7.jpg"
+            "cover": "covers/B0725N22R7.jpg",
+            "title": "Benjamin Franklin: An American Life",
+            "author": "Walter Isaacson",
+            "description": "Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings...."
           },
           {
             "rank": 3,
@@ -2503,7 +2854,10 @@
             "score": 0.5712,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071XQJT58.jpg"
+            "cover": "covers/B071XQJT58.jpg",
+            "title": "Elon Musk",
+            "author": "Ashlee Vance",
+            "description": "Elon Musk is both an illuminating and authorized look at the extraordinary life of one of Silicon Valley's most exciting, unpredictable, and ambitious entrepreneurs...."
           },
           {
             "rank": 4,
@@ -2513,7 +2867,10 @@
             "score": 0.5452,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B07BN1QB8C.jpg"
+            "cover": "covers/B07BN1QB8C.jpg",
+            "title": "The Business of Expertise",
+            "author": "David C. Baker",
+            "description": "This passionate expertise manifesto is intended to elevate the impact of advisors who sell insight as entrepreneurs...."
           },
           {
             "rank": 5,
@@ -2523,7 +2880,10 @@
             "score": 0.5401,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B0C4W36MBC.jpg"
+            "cover": "covers/B0C4W36MBC.jpg",
+            "title": "The Diary of a CEO",
+            "author": "Steven Bartlett",
+            "description": "Steven Bartlett has never been one to follow conventional rules. He\u2019s achieved extraordinary success and emerged as one of the greatest marketing minds of our time by doing things differently. But there is a method to his maverick style...."
           }
         ]
       },
@@ -2545,6 +2905,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B071Z51HRG.jpg",
+            "title": "Steve Jobs",
+            "author": "Walter Isaacson",
+            "description": "From the author of the best-selling biographies of Benjamin Franklin and Albert Einstein, this is the exclusive biography of Steve Jobs....",
             "found_by": [
               "bm25",
               "vector"
@@ -2577,6 +2940,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B0725N22R7.jpg",
+            "title": "Benjamin Franklin: An American Life",
+            "author": "Walter Isaacson",
+            "description": "Benjamin Franklin is the founding father who winks at us - an ambitious urban entrepreneur who rose up the social ladder, from leather-aproned shopkeeper to dining with kings....",
             "found_by": [
               "bm25",
               "vector"
@@ -2609,6 +2975,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071XQJT58.jpg",
+            "title": "Elon Musk",
+            "author": "Ashlee Vance",
+            "description": "Elon Musk is both an illuminating and authorized look at the extraordinary life of one of Silicon Valley's most exciting, unpredictable, and ambitious entrepreneurs....",
             "found_by": [
               "vector"
             ],
@@ -2640,6 +3009,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/0593162943.jpg",
+            "title": "The Willpower Instinct",
+            "author": "Kelly McGonigal",
+            "description": "Based on Stanford University psychologist Kelly McGonigal's wildly popular course \"The Science of Willpower\", The Willpower Instinct is the first book to explain the science of self-control and how it can be harnessed to improve our health, happiness, and productivity....",
             "found_by": [
               "bm25",
               "vector"
@@ -2672,6 +3044,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B07BN1QB8C.jpg",
+            "title": "The Business of Expertise",
+            "author": "David C. Baker",
+            "description": "This passionate expertise manifesto is intended to elevate the impact of advisors who sell insight as entrepreneurs....",
             "found_by": [
               "vector"
             ],
@@ -2723,7 +3098,10 @@
             "score": 0.6916,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B0848WT54C.jpg"
+            "cover": "covers/B0848WT54C.jpg",
+            "title": "The Successful Speaker",
+            "author": "Grant Baldwin",
+            "description": "Do you have a message you want to get out into the world? Have you ever dreamed of speaking for a living? Is there something you have to say, but you just aren't sure what to do next? The Successful Speaker is a proven, easy-to-follow guide to helping you do just that...."
           },
           {
             "rank": 2,
@@ -2733,7 +3111,10 @@
             "score": 0.6747,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B09HSS4YH8.jpg"
+            "cover": "covers/B09HSS4YH8.jpg",
+            "title": "A Mind for Numbers",
+            "author": "Barbara Oakley",
+            "description": "Whether you are a student struggling to fulfill a math or science requirement, or you are embarking on a career change that requires a new skill set, A Mind for Numbers offers the tools you need to get a better grasp of that intimidating material...."
           },
           {
             "rank": 3,
@@ -2743,7 +3124,10 @@
             "score": 0.6455,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B072L7MNMQ.jpg"
+            "cover": "covers/B072L7MNMQ.jpg",
+            "title": "The Elements of Style (Recorded Books Edition)",
+            "author": "William Strunk Jr.; E. B. White",
+            "description": "The Elements of Style has long been a valued and beloved resource for all writers...."
           },
           {
             "rank": 4,
@@ -2753,7 +3137,10 @@
             "score": 0.603,
             "score_type": "bm25",
             "is_gold": true,
-            "cover": "covers/B09GJ5CBZJ.jpg"
+            "cover": "covers/B09GJ5CBZJ.jpg",
+            "title": "How to Speak How to Listen",
+            "author": "Mortimer J. Adler",
+            "description": "With over half a million copies in print of his \u201cliving classic\u201d How to Read a Book in print, intellectual, philosopher, and academic Mortimer J. Adler set out to write an accompanying volume on speaking and listening...."
           },
           {
             "rank": 5,
@@ -2763,7 +3150,10 @@
             "score": 0.5948,
             "score_type": "bm25",
             "is_gold": false,
-            "cover": "covers/B086DN569S.jpg"
+            "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents...."
           }
         ],
         "lex_query": "books get better speaking front crowd"
@@ -2789,7 +3179,10 @@
             "score": 0.6713,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B071HMCHPL.jpg"
+            "cover": "covers/B071HMCHPL.jpg",
+            "title": "How to Win Friends & Influence People",
+            "author": "Dale Carnegie",
+            "description": "For over 60 years the rock-solid, time-tested advice in this audiobook has carried thousands of now-famous people up the ladder of success in their business and personal lives...."
           },
           {
             "rank": 2,
@@ -2799,7 +3192,10 @@
             "score": 0.6613,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B07NJJJX8R.jpg"
+            "cover": "covers/B07NJJJX8R.jpg",
+            "title": "Talking to Strangers",
+            "author": "Malcolm Gladwell",
+            "description": "Malcolm Gladwell, host of the podcast Revisionist History and author of the number-one New York Times best seller Outliers, reinvents the audiobook in this immersive production of Talking to Strangers, a powerful examination of our interactions with people...."
           },
           {
             "rank": 3,
@@ -2809,7 +3205,10 @@
             "score": 0.6473,
             "score_type": "cosine",
             "is_gold": true,
-            "cover": "covers/B0848WT54C.jpg"
+            "cover": "covers/B0848WT54C.jpg",
+            "title": "The Successful Speaker",
+            "author": "Grant Baldwin",
+            "description": "Do you have a message you want to get out into the world? Have you ever dreamed of speaking for a living? Is there something you have to say, but you just aren't sure what to do next? The Successful Speaker is a proven, easy-to-follow guide to helping you do just that...."
           },
           {
             "rank": 4,
@@ -2819,7 +3218,10 @@
             "score": 0.6453,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B072HS6MQS.jpg"
+            "cover": "covers/B072HS6MQS.jpg",
+            "title": "Influence",
+            "author": "Robert B. Cialdini",
+            "description": "Influence, the classic book on persuasion, explains the psychology of why people say yes - and how to apply these understandings...."
           },
           {
             "rank": 5,
@@ -2829,7 +3231,10 @@
             "score": 0.6426,
             "score_type": "cosine",
             "is_gold": false,
-            "cover": "covers/B09MV4LX3J.jpg"
+            "cover": "covers/B09MV4LX3J.jpg",
+            "title": "Crucial Conversations (Third Edition)",
+            "author": "Joseph Grenny; Kerry Patterson; Ron McMillan; Al Switzler; Emily Gregory",
+            "description": "The book that revolutionized business communications has been updated for today's workplace. Crucial Conversations provides powerful skills to ensure every conversation - especially difficult ones - leads to the results you want...."
           }
         ]
       },
@@ -2855,6 +3260,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B0848WT54C.jpg",
+            "title": "The Successful Speaker",
+            "author": "Grant Baldwin",
+            "description": "Do you have a message you want to get out into the world? Have you ever dreamed of speaking for a living? Is there something you have to say, but you just aren't sure what to do next? The Successful Speaker is a proven, easy-to-follow guide to helping you do just that....",
             "found_by": [
               "bm25",
               "vector"
@@ -2887,6 +3295,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B086DN569S.jpg",
+            "title": "The 7 Habits of Highly Effective People",
+            "author": "Sean Covey; Jim Collins - foreword; Stephen R. Covey",
+            "description": "One of the most inspiring and impactful books ever written, The Seven Habits of Highly Effective People has captivated people for nearly three decades. It has transformed the lives of presidents and CEOs, educators, and parents....",
             "found_by": [
               "bm25",
               "vector"
@@ -2919,6 +3330,9 @@
             "score_type": "fused",
             "is_gold": true,
             "cover": "covers/B09GJ5CBZJ.jpg",
+            "title": "How to Speak How to Listen",
+            "author": "Mortimer J. Adler",
+            "description": "With over half a million copies in print of his \u201cliving classic\u201d How to Read a Book in print, intellectual, philosopher, and academic Mortimer J. Adler set out to write an accompanying volume on speaking and listening....",
             "found_by": [
               "bm25",
               "vector"
@@ -2951,6 +3365,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071L3GWV1.jpg",
+            "title": "Thinner Leaner Stronger",
+            "author": "Michael Matthews",
+            "description": "You can get that beautiful \u201cbeach-ready\u201d body without following a bland, boring, bodybuilding diet and without doing exhausting strength training workouts you hate. And this exercise book shows you how....",
             "found_by": [
               "bm25",
               "vector"
@@ -2983,6 +3400,9 @@
             "score_type": "fused",
             "is_gold": false,
             "cover": "covers/B071HMCHPL.jpg",
+            "title": "How to Win Friends & Influence People",
+            "author": "Dale Carnegie",
+            "description": "For over 60 years the rock-solid, time-tested advice in this audiobook has carried thousands of now-famous people up the ladder of success in their business and personal lives....",
             "found_by": [
               "vector"
             ],
