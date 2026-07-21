@@ -22,16 +22,20 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g, 
     # lexical/hybrid keyword leg searches the CLEANED query (rare words: filler and
     # common words like "book"/"looking for" dropped); vector leg keeps the raw
     # natural-language query for meaning.
+    rerank_fell_back = None
     if mode == "lexical":
         ranked, score_type = h.lexical(conn, lex_q, K), "bm25"
     elif mode == "vector":
         ranked, score_type = h.vector(conn, query, K), "cosine"
     elif rerank:
         # hybrid + post-fusion cross-encoder rerank: take the fusion top-N, re-score
-        # with the reranker, cut to K. Falls back to fusion order inside rr.rerank().
+        # with the reranker, cut to K. If the reranker is unreachable, rr.rerank sets
+        # meta["fell_back"] — we surface that so the caller can report it rather than
+        # silently returning fusion order dressed up as "reranked".
         fusion = h.hybrid_split(conn, lex_q, query, rr.RERANK_N)
         pairs = [(cid, h.snippet(conn, cid, rr.RERANK_DOC_CHARS)) for cid, _ in fusion]
-        reordered, _m = rr.rerank(query, pairs, n=rr.RERANK_N, k=K)
+        reordered, meta = rr.rerank(query, pairs, n=rr.RERANK_N, k=K)
+        rerank_fell_back = bool(meta.get("fell_back"))
         ranked = [(cid, sc if sc is not None else 0.0) for cid, _t, sc in reordered]
         score_type = "rerank"
     else:
@@ -73,6 +77,8 @@ def build_response(conn, query, lex_q, mode, gold, lex_pool, vec_pool, expl, g, 
 
     resp = {"query": query, "mode": mode, "k": K,
             "gold_chunk_ids": sorted(gold), "gold_rank": gold_rank, "results": results}
+    if rerank_fell_back is not None:
+        resp["rerank_fell_back"] = rerank_fell_back
     if mode == "lexical":
         # what the keyword leg actually searched: the raw query minus English
         # stopwords (core.keywords()), shown without the CONTAINS "OR" syntax.

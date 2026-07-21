@@ -134,6 +134,9 @@ body { margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg)
 /* ---- output ---- */
 .output { margin-top:18px; }
 .placeholder { color:var(--muted); }
+.rerank-err { color:#7a2e2e; background:#fdf3f0; border:1px solid #e7c3b8;
+  border-radius:10px; padding:14px 16px; line-height:1.5; }
+.rerank-err code { background:#f3ddd5; color:#7a2e2e; padding:1px 5px; border-radius:4px; }
 
 /* hero gold-rank badge */
 .hero { display:flex; flex-wrap:wrap; align-items:center; gap:10px; font-size:1.05rem; font-weight:700;

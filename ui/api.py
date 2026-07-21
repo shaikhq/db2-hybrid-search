@@ -67,7 +67,14 @@ def search(q: str = Query(..., description="search text"), k: int = bf.K,
         modes = bf.responses_for(conn, q, gold, rerank=do_rerank)
     finally:
         ibm_db.close(conn)
-    return {"query": q, "gold_chunk_ids": sorted(gold), "reranked": do_rerank, **modes}
+    # If reranking was requested but the reranker was unreachable, say so explicitly
+    # rather than pass off fusion order as "reranked" — the UI shows an error.
+    fell_back = do_rerank and modes.get("hybrid", {}).get("rerank_fell_back", False)
+    out = {"query": q, "gold_chunk_ids": sorted(gold),
+           "reranked": do_rerank and not fell_back, **modes}
+    if fell_back:
+        out["rerank_unavailable"] = True
+    return out
 
 
 @app.get("/api/smart_search")

@@ -185,6 +185,18 @@ async function run() {
         fetch(`/api/search?q=${enc}&rerank=1`).then((r) => { if (!r.ok) throw 0; return r.json(); }),
         fetch(`/api/search?q=${enc}&rerank=0`).then((r) => { if (!r.ok) throw 0; return r.json(); }),
       ]);
+      // Reranker requested but its server was unreachable: report it, don't silently
+      // show the un-reranked fusion order as if it were reranked.
+      if (rr.rerank_unavailable) {
+        $("#output").innerHTML = `<p class="placeholder rerank-err">
+          <b>Reranker is not available.</b> The reranker server (<code>:8087</code>) isn't
+          reachable, so results were not reranked. Start it with
+          <code>./scripts/0_start-services.sh</code> (needs the bge-reranker model — see
+          install/README.md §3), then click Rerank again.</p>`;
+        setRerank(false);                 // reflect that reranking did not happen
+        state.record = null; state.recordFusion = null;
+        return;
+      }
       state.record = rr; state.recordFusion = fu;
     } else {
       const r = await fetch(`/api/search?q=${enc}&rerank=0`);
