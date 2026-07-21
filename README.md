@@ -112,10 +112,16 @@ have Db2 installed.
 ### Step 0 — System packages
 
 ```bash
-sudo dnf install -y git cmake gcc-c++ python3.12 libaio ksh
+sudo dnf install -y git cmake gcc-c++ python3.12 \
+                    libaio libstdc++ ksh pam numactl-libs libnsl libxcrypt-compat
 ```
-`git`/`cmake`/`gcc-c++` build the embedding server; `libaio`/`ksh` are Db2
-prerequisites; `python3.12` is the project runtime (already present on RHEL 10.2).
+`git`/`cmake`/`gcc-c++` build the embedding server; `python3.12` is the project
+runtime (already present on RHEL 10.2); the rest are **Db2 prerequisites**.
+`libxcrypt-compat` (provides the legacy `libcrypt.so.1`) is required on RHEL 10 —
+without it `db2prereqcheck` fails with `DBT3507E`.
+
+> Db2's own `db2prereqcheck` lists every missing package for your exact version —
+> run it from the install media, install whatever it names, and re-run until clean.
 
 ### Step 1 — Get the code
 

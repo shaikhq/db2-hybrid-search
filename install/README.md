@@ -120,7 +120,12 @@ rerunning the Step 5 command (no reinstall). You never query OpenSearch directly
 **1. Install Db2 and create the instance** (steps before `su - db2inst1` run as **root**):
 
 ```bash
+# OS prerequisites (RHEL 10). libxcrypt-compat provides the legacy libcrypt.so.1
+# that Db2 needs — without it db2_install/db2prereqcheck fail with DBT3507E.
+sudo dnf install -y libaio libstdc++ ksh pam numactl-libs libnsl libxcrypt-compat
+
 tar -xvf v12.1.5_linuxx64_server_dec.tar.gz && cd server_dec
+./db2prereqcheck -v 12.1.5.0                     # confirms all prereqs; install anything it names
 ./db2_install                                    # accept defaults
 useradd db2inst1 && passwd db2inst1
 cd /opt/ibm/db2/V12.1/instance
