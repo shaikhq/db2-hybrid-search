@@ -161,6 +161,12 @@ body { margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg)
   display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 .row.open .rdesc { -webkit-line-clamp:unset; overflow:visible; }
 .row.open .rtitle { white-space:normal; }
+/* "Show more/less" — only on rows whose description actually overflows (JS adds
+   .clamped after measuring). Clicking anywhere on the card toggles .open. */
+.rmore { display:none; margin-top:5px; font-size:.8rem; font-weight:600; color:#2b6cb0; }
+.row.clamped > .rbody .rmore { display:inline-block; }
+.row.clamped:not(.open) .rmore::before { content:"Show more \25be"; }
+.row.clamped.open .rmore::before { content:"Show less \25b4"; }
 .rank { font-family:var(--mono); font-size:.9rem; color:var(--muted); width:1.6em; text-align:right; }
 .cid { font-family:var(--mono); font-size:.82rem; font-weight:600; background:#eef0f4;
   color:#374151; padding:2px 8px; border-radius:6px; white-space:nowrap; }

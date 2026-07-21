@@ -206,6 +206,18 @@ function render() {
   else if (state.showLexical || state.showSemantic) html = legCompareHtml(rec);          // Lexical/Semantic legs side by side
   else html = hybridHtml(rec);
   $("#output").innerHTML = html;
+  markClamped($("#output"));
+}
+
+// A description longer than its 3-line clamp gets a "Show more" affordance; a short
+// one that fits doesn't. Measured after layout (scrollHeight vs clientHeight) so the
+// cue only appears when there's genuinely more to reveal. Clicking the card (existing
+// #output handler toggles .open) un-clamps it.
+function markClamped(root) {
+  root.querySelectorAll(".row").forEach((row) => {
+    const d = row.querySelector(".rdesc");
+    if (d && d.scrollHeight - d.clientHeight > 2) row.classList.add("clamped");
+  });
 }
 
 // The keyword leg searches your query minus English stopwords (core.keywords()).
@@ -239,7 +251,7 @@ function resultCard(r, hl, extra) {
     <div class="rbody">
       <div class="rline"><span class="rank">${r.rank}</span><span class="rtitle">${highlight(esc(title), hl)}</span></div>
       ${r.author ? `<div class="rby">by ${esc(r.author)}</div>` : ""}
-      ${desc ? `<div class="rdesc">${highlight(esc(desc), hl)}</div>` : ""}
+      ${desc ? `<div class="rdesc">${highlight(esc(desc), hl)}</div><span class="rmore" aria-hidden="true"></span>` : ""}
       ${extra || ""}
       ${scoresHtml(r)}
     </div>

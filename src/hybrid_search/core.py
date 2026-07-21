@@ -350,7 +350,7 @@ def book_meta(conn, chunk_id):
     and the cover path — all read from Db2's own columns. Lets the search UI render
     a proper card (bold title, author, description) instead of the raw chunk_text."""
     sql = (f"SELECT title, authors, "
-           f"CAST(SUBSTR(COALESCE(description,''),1,600) AS VARCHAR(600)), "
+           f"CAST(SUBSTR(COALESCE(description,''),1,4000) AS VARCHAR(4000)), "
            f"COALESCE(cover_url,'') FROM {T} WHERE chunk_id = ?")
     _log_sql(sql, [chunk_id], level=logging.DEBUG)
     stmt = ibm_db.prepare(conn, sql)
