@@ -30,7 +30,7 @@ verifies, then leaves the service stopped (`0_start-services.sh` starts them for
 | `9200` | OpenSearch (Db2 Text Search backend) | `0_start-services.sh` |
 | `8085` | llama.cpp **embedding** server (bge-small-en-v1.5) | `0_start-services.sh` |
 | `8086` | llama.cpp **generation** server (Qwen2.5-3B) — *optional*, query-understanding | `scripts/query-understanding/start_gen_server.sh` |
-| `8087` | llama.cpp **reranker** server (bge-reranker-v2-m3) — *optional*, search reranking | `scripts/rerank/start_rerank_server.sh` |
+| `8087` | llama.cpp **reranker** server (bge-reranker-v2-m3) — *optional*, search reranking | `0_start-services.sh` (auto, if the model is present) |
 
 > **Important — llama.cpp runs as *separate* server processes on *different* ports.**
 > `llama-server`'s `--embedding` and `--reranking` flags are **mutually exclusive** at
@@ -231,8 +231,13 @@ note in §0).
 mkdir -p ~/models/bge-reranker-v2-m3
 curl -fSL -o ~/models/bge-reranker-v2-m3/bge-reranker-v2-m3-Q4_K_M.gguf \
   "https://huggingface.co/gpustack/bge-reranker-v2-m3-GGUF/resolve/main/bge-reranker-v2-m3-Q4_K_M.gguf"
-scripts/rerank/start_rerank_server.sh    # --reranking on :8087; see scripts/rerank/README.md
 ```
+
+Once the model is downloaded, **`0_start-services.sh` starts the reranker
+automatically** on :8087 (and `3_stop-services.sh` stops it) — no separate command.
+To apply it to every search, set **`RERANK_ON=1`** in `.env`; otherwise it runs only
+when the Search tab's **Rerank** button is used. (`scripts/rerank/start_rerank_server.sh`
+still exists to start it standalone.)
 
 **Generation** — `Qwen2.5-3B-Instruct` (~2 GB), for the query-understanding gated mode:
 
