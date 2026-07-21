@@ -66,10 +66,13 @@ echo 'vm.max_map_count=262144' | sudo tee /etc/sysctl.d/99-opensearch.conf
 sudo sysctl -p /etc/sysctl.d/99-opensearch.conf     # verify: sysctl vm.max_map_count -> 262144
 ```
 
-**2. Create a service account:**
+**2. Ensure the runtime user exists.** The whole stack — OpenSearch, Db2, the app —
+runs as **one** user (`db2inst1`, the Db2 instance owner), so there's no cross-user
+`sudo` to start or stop services. Create it now if it doesn't exist yet (Db2's setup
+in §2 reuses the same user; OpenSearch just can't run as root):
 
 ```bash
-sudo useradd --system --no-create-home --shell /sbin/nologin opensearch
+id db2inst1 &>/dev/null || sudo useradd db2inst1
 ```
 
 **3. Download and unpack into /opt/opensearch:**
@@ -80,7 +83,7 @@ sudo wget https://artifacts.opensearch.org/releases/bundle/opensearch/3.7.0/open
 sudo tar -xzf opensearch-3.7.0-linux-x64.tar.gz
 sudo mv opensearch-3.7.0 opensearch
 sudo rm opensearch-3.7.0-linux-x64.tar.gz
-sudo chown -R opensearch:opensearch /opt/opensearch
+sudo chown -R db2inst1:db2inst1 /opt/opensearch      # the whole tree is owned by the runtime user
 ```
 
 **4. Configure** — append to `/opt/opensearch/config/opensearch.yml` (single-node, security off):
@@ -94,17 +97,22 @@ discovery.type: single-node
 plugins.security.disabled: true
 ```
 
-**5. Start (background) and check:**
+**5. Start (background) and check.** During install you're `root`, so start it *as*
+`db2inst1` with `sudo -u`:
 
 ```bash
-sudo -u opensearch /opt/opensearch/bin/opensearch -d -p /opt/opensearch/opensearch.pid
+sudo -u db2inst1 /opt/opensearch/bin/opensearch -d -p /opt/opensearch/opensearch.pid
 # ~1 min to be ready the first time, then:
 curl "http://localhost:9200"     # JSON showing node-1 / db2-text-search-cluster = running
 ```
 
-Stop it: `sudo kill "$(cat /opt/opensearch/opensearch.pid)"`. Start again later by
-rerunning the Step 5 command (no reinstall). You never query OpenSearch directly —
-**Db2 Text Search owns the index.**
+Stop it: `sudo -u db2inst1 kill "$(cat /opt/opensearch/opensearch.pid)"`.
+
+> **Day to day you won't type any of this.** `0_start-services.sh` /
+> `3_stop-services.sh` run *as* `db2inst1`, and OpenSearch is owned by `db2inst1`, so
+> they start and stop it with **no `sudo` and no password prompt**. The `sudo -u`
+> above is only because the one-time install runs as root. You never query OpenSearch
+> directly — **Db2 Text Search owns the index.**
 
 ---
 
@@ -136,7 +144,8 @@ tar -xvf v12.1.5_linuxx64_server_dec.tar.gz && cd server_dec
 > **ignore them**. Don't force with `-f sysreq`; it skips the real errors too.
 
 ```bash
-useradd db2inst1 && passwd db2inst1
+id db2inst1 &>/dev/null || useradd db2inst1      # may already exist from §1 (OpenSearch)
+passwd db2inst1
 cd /opt/ibm/db2/V12.1/instance
 ./db2icrt -u db2inst1 -nosharedgroup db2inst1    # db2inst1 is also the fenced user
 ```
@@ -158,7 +167,29 @@ db2 connect to sample
 db2 "SELECT * FROM employee FETCH FIRST 5 ROWS ONLY"   # should return 5 rows
 ```
 
-**3. Enable the vector index registry var** (once per instance, before ingest):
+**3. Enable Db2 Text Search + register OpenSearch** (once per database — the
+lexical/BM25 leg lives here). Skipping this is the classic manual-install miss: the
+vector leg still works, but ingest's `SYSTS_CREATE`/`SYSTS_UPDATE` fail with
+`CIE00323 … database not enabled for text` and there is **no lexical or hybrid
+search**. Run as `db2inst1`, with OpenSearch already installed (running not required
+— registration is catalog metadata):
+
+```bash
+db2 -tv <<'SQL'
+CONNECT TO SAMPLE;
+CREATE TABLESPACE systoolspace;                    -- harmless "already exists" if db2sampl made it
+CALL SYSPROC.SYSTS_ENABLE('en_US', ?);
+CALL SYSPROC.SYSTS_CREATE_SERVER('localhost', 9200, 'dummyuser:dummypassword', 'dummymasterkey2024', 'OPENSEARCH', 0, 2, 0, 'en_US', ?, ?);
+SELECT SERVERID, CAST(HOST AS VARCHAR(40)) AS HOST, PORT FROM SYSIBMTS.TSSERVERS WHERE ENGINETYPE='OPENSEARCH';
+CONNECT RESET;
+SQL
+```
+
+The `SELECT` must return the registered server as **`SERVERID 1`** — `scripts/1_ingest.sql`
+hard-codes `'SERVERID 1'`. On a fresh database the first server registered gets ID 1;
+if yours differs, edit the `SERVERID` in `1_ingest.sql` to match.
+
+**4. Enable the vector index registry var** (once per instance, before ingest):
 
 ```bash
 db2set DB2_VECTOR_INDEXING=YES -immediate

@@ -14,8 +14,8 @@ if fuser -k "${EMBED_PORT}/tcp" 2>/dev/null; then echo "Embeddings: stopped"; el
 # cross-encoder reranker (started by 0_start-services.sh when its model is present)
 if fuser -k "${RERANK_PORT}/tcp" 2>/dev/null; then echo "Reranker: stopped"; else echo "Reranker: not running"; fi
 
-# OpenSearch
-if [ -f "$OS_HOME/opensearch.pid" ] && sudo kill "$(cat "$OS_HOME/opensearch.pid")" 2>/dev/null; then
+# OpenSearch (runs as db2inst1 — same owner as this script, so no sudo needed)
+if [ -f "$OS_HOME/opensearch.pid" ] && kill "$(cat "$OS_HOME/opensearch.pid")" 2>/dev/null; then
   echo "OpenSearch: stopped"
 else
   echo "OpenSearch: not running (or no pid file)"

@@ -26,7 +26,10 @@ fi
 if curl -s -o /dev/null "http://localhost:${OS_PORT}"; then
   echo "OpenSearch: already running on :${OS_PORT}"
 else
-  sudo -u opensearch "$OS_HOME/bin/opensearch" -d -p "$OS_HOME/opensearch.pid"
+  # Redirect the JVM's early startup notices (incubator/Unsafe/JNA warnings) off the
+  # terminal; OpenSearch's real logs still go to $OS_HOME/logs/. Keeps this script's
+  # output clean. -d already daemonizes.
+  "$OS_HOME/bin/opensearch" -d -p "$OS_HOME/opensearch.pid" >/tmp/opensearch-start.log 2>&1
   echo "OpenSearch: starting on :${OS_PORT} (~1 min to be ready)"
 fi
 

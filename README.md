@@ -194,14 +194,14 @@ you'll ever connect over TCP — find it with the snippet in
 [install/README.md §2](install/README.md#2-db2-1215--instance--text-search)).
 `.env` is git-ignored; real credentials are never committed.
 
-### Step 7 — Start services & verify
+### Step 7 — Start services
 
 ```bash
 ./scripts/0_start-services.sh      # starts Db2, OpenSearch, embedding server (idempotent)
-./scripts/smoke-test.sh            # confirms all three are up + a real search returns results
 ```
-**You should see:** `SMOKE TEST: PASS`. OpenSearch takes ~1 min to accept
-connections the first time.
+**You should see:** each service reported as `running`/`starting`. OpenSearch takes
+~1 min to accept connections the first time. (The full `smoke-test.sh` runs *after*
+ingest, below — it does an end-to-end search, so it needs the corpus loaded first.)
 
 That's the one-time setup. **Everything below is the day-to-day workflow.**
 
@@ -228,6 +228,15 @@ model, fills a `VECTOR` column via `TO_EMBEDDING`, and builds the vector index.
 `DB20000I … completed successfully`.
 **Leaves behind:** one table (`myschema.chunks`) where every row has `chunk_id`,
 `chunk_text`, a text-search index entry, and an `embedding` vector.
+
+Now verify the whole engine end-to-end — services **and** a real search:
+
+```bash
+./scripts/smoke-test.sh
+```
+**You should see:** `SMOKE TEST: PASS`. (Run this only *after* ingest — it searches
+the corpus, so it fails with `MYSCHEMA.CHUNKS_EMBED is an undefined name` if
+`1_ingest.sql` hasn't run yet.)
 
 Then run the reference search — all three legs for one query, in one Db2 statement:
 

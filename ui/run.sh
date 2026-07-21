@@ -18,6 +18,17 @@ REPO="$(dirname "$HERE")"
 OWNER="${DB2_INSTANCE_OWNER:-db2inst1}"
 PORT="${PORT:-8000}"
 
+# Run a command as the Db2 instance owner. If we ARE already that user (the normal
+# "operate as db2inst1" case), run it directly — no sudo, which db2inst1 need not
+# have. Only drop privileges via sudo when a different user launched this script.
+as_owner() {
+    if [ "$(id -un)" = "$OWNER" ]; then
+        bash -lc "$1"
+    else
+        sudo -iu "$OWNER" bash -lc "$1"
+    fi
+}
+
 if [ "${1:-}" = "--live" ]; then
     # Stage everything the instance owner can read (it can't read /home/<you>).
     STAGE=/tmp/hybrid-ui
@@ -36,14 +47,13 @@ if [ "${1:-}" = "--live" ]; then
     # A previous server orphaned by a closed terminal keeps holding the port and
     # would block the bind ("address already in use"). It runs as $OWNER, so free
     # the port as $OWNER before starting.
-    if sudo -iu "$OWNER" bash -lc "fuser ${PORT}/tcp" >/dev/null 2>&1; then
+    if as_owner "fuser ${PORT}/tcp" >/dev/null 2>&1; then
         echo "Port ${PORT} busy — stopping the previous live server first."
-        sudo -iu "$OWNER" bash -lc "fuser -k ${PORT}/tcp" >/dev/null 2>&1 || true
+        as_owner "fuser -k ${PORT}/tcp" >/dev/null 2>&1 || true
         sleep 1
     fi
     echo "LIVE  → http://127.0.0.1:$PORT   (real Db2 search as $OWNER; docs at /docs)"
-    sudo -iu "$OWNER" bash -lc \
-        "cd '$STAGE' && DB2_HOST=local '$PY' -m uvicorn api:app --host 127.0.0.1 --port $PORT"
+    as_owner "cd '$STAGE' && DB2_HOST=local '$PY' -m uvicorn api:app --host 127.0.0.1 --port $PORT"
 else
     [ -f "$HERE/static/fixtures.json" ] || {
         echo "No fixtures yet — run ./ui/build_fixtures.sh first." >&2; exit 1; }
