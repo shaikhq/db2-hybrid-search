@@ -53,5 +53,5 @@ if curl -s -o /dev/null "http://127.0.0.1:${RERANK_PORT}/health"; then
 elif [ -f "$RERANK_GGUF" ]; then
   "$HERE/rerank/start_rerank_server.sh" || echo "Reranker: failed to start — see /tmp/rerank-server.log"
 else
-  echo "Reranker: model not found at $RERANK_GGUF — skipping (see install/README.md §3 to enable)"
+  echo "Reranker: model not found at $RERANK_GGUF — skipping (see the README, llama.cpp models, to enable)"
 fi

@@ -1,12 +1,36 @@
 # Hybrid Search on IBM Db2 12.1.5
 
-Keyword search **and** semantic (vector) search over the same data, fused into one
-ranking — built entirely inside **IBM Db2 12.1.5**, with a small local embedding
-server. No external vector database, no separate search service to keep in sync.
-One Db2 table is the source of truth.
+This tutorial implements **hybrid search** on **IBM Db2 12.1.5**, using the AI stack
+built into Db2:
 
-This README takes you from **a bare Red Hat machine to a running app**, step by
-step. No prior Db2, OpenSearch, or embeddings experience assumed.
+- **Vector storage** — native `VECTOR` columns
+- **Vector similarity** — `VECTOR_DISTANCE` (cosine)
+- **Similarity search** over the vector column
+- **Vector index** — approximate-nearest-neighbor index for fast retrieval
+- **Text search** — Db2 Text Search (BM25), OpenSearch-backed
+- **Language-model integration** — in-database `TO_EMBEDDING`, calling a local
+  OpenAI-compatible model (no API keys, no cloud)
+
+**The use case: audiobook search.** The corpus is a catalogue of 92 audiobooks. For
+each book we keep its title, some metadata (author, narrator), and a summary — all
+in a single Db2 table.
+
+**Ingestion.** Each book's description is (a) fed into a **lexical (keyword) index**
+through Db2 Text Search, and (b) **vectorized** by a lightweight text-embedding model
+running locally, called from SQL via Db2's `TO_EMBEDDING`. The rows and both indexes
+are stored in Db2.
+
+**Search.** A query runs through both legs — the **lexical index** for keyword search
+and **vector search** for dense retrieval — and a single Db2 SQL query combines both
+result sets into one unified ranking (see [How the fusion works](#how-the-fusion-works-and-why-not-rrf)).
+An **optional reranker** can refine this: the application layer sends the top ~20
+hybrid results to a locally running cross-encoder and presents the reranker's
+top matches.
+
+This README takes you from **a bare Red Hat machine to a running app**, one command
+at a time. No prior Db2, OpenSearch, or embeddings experience assumed. Every install
+command is on its own line so you can copy and run them one at a time and watch each
+result before moving on.
 
 ---
 
@@ -14,8 +38,15 @@ step. No prior Db2, OpenSearch, or embeddings experience assumed.
 
 - [What it does & why](#what-it-does--why)
 - [Architecture](#architecture-one-row-two-representations)
-- [See it in 30 seconds (no install)](#see-it-in-30-seconds-no-install)
 - [Full setup on a fresh RHEL box](#full-setup-on-a-fresh-rhel-box) ← the main guide
+  - [Step 1 — Db2 12.1.5 + instance](#step-1--db2-1215--instance)
+  - [Step 2 — OpenSearch](#step-2--opensearch-the-text-search-backend)
+  - [Step 3 — Enable Db2 Text Search + register OpenSearch](#step-3--enable-db2-text-search--register-opensearch)
+  - [Step 4 — llama.cpp + the three models](#step-4--llamacpp--the-three-models)
+  - [Step 5 — Get the code](#step-5--get-the-code)
+  - [Step 6 — Python project](#step-6--python-project)
+  - [Step 7 — Configure `.env`](#step-7--configure-env)
+  - [Step 8 — Start services & verify](#step-8--start-services--verify)
 - [Run the pipeline](#run-the-pipeline-ingest--search)
 - [Run the app](#run-the-app)
 - [Try it: example queries](#try-it-example-queries)
@@ -69,171 +100,352 @@ The fusion is **not** plain Reciprocal Rank Fusion — see
 
 ---
 
-## See it in 30 seconds (no install)
-
-Before installing anything, you can run the **offline demo**. It serves a frozen
-snapshot of real search results — no Db2, no Python packages, no models. You only
-need `git` and Python 3.
-
-```bash
-git clone <your-repo-url> db2-hybrid-search && cd db2-hybrid-search
-./ui/run.sh                     # serves the static demo
-```
-
-Open **http://127.0.0.1:8000**. You'll land on a **Start here** page, then a
-**Demo** tab that shows — for real queries — where each single retriever fails and
-hybrid succeeds. Stop with `Ctrl-C`.
-
-This is the whole point of the project, visible before you commit to the full
-install. When you're ready for live search over your own data, continue below.
-
----
-
 ## Full setup on a fresh RHEL box
 
-**What you're building:** OpenSearch (the keyword-index backend) → Db2 (the
-database + vector engine) → a local embedding server → the Python project → your
-data ingested → the app.
+**What you're building, in order:** Db2 (the database + vector engine) → OpenSearch
+(the keyword-index backend) → Db2 Text Search enabled → a local llama.cpp server +
+models → the project code → the Python project → your data ingested → the app.
 
 **Time & footprint:** ~30–45 min, mostly downloads. CPU-only is fine (no GPU).
 Budget ~2 GB RAM for OpenSearch and a few GB for Db2. Developed on **RHEL 10**.
 
-**You will need:** root/sudo (for installs), the **Db2 12.1.5 server install
-media**, and internet access. Everything is scriptable except obtaining the Db2
-media, which requires an IBM entitlement.
+**You will need:** root/sudo (for the installs), the **Db2 12.1.5 server install
+media** (requires an IBM entitlement — everything else downloads freely), and
+internet access. `git`, `cmake`, `gcc-c++`, `wget`, and Python 3.12 are used along
+the way and already ship on RHEL 10 — install any that are missing on your box.
 
-> **Run the project steps as the Db2 instance owner** (e.g. `db2inst1`). Db2's
-> text-search admin steps and the fast local connection require it.
+The whole stack runs as **one user, `db2inst1`** (the Db2 instance owner). Steps 1–2
+are system-level, run as **root**; from Step 3 on you work as `db2inst1`
+(`su - db2inst1`). Each step is marked **(root)** or **(db2inst1)** so you always
+know which identity to use.
 
-Each component below has an **automated installer** in [`install/`](install/) that
-installs, verifies, and leaves the service stopped. The commands here are the happy
-path; [install/README.md](install/README.md) is the detailed reference (manual
-steps, every option, and a Gotchas table) — read it if a step fails or you already
-have Db2 installed.
+---
 
-### Step 0 — System packages
+### Step 1 — Db2 12.1.5 + instance
 
-```bash
-sudo dnf install -y git cmake gcc-c++ python3.12 \
-                    libaio libstdc++ ksh pam numactl-libs libnsl libxcrypt-compat
-```
-`git`/`cmake`/`gcc-c++` build the embedding server; `python3.12` is the project
-runtime (already present on RHEL 10.2); the rest are **Db2 prerequisites**.
-`libxcrypt-compat` (provides the legacy `libcrypt.so.1`) is required on RHEL 10 —
-without it `db2prereqcheck` fails with `DBT3507E`.
+**(root)** You provide the Db2 12.1.5 server install media (an IBM entitlement — the
+example assumes the tarball `v12.1.5_linuxx64_server_dec.tar.gz`).
 
-> Db2's own `db2prereqcheck` lists every missing package for your exact version —
-> run it from the install media, install whatever it names, and re-run until clean.
-
-### Step 1 — Get the code
+**1.1 — Install the one Db2 prerequisite.** On RHEL 10 the only missing library is
+`libxcrypt-compat` (it provides the legacy `libcrypt.so.1`; without it `db2_install`
+fails with `DBT3507E`):
 
 ```bash
-git clone <your-repo-url> db2-hybrid-search && cd db2-hybrid-search
+sudo dnf install -y libxcrypt-compat
 ```
 
-### Step 2 — OpenSearch (install **before** Db2)
-
-Db2 Text Search registers OpenSearch as its backend, so OpenSearch must exist first.
+**1.2 — Install the Db2 binaries and verify:**
 
 ```bash
-./install/opensearch-install.sh
+tar -xvf v12.1.5_linuxx64_server_dec.tar.gz
+cd server_dec
+./db2_install
+db2ls
 ```
-**Does:** raises the OS `vm.max_map_count`, downloads OpenSearch 3.7.0 into
-`/opt/opensearch`, configures a single-node cluster (security disabled — local use
-only), verifies it starts, then stops it.
-**You should see:** a success line; `curl http://localhost:9200` returns cluster
-JSON while it's running.
 
-### Step 3 — Db2 12.1.5 + instance + Text Search
+`db2ls` lists the installed Db2 copy (e.g. under `/opt/ibm/db2/V12.1`) — a quick
+confirmation that `db2_install` succeeded.
+
+> **Reading `db2_install`'s prerequisite check — `E` vs `W`:** `db2_install` runs its
+> own prerequisite check; watch its output. A `DBT3507E` (**error**, e.g. missing
+> `libxcrypt-compat`) aborts the install and must be fixed. `DBT3514W` (**warnings**)
+> for the 32-bit `.i686` libraries are *"only required for 32-bit non-SQL routines"* —
+> this stack uses none, so **ignore them**.
+
+**1.3 — Create the instance owner and the instance** (`db2inst1` is also the fenced
+user, and the single account the whole stack runs as):
 
 ```bash
-sudo ./install/db2-install.sh /path/to/server_dec
+useradd db2inst1
+passwd db2inst1
+cd /opt/ibm/db2/V12.1/instance
+./db2icrt -u db2inst1 -nosharedgroup db2inst1
 ```
-`/path/to/server_dec` is the extracted Db2 install media directory.
-**Does (as root, then as the new `db2inst1`):** installs Db2, creates the
-`db2inst1` instance, builds the `SAMPLE` database, enables Db2 Text Search and
-registers OpenSearch as the backend, sets `DB2_VECTOR_INDEXING=YES`, then leaves
-Db2 stopped. It prompts you to set the `db2inst1` password.
-**You should see:** `OK — Db2 installed, instance 'db2inst1' created, SAMPLE built,
-Text Search enabled…`.
 
-> Already have Db2 installed? Skip the installer and follow
-> [install/README.md §2](install/README.md#2-db2-1215--instance--text-search) to
-> enable Text Search and register OpenSearch by hand.
+The Db2 software is installed and the `db2inst1` instance exists. You configure and
+start it in Step 3 (after OpenSearch is in place).
 
-### Step 4 — Local embedding server (llama.cpp + model)
+---
+
+### Step 2 — OpenSearch (the Text Search backend)
+
+**(root)** OpenSearch is the backend for Db2's lexical/BM25 leg; you register it with
+Db2 in Step 3. Version **3.7.0** is the one validated with Db2 12.1.5 Text Search.
+Security is **off** and it binds to `127.0.0.1` only (local use) — keep it that way.
+It runs as `db2inst1` (created in Step 1); OpenSearch can't run as root.
+
+**2.1 — Raise the memory-map limit** (OpenSearch won't start without it):
 
 ```bash
-./install/llamacpp-install.sh
+echo 'vm.max_map_count=262144' | sudo tee /etc/sysctl.d/99-opensearch.conf
+sudo sysctl -p /etc/sysctl.d/99-opensearch.conf
 ```
-**Does:** builds `llama-server` from source, downloads the `bge-small-en-v1.5`
-embedding model (~37 MB), and verifies it returns **384-dimensional** vectors.
-**You should see:** `dim 384`. (The optional reranker and generation models are
-off by default — see [install/README.md §3](install/README.md#3-llamacpp--models-local-keyless).)
 
-### Step 5 — Python project
+**2.2 — Download and unpack into `/opt/opensearch`, owned by db2inst1:**
+
+```bash
+cd /opt
+sudo wget https://artifacts.opensearch.org/releases/bundle/opensearch/3.7.0/opensearch-3.7.0-linux-x64.tar.gz
+sudo tar -xzf opensearch-3.7.0-linux-x64.tar.gz
+sudo mv opensearch-3.7.0 opensearch
+sudo rm opensearch-3.7.0-linux-x64.tar.gz
+sudo chown -R db2inst1:db2inst1 /opt/opensearch
+```
+
+**2.3 — Write the config** (single-node, security off). This one block writes the
+whole file as db2inst1:
+
+```bash
+sudo -u db2inst1 tee /opt/opensearch/config/opensearch.yml >/dev/null <<'YML'
+cluster.name: db2-text-search-cluster
+node.name: node-1
+network.host: 127.0.0.1
+http.port: 9200
+discovery.type: single-node
+plugins.security.disabled: true
+YML
+```
+
+**2.4 — Start it as db2inst1 and verify** (first start takes ~1 min):
+
+```bash
+sudo -u db2inst1 /opt/opensearch/bin/opensearch -d -p /opt/opensearch/opensearch.pid
+until curl -s -o /dev/null http://localhost:9200; do sleep 2; done
+curl http://localhost:9200
+```
+
+You should see JSON with `"cluster_name" : "db2-text-search-cluster"` and version
+`3.7.0`. Then stop it:
+
+```bash
+sudo -u db2inst1 kill "$(cat /opt/opensearch/opensearch.pid)"
+```
+
+---
+
+### Step 3 — Enable Db2 Text Search + register OpenSearch
+
+**(db2inst1)** Switch to the instance owner and configure Db2. From here on
+everything runs as `db2inst1`:
+
+```bash
+su - db2inst1
+```
+
+**3.1 — Configure and start the instance** — TCP listener, **vector indexing on**
+(required for `CREATE VECTOR INDEX` at ingest), a port, then build the `SAMPLE`
+database:
+
+```bash
+db2set DB2COMM=TCPIP
+db2set DB2_VECTOR_INDEXING=YES
+db2start
+db2 update dbm cfg using SVCENAME 25010
+db2stop
+db2start
+db2sampl
+```
+
+**3.2 — Test the database** (five rows means Db2 is up):
+
+```bash
+db2 connect to sample
+db2 "SELECT * FROM employee FETCH FIRST 5 ROWS ONLY"
+```
+
+**3.3 — Enable Text Search and register OpenSearch as its backend** (still connected
+to `sample`). This is the step manual installs most often miss — without it the
+vector leg works but ingest's `SYSTS_CREATE`/`SYSTS_UPDATE` fail with `CIE00323 … not
+enabled for text` and there is **no lexical or hybrid search**:
+
+```bash
+db2 "CREATE TABLESPACE systoolspace"
+db2 "CALL SYSPROC.SYSTS_ENABLE('en_US', ?)"
+db2 "CALL SYSPROC.SYSTS_CREATE_SERVER('localhost', 9200, 'dummyuser:dummypassword', 'dummymasterkey2024', 'OPENSEARCH', 0, 2, 0, 'en_US', ?, ?)"
+db2 "SELECT SERVERID, PORT FROM SYSIBMTS.TSSERVERS WHERE ENGINETYPE='OPENSEARCH'"
+db2 connect reset
+```
+
+The `SELECT` must show the server as **`SERVERID 1`** — `scripts/1_ingest.sql`
+hard-codes `'SERVERID 1'`. On a fresh database the first server registered gets ID 1;
+if yours differs, edit the `SERVERID` in `1_ingest.sql` to match.
+
+> `CREATE TABLESPACE systoolspace` may report "already exists" (if `db2sampl` made
+> it) — harmless. `SYSTS_CREATE_SERVER`'s `dummyuser`/`dummypassword`/`dummymasterkey`
+> are placeholders: OpenSearch security is off, so they're never used. Find your Db2
+> port any time with `db2 get dbm cfg | grep 'SVCENAME'`.
+
+---
+
+### Step 4 — llama.cpp + the three models
+
+**(db2inst1)** Db2's `TO_EMBEDDING` calls a local llama.cpp server — no API keys, no
+network egress, no per-call cost. Run these **as db2inst1** so `llama.cpp` and the
+models land in its home (`~`), where the service scripts look for them.
+
+**4.1 — Build `llama-server`** (CPU; pinned to a known-good tag — the start scripts
+depend on its `--pooling`/`--reranking` flag names):
+
+```bash
+git clone --depth 1 --branch b9913 https://github.com/ggml-org/llama.cpp.git ~/llama.cpp
+cmake -S ~/llama.cpp -B ~/llama.cpp/build -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF -DGGML_NATIVE=ON
+cmake --build ~/llama.cpp/build --target llama-server -j"$(nproc)"
+```
+
+**4.2 — Download the embedding model** (bge-small-en-v1.5, ~37 MB, **required**):
+
+```bash
+mkdir -p ~/models/bge-small-en-v1.5
+curl -fSL -o ~/models/bge-small-en-v1.5/bge-small-en-v1.5-q8_0.gguf "https://huggingface.co/CompendiumLabs/bge-small-en-v1.5-gguf/resolve/main/bge-small-en-v1.5-q8_0.gguf"
+```
+
+**4.3 — Download the reranker model** (bge-reranker-v2-m3, ~438 MB, optional — the
+Search tab's Rerank button):
+
+```bash
+mkdir -p ~/models/bge-reranker-v2-m3
+curl -fSL -o ~/models/bge-reranker-v2-m3/bge-reranker-v2-m3-Q4_K_M.gguf "https://huggingface.co/gpustack/bge-reranker-v2-m3-GGUF/resolve/main/bge-reranker-v2-m3-Q4_K_M.gguf"
+```
+
+**4.4 — Download the generation model** (Qwen2.5-3B-Instruct, ~2 GB, optional —
+query-understanding):
+
+```bash
+mkdir -p ~/models/qwen2.5-3b-instruct
+curl -fSL -o ~/models/qwen2.5-3b-instruct/Qwen2.5-3B-Instruct-Q4_K_M.gguf "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf"
+```
+
+**4.5 — Sanity-test the embedding model** (start on a throwaway port :8099, embed
+once, stop). `--pooling cls` is **required** — the wrong pooling silently degrades
+quality:
+
+```bash
+~/llama.cpp/build/bin/llama-server -m ~/models/bge-small-en-v1.5/bge-small-en-v1.5-q8_0.gguf --embedding --pooling cls --ctx-size 512 --host 127.0.0.1 --port 8099 >/tmp/sanity.log 2>&1 &
+until curl -s -o /dev/null http://127.0.0.1:8099/health; do sleep 1; done
+curl -s http://127.0.0.1:8099/v1/embeddings -H 'Content-Type: application/json' -d '{"input":"hello"}' | python3 -c "import sys,json;print('dim', len(json.load(sys.stdin)['data'][0]['embedding']))"
+fuser -k 8099/tcp
+```
+
+Expect `dim 384`. **4.6 — Sanity-test the reranker** (higher score for the relevant
+document):
+
+```bash
+~/llama.cpp/build/bin/llama-server -m ~/models/bge-reranker-v2-m3/bge-reranker-v2-m3-Q4_K_M.gguf --reranking --pooling rank --ctx-size 2048 --host 127.0.0.1 --port 8099 >/tmp/sanity.log 2>&1 &
+until curl -s -o /dev/null http://127.0.0.1:8099/health; do sleep 1; done
+curl -s http://127.0.0.1:8099/v1/rerank -H 'Content-Type: application/json' -d '{"query":"building good habits","documents":["a book about tiny habits and behaviour change","a book about cooking pasta"]}' | python3 -c "import sys,json;print('scores', [round(r['relevance_score'],3) for r in json.load(sys.stdin)['results']])"
+fuser -k 8099/tcp
+```
+
+The habits document should score higher than the pasta one. **4.7 — Sanity-test the
+generation model:**
+
+```bash
+~/llama.cpp/build/bin/llama-server -m ~/models/qwen2.5-3b-instruct/Qwen2.5-3B-Instruct-Q4_K_M.gguf --ctx-size 2048 --host 127.0.0.1 --port 8099 >/tmp/sanity.log 2>&1 &
+until curl -s -o /dev/null http://127.0.0.1:8099/health; do sleep 1; done
+curl -s http://127.0.0.1:8099/v1/chat/completions -H 'Content-Type: application/json' -d '{"messages":[{"role":"user","content":"Reply with one word: hello"}]}' | python3 -c "import sys,json;print('reply:', json.load(sys.stdin)['choices'][0]['message']['content'])"
+fuser -k 8099/tcp
+```
+
+A short reply means it works. (If a `curl` fails, the server's log is in
+`/tmp/sanity.log`.) These were throwaway servers — Step 8 starts the real ones on
+their proper ports.
+
+---
+
+### Step 5 — Get the code
+
+**(db2inst1)** Clone the project into db2inst1's home — the Python package, the
+service scripts, and the corpus all live here:
+
+```bash
+cd ~
+git clone <your-repo-url> db2-hybrid-search
+cd db2-hybrid-search
+```
+
+---
+
+### Step 6 — Python project
+
+**(db2inst1)** A Python 3.12 venv installs the engine (`ibm_db`, FastAPI, uvicorn)
+and makes `hybrid_search` importable:
 
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
-**Does:** creates a virtualenv and installs the engine (`ibm_db`, FastAPI, uvicorn)
-and makes `hybrid_search` importable. For the test suite, add:
-`pip install -e ".[test]"` (see [tests/README.md](tests/README.md)).
 
-### Step 6 — Configure `.env`
+> The headless UI test needs Playwright + Chromium:
+> `pip install playwright` then `python -m playwright install chromium`.
+
+---
+
+### Step 7 — Configure `.env`
+
+**(db2inst1)**
 
 ```bash
 cp .env.example .env
 $EDITOR .env
 ```
-The pipeline and app connect **locally as the instance owner** (fast, no password),
-so most defaults are fine out of the box. Set `DB2_PASSWORD` (and `DB2_PORT`, if
-you'll ever connect over TCP — find it with the snippet in
-[install/README.md §2](install/README.md#2-db2-1215--instance--text-search)).
-`.env` is git-ignored; real credentials are never committed.
 
-### Step 7 — Start services
+The pipeline and app connect **locally as the instance owner** (fast, no password),
+so most defaults are fine. Set `DB2_PASSWORD`, and `DB2_PORT` if you'll ever connect
+over TCP (find it with `db2 get dbm cfg | grep 'SVCENAME'`). `.env` is git-ignored —
+real credentials are never committed. See `.env.example` for every key.
+
+---
+
+### Step 8 — Start services & verify
+
+**(db2inst1)** One command starts Db2, OpenSearch, the embedding server, and (if its
+model is present) the reranker — all with no sudo:
 
 ```bash
-./scripts/0_start-services.sh      # starts Db2, OpenSearch, embedding server (idempotent)
+./scripts/0_start-services.sh
 ```
-**You should see:** each service reported as `running`/`starting`. OpenSearch takes
-~1 min to accept connections the first time. (The full `smoke-test.sh` runs *after*
-ingest, below — it does an end-to-end search, so it needs the corpus loaded first.)
 
-That's the one-time setup. **Everything below is the day-to-day workflow.**
+Confirm each service is up:
+
+```bash
+db2gcf -s
+curl -s -o /dev/null -w "opensearch: %{http_code}\n" http://localhost:9200
+curl -s -o /dev/null -w "embeddings: %{http_code}\n" http://127.0.0.1:8085/health
+```
+
+`DB2 State : Available` and two `200`s means you're ready to ingest. That's the
+one-time setup — **everything below is the day-to-day workflow.**
 
 ---
 
 ## Run the pipeline (ingest → search)
 
-Ingest your corpus into Db2, then search it. Run these as the instance owner, from
-the repo root, with the services up (Step 7).
+Ingest your corpus into Db2, then search it. Run these as `db2inst1`, from the repo
+root, with the services up (Step 8).
 
 ```bash
-./scripts/preflight.sh && db2 -tvf scripts/1_ingest.sql
+./scripts/preflight.sh
+db2 -tvf scripts/1_ingest.sql
 ```
-**Always run `preflight.sh` first.** It waits for OpenSearch and the embedding
-server and fails with a clear message if either is down. Skipping it is the single
-most confusing way to break setup — a stopped OpenSearch makes ingest reject *every
-row as a duplicate key*, which looks like a data problem but is really a stopped
-service.
+
+**Always run `preflight.sh` first.** It waits for OpenSearch and the embedding server
+and fails with a clear message if either is down. Skipping it is the single most
+confusing way to break setup — a stopped OpenSearch makes ingest reject *every row as
+a duplicate key*, which looks like a data problem but is really a stopped service.
 
 `1_ingest.sql` drops any existing table/index (so it's re-runnable), imports
 `data/corpus.csv`, builds the Db2 Text Search index, registers the local embedding
 model, fills a `VECTOR` column via `TO_EMBEDDING`, and builds the vector index.
 **You should see:** `92 rows … successfully inserted`, then several
 `DB20000I … completed successfully`.
-**Leaves behind:** one table (`myschema.chunks`) where every row has `chunk_id`,
-`chunk_text`, a text-search index entry, and an `embedding` vector.
 
 Now verify the whole engine end-to-end — services **and** a real search:
 
 ```bash
 ./scripts/smoke-test.sh
 ```
+
 **You should see:** `SMOKE TEST: PASS`. (Run this only *after* ingest — it searches
 the corpus, so it fails with `MYSCHEMA.CHUNKS_EMBED is an undefined name` if
 `1_ingest.sql` hasn't run yet.)
@@ -243,11 +455,13 @@ Then run the reference search — all three legs for one query, in one Db2 state
 ```bash
 db2 -tvf scripts/2_search.sql
 ```
-It prints the **lexical**, **vector**, and **hybrid** rankings side by side. To
-search something else, either edit the query text in that file, or use the app
-(next), which takes typed queries.
 
-When you're done for the day: `./scripts/3_stop-services.sh`.
+It prints the **lexical**, **vector**, and **hybrid** rankings side by side. When
+you're done for the day:
+
+```bash
+./scripts/3_stop-services.sh
+```
 
 > Using your own data? Match the CSV schema in `data/corpus.csv` (the `IMPORT` in
 > `1_ingest.sql` is positional), or edit the `IMPORT FROM` line. For lexical-only,
@@ -260,12 +474,14 @@ When you're done for the day: `./scripts/3_stop-services.sh`.
 A web demo that shows each retriever's blind spot and how hybrid covers it.
 
 ```bash
-./ui/run.sh                 # OFFLINE: static page + frozen results, no Db2 needed → http://127.0.0.1:8000
-./ui/run.sh --live          # LIVE: type any query, answered by the real engine; API docs at /docs
+./ui/run.sh
+./ui/run.sh --live
 ```
-- **Offline** is the conference/demo path — it serves committed fixtures, so it
-  runs anywhere with just Python 3.
-- **Live** answers ad-hoc queries against Db2 (needs Step 7's services up).
+
+- **Offline** (`./ui/run.sh`) is the conference/demo path — it serves committed
+  fixtures, so it runs anywhere with just Python 3 → http://127.0.0.1:8000
+- **Live** (`./ui/run.sh --live`) answers ad-hoc queries against Db2 (needs Step 8's
+  services up); API docs at `/docs`.
 
 See [ui/README.md](ui/README.md) for the tabs and design notes.
 
@@ -283,15 +499,11 @@ Search tab, or use the Demo tab which runs curated cases automatically.
 
 **Vector wins** — a description using none of the book's own words:
 - `why we so often misjudge people we've just met` → *Talking to Strangers*.
-- `coping with stress` → *How to Stop Worrying and Start Living* (keyword finds nothing).
 
 **Hybrid wins** — an author/topic mix where both legs contribute:
+- `how to build better habits` → *Atomic Habits* (keyword grabs a different
+  self-help title; hybrid recovers the one you meant).
 - `jason fung reversing type 2 diabetes` → *The Diabetes Code*.
-- `cal newport focus without burnout` → *Slow Productivity*.
-
-The **Demo** tab has a sharper case — *"getting past procrastination and just
-starting"*, where neither leg ranks *Eat That Frog* in its own top results but
-fusion lifts it into view. That's hybrid doing what neither leg can alone.
 
 ## How the fusion works (and why not RRF)
 
@@ -314,6 +526,7 @@ re-tune with `eval.py` on your data.
 ```bash
 DB2_HOST=local PYTHONPATH=src python scripts/eval.py
 ```
+
 Scores the shipped **golden eval set** ([data/eval/golden_set.json](data/eval/golden_set.json))
 against all three legs — MRR/Hits@1 for known-item queries, Recall@5/nDCG@5 for
 topical — reported on a held-out slice (never tuned on), TRAIN, and ALL, with a
@@ -330,21 +543,31 @@ features ship **off**.
 
 ## Troubleshooting
 
-The most common failure is running the pipeline with a service down. `preflight.sh`
-and `smoke-test.sh` catch that. The full symptom→cause→fix table is in
-[install/README.md § Gotchas](install/README.md#gotchas) — including the
-duplicate-key ingest failure (a stopped OpenSearch) and the "find your Db2 port"
-snippet.
+The most common failure is running the pipeline with a service down — `preflight.sh`
+and `smoke-test.sh` catch that. Symptom → cause → fix:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Ingest rejects **every** row: `SQL0803N` duplicate key (preceded by `SQL0601N`, `SQL20536N`) | **OpenSearch is down.** `SYSTS_DROP` fails → the text index survives → it blocks `DROP TABLE` → `CREATE TABLE` fails → `IMPORT` runs against the *old* table, so every row collides. The errors never mention the stopped service. | `./scripts/preflight.sh` before ingesting — it waits for OpenSearch/embeddings and says so plainly |
+| Ingest: `CIE00323 … database not enabled for text` | Text Search was never enabled on the database | Run Step 3.3 (`SYSTS_ENABLE` + `SYSTS_CREATE_SERVER`), then re-ingest |
+| Search: `CIE00701 Internal error` / `SQL20423N` on the text index | OpenSearch was reinstalled/wiped **after** the text index was built, orphaning it | Rebuild it: re-run `db2 -tvf scripts/1_ingest.sql` (drops + recreates the index on the current OpenSearch) |
+| `MYSCHEMA.CHUNKS_EMBED is an undefined name` | The ingest hasn't run on this machine yet | `./scripts/preflight.sh` then `db2 -tvf scripts/1_ingest.sql` |
+| `DB2_PORT` connection fails | real instances vary — don't assume 50000 | `db2 get dbm cfg \| grep 'SVCENAME'`, then look it up in `/etc/services` |
+| `ModuleNotFoundError: ibm_db` / `hybrid_search` | package not installed in that python | `pip install -e .` as db2inst1, in the venv |
+| `ibm_db` TCP connect hangs ~40s | slow TCP path on this setup | use `DB2_HOST=local` for the fast local connection |
+| `TO_EMBEDDING` fails during ingest/search | embedding server not up on `:8085` | `./scripts/0_start-services.sh`; re-run the Step 4.5 sanity test |
+| Embedding sanity prints a dim other than 384 | wrong model file or missing `--pooling cls` | re-download the GGUF and pass the flag |
+| Reranker returns near-zero / identical scores | a broken GGUF conversion | use the `gpustack` bge-reranker-v2-m3 GGUF above; avoid unverified Qwen3-Reranker GGUFs |
 
 ## Repository layout
 
 ```
 src/hybrid_search/   core.py (engine + fusion) · evalset.py (golden-set resolver)
                      understanding.py · rerank.py (optional stages, off by default)
-install/   README.md (setup guide) + opensearch / db2 / llamacpp installers
 scripts/   services: 0_start-services.sh · 3_stop-services.sh
            pipeline: preflight.sh · 1_ingest.sql · 2_search.sql
            quality:  eval.py · smoke-test.sh
+           corpus:   build_chunk_text.py · fetch_covers.py · fetch_descriptions.py  (regenerate data/corpus.csv)
            query-understanding/ · rerank/   (optional; off by default)
 data/      corpus.csv (the audiobook corpus) · eval/golden_set.json (eval queries)
 ui/        run.sh · build_*.sh · api.py · static/ (Start · Search · Demo · Eval · Architecture)
@@ -354,8 +577,7 @@ docs/      eval-results.md
 
 ## Docs
 
-- **[install/README.md](install/README.md)** — the detailed setup reference + Gotchas.
-- [tests/README.md](tests/README.md) — how to run the six test suites.
+- [tests/README.md](tests/README.md) — how to run the test suites.
 - [docs/eval-results.md](docs/eval-results.md) — search-quality evaluation.
 - [ui/README.md](ui/README.md) — the demo UI internals.
 - [scripts/query-understanding/README.md](scripts/query-understanding/README.md) · [scripts/rerank/README.md](scripts/rerank/README.md) — optional stages (off by default).

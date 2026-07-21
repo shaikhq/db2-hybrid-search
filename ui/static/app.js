@@ -192,7 +192,7 @@ async function run() {
           <b>Reranker is not available.</b> The reranker server (<code>:8087</code>) isn't
           reachable, so results were not reranked. Start it with
           <code>./scripts/0_start-services.sh</code> (needs the bge-reranker model — see
-          install/README.md §3), then click Rerank again.</p>`;
+          the README), then click Rerank again.</p>`;
         setRerank(false);                 // reflect that reranking did not happen
         state.record = null; state.recordFusion = null;
         return;
