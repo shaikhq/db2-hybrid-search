@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=52" />
+  <link rel="stylesheet" href="styles.css?v=53" />
 </head>
 <body>
   <header class="topbar">
@@ -52,7 +52,7 @@
   <main class="searchpage" id="page-search" hidden>
     <div class="search-intro">
       <h2>Search the library</h2>
-      <p>The top 3 <b>Hybrid</b> results. Use <b>Rerank</b> for the optional cross-encoder stage, or <b>Explain</b> for details.</p>
+      <p>The top 5 <b>Hybrid</b> results. Use <b>Rerank</b> for the optional cross-encoder stage, or <b>Explain</b> for details.</p>
     </div>
     <div class="controls">
       <input id="searchbox" type="text" placeholder="Search your library — type anything…"
@@ -69,7 +69,7 @@
       <label class="search-toggle"><input type="checkbox" id="t-scores" /> Show scores</label>
     </div>
     <div id="output" class="output">
-      <p class="placeholder">Type a query and hit Search to see the top 3 Hybrid results.</p>
+      <p class="placeholder">Type a query and hit Search to see the top 5 Hybrid results.</p>
     </div>
   </main>
 
@@ -132,9 +132,9 @@
     <div id="arch-canvas" class="arch-canvas"></div>
   </section>
 
-  <script src="app.js?v=52"></script>
-  <script src="demo.js?v=52"></script>
-  <script src="arch.js?v=52"></script>
-  <script src="start.js?v=52"></script>
+  <script src="app.js?v=53"></script>
+  <script src="demo.js?v=53"></script>
+  <script src="arch.js?v=53"></script>
+  <script src="start.js?v=53"></script>
 </body>
 </html>

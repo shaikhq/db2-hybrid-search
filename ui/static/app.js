@@ -1,6 +1,6 @@
 "use strict";
 
-// Search tab = open-ended search: type anything, see the top 3 results from all
+// Search tab = open-ended search: type anything, see the top 5 results from all
 // three strategies side by side. Needs the live backend (./ui/run.sh --live) since
 // arbitrary queries must hit Db2. The Golden-eval tab reads the frozen eval_set.json.
 
@@ -9,7 +9,7 @@ const state = { showScores: false, explain: false,
 let LIVE = false;      // /api/search reachable (live backend up)?
 let EVAL = null;       // eval_set.json (featured queries + their gold answers)
 
-const TOP = 3;         // results shown per strategy
+const TOP = 5;         // results shown per strategy
 const $ = (sel) => document.querySelector(sel);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -94,15 +94,15 @@ function setPage(page) {
 }
 
 /* ---------- controls ---------- */
-// Rerank and the leg toggles are competing VIEW selectors; keep state + UI in sync.
+// Rerank is the only non-default VIEW selector; keep state + button in sync.
 function setRerank(on) {
   state.rerank = on;
   $("#btn-rerank").setAttribute("aria-pressed", String(on));
 }
 // Searching a new query (Search button or Enter) is always a plain search. Rerank
 // is an explicit, per-query action — it never rides along on a fresh query, so we
-// clear it here. Leg toggles persist (you may want to keep comparing legs).
-const PLACEHOLDER = `<p class="placeholder">Type a query and hit Search to see the top 3 Hybrid results.</p>`;
+// clear it here.
+const PLACEHOLDER = `<p class="placeholder">Type a query and hit Search to see the top 5 Hybrid results.</p>`;
 function newSearch() {
   setRerank(false);
   run();
@@ -130,8 +130,8 @@ function wire() {
   $("#searchbox").addEventListener("keydown", (e) => { if (e.key === "Enter") newSearch(); });
   $("#btn-reset").addEventListener("click", resetAll);
   // Explain / Show scores are display MODIFIERS: they annotate whichever view is
-  // showing (leg comparison, plain Hybrid, or the Rerank comparison). They never
-  // switch views, so they don't touch Rerank — just re-render.
+  // showing (plain Hybrid or the Rerank comparison). They never switch views, so
+  // they don't touch Rerank — just re-render.
   $("#t-scores").addEventListener("change", (e) => {
     state.showScores = e.target.checked; if (state.record) render();
   });
@@ -271,7 +271,7 @@ function compareHtml(fu, rr) {
     </div>${scoreNote()}`;
 }
 
-// Search tab shows only the Hybrid top-3. Each result is annotated with which
+// Search tab shows only the Hybrid top-5. Each result is annotated with which
 // strategy found it and at what rank within that strategy.
 function hybridHtml(rec) {
   // highlight the keyword terms the lexical leg actually searched (stopwords dropped)
