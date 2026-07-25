@@ -4,8 +4,9 @@
 // three strategies side by side. Needs the live backend (./ui/run.sh --live) since
 // arbitrary queries must hit Db2. The Golden-eval tab reads the frozen eval_set.json.
 
-const state = { showScores: false, explain: false,
-                rerank: false, record: null, recordFusion: null };
+// mode: the single-search leg (keyword|hybrid|rerank). compare: two of those legs to
+// show side by side. fu = plain (rerank=0) response; rr = reranked (rerank=1) response.
+const state = { mode: "hybrid", compare: [], fu: null, rr: null };
 let LIVE = false;      // /api/search reachable (live backend up)?
 let EVAL = null;       // eval_set.json (featured queries + their gold answers)
 
@@ -94,28 +95,44 @@ function setPage(page) {
 }
 
 /* ---------- controls ---------- */
-// Rerank is the only non-default VIEW selector; keep state + button in sync.
-function setRerank(on) {
-  state.rerank = on;
-  $("#btn-rerank").setAttribute("aria-pressed", String(on));
+const MODES = ["keyword", "hybrid", "rerank"];
+const LEG = {
+  keyword: { label: "Keyword", dot: "bm25" },
+  hybrid:  { label: "Hybrid",  dot: "hyb" },
+  rerank:  { label: "Rerank",  dot: "rr" },
+};
+
+// Reflect state in the controls: the active single-mode button is pressed unless a
+// two-leg Compare is active (then none is), and the Compare checkboxes mirror state.
+function refreshControls() {
+  const comparing = state.compare.length === 2;
+  MODES.forEach((m) => {
+    $("#mode-" + m).setAttribute("aria-pressed", String(!comparing && state.mode === m));
+    $("#cmp-" + m).checked = state.compare.includes(m);
+  });
 }
-// Searching a new query (Search button or Enter) is always a plain search. Rerank
-// is an explicit, per-query action — it never rides along on a fresh query, so we
-// clear it here.
-const PLACEHOLDER = `<p class="placeholder">Type a query and hit Search to see the top 5 Hybrid results.</p>`;
-function newSearch() {
-  setRerank(false);
+
+// A single-mode button: exclusive search in that leg. Clears any Compare selection.
+function setMode(mode) {
+  state.mode = mode;
+  state.compare = [];
+  refreshControls();
   run();
 }
-// Reset the Search tab to its opening state: empty box, no view/modifier selected.
-function resetAll() {
-  $("#searchbox").value = "";
-  setRerank(false);
-  state.explain = false;    $("#t-explain").checked = false;
-  state.showScores = false; $("#t-scores").checked = false;
-  state.record = null; state.recordFusion = null;
-  $("#output").innerHTML = PLACEHOLDER;
-  $("#searchbox").focus();
+
+// A Compare checkbox toggled. At most two legs — checking a third drops the oldest.
+// The comparison runs as soon as two are selected; dropping below two returns to the
+// single-mode view.
+function toggleCompare(leg, checked) {
+  if (checked) {
+    if (!state.compare.includes(leg)) state.compare.push(leg);
+    while (state.compare.length > 2) state.compare.shift();
+  } else {
+    state.compare = state.compare.filter((x) => x !== leg);
+  }
+  refreshControls();
+  if (state.compare.length === 2) run();
+  else if (state.fu) render();
 }
 
 function wire() {
@@ -126,21 +143,11 @@ function wire() {
   $("#eval-list").addEventListener("click", (e) => {
     const gp = e.target.closest(".gold-passage"); if (gp) gp.classList.toggle("open");
   });
-  $("#run").addEventListener("click", newSearch);
-  $("#searchbox").addEventListener("keydown", (e) => { if (e.key === "Enter") newSearch(); });
-  $("#btn-reset").addEventListener("click", resetAll);
-  // Explain / Show scores are display MODIFIERS: they annotate whichever view is
-  // showing (plain Hybrid or the Rerank comparison). They never switch views, so
-  // they don't touch Rerank — just re-render.
-  $("#t-scores").addEventListener("change", (e) => {
-    state.showScores = e.target.checked; if (state.record) render();
-  });
-  $("#t-explain").addEventListener("change", (e) => {
-    state.explain = e.target.checked; if (state.record) render();
-  });
-  $("#btn-rerank").addEventListener("click", () => {
-    setRerank(!state.rerank);
-    if (state.record) run();                     // re-search (fetches both orderings when on)
+  // Enter searches: a two-leg Compare if two are ticked, else the current single mode.
+  $("#searchbox").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
+  MODES.forEach((m) => {
+    $("#mode-" + m).addEventListener("click", () => setMode(m));
+    $("#cmp-" + m).addEventListener("change", (e) => toggleCompare(m, e.target.checked));
   });
   $("#output").addEventListener("click", (e) => {
     const row = e.target.closest(".row"); if (row) row.classList.toggle("open");
@@ -148,62 +155,66 @@ function wire() {
 }
 
 /* ---------- run + render ---------- */
+// keyword/hybrid come from the plain (rerank=0) response; rerank from the reranked
+// (rerank=1) response's hybrid leg.
+function legResults(leg) {
+  if (leg === "keyword") return (state.fu && state.fu.lexical.results) || [];
+  if (leg === "hybrid")  return (state.fu && state.fu.hybrid.results) || [];
+  if (leg === "rerank")  return (state.rr && state.rr.hybrid.results) || [];
+  return [];
+}
+
 async function run() {
   const text = $("#searchbox").value.trim();
   if (!text) return;
   if (!LIVE) {
     $("#output").innerHTML = `<p class="placeholder">Open-ended search needs the live backend —
       run <code>./ui/run.sh --live</code>, then search any query here.</p>`;
-    state.record = null; return;
+    state.fu = null; return;
   }
+  const legs = state.compare.length === 2 ? state.compare : [state.mode];
+  const needRerank = legs.includes("rerank");
   $("#output").innerHTML = `<p class="placeholder">Searching…</p>`;
   const enc = encodeURIComponent(text);
   try {
-    if (state.rerank) {
-      // Re-rank pressed: fetch both orderings so we can show Hybrid vs Hybrid reranked
-      const [rr, fu] = await Promise.all([
-        fetch(`/api/search?q=${enc}&rerank=1`).then((r) => { if (!r.ok) throw 0; return r.json(); }),
-        fetch(`/api/search?q=${enc}&rerank=0`).then((r) => { if (!r.ok) throw 0; return r.json(); }),
-      ]);
-      // Reranker requested but its server was unreachable: report it, don't silently
-      // show the un-reranked fusion order as if it were reranked.
+    const fu = await fetch(`/api/search?q=${enc}&rerank=0`).then((r) => { if (!r.ok) throw 0; return r.json(); });
+    let rr = null;
+    if (needRerank) {
+      rr = await fetch(`/api/search?q=${enc}&rerank=1`).then((r) => { if (!r.ok) throw 0; return r.json(); });
+      // Reranker requested but unreachable: say so, don't pass off fusion order as reranked.
       if (rr.rerank_unavailable) {
         $("#output").innerHTML = `<p class="placeholder rerank-err">
           <b>Reranker is not available.</b> The reranker server (<code>:8087</code>) isn't
-          reachable, so results were not reranked. Start it with
-          <code>./scripts/0_start-services.sh</code> (needs the bge-reranker model — see
-          the README), then click Rerank again.</p>`;
-        setRerank(false);                 // reflect that reranking did not happen
-        state.record = null; state.recordFusion = null;
-        return;
+          reachable. Start it with <code>./scripts/0_start-services.sh</code> (needs the
+          bge-reranker model — see the README), then try Rerank again.</p>`;
+        state.fu = null; state.rr = null; return;
       }
-      state.record = rr; state.recordFusion = fu;
-    } else {
-      const r = await fetch(`/api/search?q=${enc}&rerank=0`);
-      if (!r.ok) throw new Error("bad status");
-      state.record = await r.json(); state.recordFusion = null;
     }
+    state.fu = fu; state.rr = rr;
     render();
   } catch (_) {
     $("#output").innerHTML = `<p class="placeholder">Search failed — is the live backend running?</p>`;
-    state.record = null;
+    state.fu = null;
   }
 }
 
+// Compare (two legs) → two collapsed columns, side by side. Single mode → one column
+// of expanded cards (cover, title, author, click-to-expand description).
 function render() {
-  const rec = state.record;
-  if (!rec) return;
-  let html;
-  if (state.rerank && state.recordFusion) html = compareHtml(state.recordFusion, rec);   // Re-rank: Hybrid vs Hybrid reranked
-  else html = hybridHtml(rec);
-  $("#output").innerHTML = html;
-  markClamped($("#output"));
+  if (!state.fu) return;
+  if (state.compare.length === 2) {
+    // Always render the two columns in the fixed button order (Keyword · Hybrid ·
+    // Rerank), regardless of which was ticked first.
+    const [a, b] = MODES.filter((m) => state.compare.includes(m));
+    $("#output").innerHTML = compareView(a, b);
+  } else {
+    $("#output").innerHTML = singleView(state.mode);
+    markClamped($("#output"));
+  }
 }
 
-// A description longer than its 3-line clamp gets a "Show more" affordance; a short
-// one that fits doesn't. Measured after layout (scrollHeight vs clientHeight) so the
-// cue only appears when there's genuinely more to reveal. Clicking the card (existing
-// #output handler toggles .open) un-clamps it.
+// A description longer than its 3-line clamp gets a "Show more" affordance; measured
+// after layout. Clicking the card (#output handler toggles .open) un-clamps it.
 function markClamped(root) {
   root.querySelectorAll(".row").forEach((row) => {
     const d = row.querySelector(".rdesc");
@@ -211,18 +222,7 @@ function markClamped(root) {
   });
 }
 
-// The keyword leg searches your query minus English stopwords (core.keywords()).
-// Surface that ONLY when it actually differs from what you typed — i.e. stopwords
-// were dropped — so a filler-free query shows no redundant note. Explain-gated.
-function lexNoteHtml(lexq, fullq) {
-  const a = (lexq || "").trim(), b = (fullq || "").trim();
-  if (!state.explain || !a || a.toLowerCase() === b.toLowerCase()) return "";
-  return `<p class="lex-note">Keyword leg searched <code>${esc(a)}</code>
-    <span>· stopwords dropped; semantic leg uses your full query</span></p>`;
-}
-
-// The book's cover thumbnail (path from Db2, served under ui/static/). Falls back
-// to a neutral placeholder when a book has no cover or the image fails to load.
+// The book's cover thumbnail (path from Db2). Neutral placeholder when missing/broken.
 function coverImg(r) {
   return r && r.cover
     ? `<img class="cover" src="${esc(r.cover)}" alt="" loading="lazy"
@@ -230,11 +230,9 @@ function coverImg(r) {
     : `<span class="cover cover-missing" aria-hidden="true"></span>`;
 }
 
-// A search-result card: cover on the left; title, author, and description on the
-// right. The description shows by default (click the card to un-clamp it in full).
-// `extra` slots in provenance / rank-delta for the hybrid legs. Falls back to
-// snippet/text so any fixture predating the structured fields still renders.
-function resultCard(r, hl, extra) {
+// Expanded card (single mode): cover, title, author, and the description shown clamped
+// (click the card to reveal it in full).
+function resultCard(r, hl) {
   const title = r.title || r.snippet || "";
   const desc = r.description || r.text || "";
   return `<div class="row">
@@ -243,95 +241,44 @@ function resultCard(r, hl, extra) {
       <div class="rline"><span class="rank">${r.rank}</span><span class="rtitle">${highlight(esc(title), hl)}</span></div>
       ${r.author ? `<div class="rby">by ${esc(r.author)}</div>` : ""}
       ${desc ? `<div class="rdesc">${highlight(esc(desc), hl)}</div><span class="rmore" aria-hidden="true"></span>` : ""}
-      ${extra || ""}
-      ${scoresHtml(r)}
     </div>
   </div>`;
 }
 
-// Rerank vs fusion, side by side — same query, two orderings of the same candidates.
-function compareHtml(fu, rr) {
-  const lexq = (rr.lexical && rr.lexical.lex_query) || (fu.lexical && fu.lexical.lex_query);
-  const terms = queryTerms(lexq || rr.query);
-  const lexNote = lexNoteHtml(lexq, rr.query);
-  const fuAll = (fu.hybrid && fu.hybrid.results) || [];
-  const fuTop = fuAll.slice(0, TOP);
-  const rrTop = ((rr.hybrid && rr.hybrid.results) || []).slice(0, TOP);
-  const fusionRankById = {};
-  fuAll.forEach((r, i) => { fusionRankById[r.chunk_id] = i + 1; });   // fusion rank of each candidate
-  const col = (title, rows, ranks) => `
-    <div class="cmp-col">
-      <h3 class="results-h"><span class="dot hyb"></span>${title}</h3>
-      <div class="rows">${rows.map((r) => hybRowHtml(r, terms, ranks)).join("")}</div>
-    </div>`;
-  return `${lexNote}
-    <div class="cmp-grid">
-      ${col("Hybrid", fuTop, null)}
-      ${col("Hybrid · reranked", rrTop, fusionRankById)}
-    </div>${scoreNote()}`;
+// Collapsed card (compare columns): cover, title, author — no description.
+function compactCard(r, hl) {
+  const title = r.title || r.snippet || "";
+  return `<div class="row row-compact">
+    ${coverImg(r)}
+    <div class="rbody">
+      <div class="rline"><span class="rank">${r.rank}</span><span class="rtitle">${highlight(esc(title), hl)}</span></div>
+      ${r.author ? `<div class="rby">by ${esc(r.author)}</div>` : ""}
+    </div>
+  </div>`;
 }
 
-// Search tab shows only the Hybrid top-5. Each result is annotated with which
-// strategy found it and at what rank within that strategy.
-function hybridHtml(rec) {
-  // highlight the keyword terms the lexical leg actually searched (stopwords dropped)
-  const lexq = rec.lexical && rec.lexical.lex_query;
-  const lexNote = lexNoteHtml(lexq, rec.query);
-  const terms = queryTerms(lexq || rec.query);
-  const results = ((rec.hybrid && rec.hybrid.results) || []).slice(0, TOP);
-  if (!results.length) return lexNote + `<p class="placeholder">No results.</p>`;
-  const tag = rec.reranked ? ` <span class="rerank-tag">reranked</span>` : "";
-  return `${lexNote}<h3 class="results-h"><span class="dot hyb"></span>Top ${results.length} · Hybrid${tag}</h3>
-    <div class="rows">${results.map((r) => hybRowHtml(r, terms)).join("")}</div>${scoreNote()}`;
+// One leg, expanded, single column.
+function singleView(leg) {
+  const meta = LEG[leg];
+  const terms = queryTerms(state.fu.query);
+  const results = legResults(leg).slice(0, TOP);
+  if (!results.length) return `<p class="placeholder">No results.</p>`;
+  return `<h3 class="results-h"><span class="dot ${meta.dot}"></span>Top ${results.length} · ${meta.label}</h3>
+    <div class="rows">${results.map((r) => resultCard(r, terms)).join("")}</div>`;
 }
 
-// "found by Lexical (rank N) · Semantic (rank M)" — the ranks are each strategy's
-// own ranking of this result (a strategy is listed only if it surfaced it).
-function provenanceHtml(r) {
-  const pl = r.per_leg || {};
-  const legs = [];
-  if (pl.bm25 && pl.bm25.rank != null)
-    legs.push(`<span class="chip chip-bm25">Lexical &middot; rank ${pl.bm25.rank}${pl.bm25.gated ? " &middot; gated" : ""}</span>`);
-  if (pl.vector && pl.vector.rank != null)
-    legs.push(`<span class="chip chip-vector">Semantic &middot; rank ${pl.vector.rank}${pl.vector.gated ? " &middot; gated" : ""}</span>`);
-  if (!legs.length) return "";
-  return `<div class="prov"><span class="prov-label">found by</span>${legs.join("")}</div>`;
-}
-
-function hybRowHtml(r, hl, fusionRankById) {
-  // Explain OFF (default): just rank + result. ON: per-leg provenance + rank-delta labels.
-  let delta = "";
-  if (state.explain && fusionRankById) {   // reranked compare column: how it moved vs fusion
-    const fr = fusionRankById[r.chunk_id];
-    if (fr == null)        delta = `<span class="delta up">↑ promoted from the fusion pool</span>`;
-    else if (fr > r.rank)  delta = `<span class="delta up">↑ fusion #${fr} → #${r.rank}</span>`;
-    else if (fr < r.rank)  delta = `<span class="delta down">↓ fusion #${fr} → #${r.rank}</span>`;
-    else                   delta = `<span class="delta same">unchanged · #${fr}</span>`;
-  }
-  return resultCard(r, hl, `${state.explain ? provenanceHtml(r) : ""}${delta}`);
-}
-
-function scoresHtml(r) {
-  if (!state.showScores) return "";
-  const parts = [];
-  if (r.score_type === "bm25") parts.push(`Lexical <b>${r.score}</b>`);
-  else if (r.score_type === "cosine") parts.push(`Semantic <b>${r.score}</b>`);
-  else {
-    parts.push(`${r.score_type === "rerank" ? "rerank" : "fused"} <b>${r.score}</b>`);
-    if (r.per_leg) {
-      const b = r.per_leg.bm25, v = r.per_leg.vector;
-      parts.push(`Lexical${b.gated ? " (gated)" : ""} raw ${b.score ?? "—"} · norm ${b.norm} → +${r.contribution.bm25}`);
-      parts.push(`Semantic${v.gated ? " (gated)" : ""} raw ${v.score ?? "—"} · norm ${v.norm} → +${r.contribution.vector}`);
-    }
-  }
-  return `<div class="scores">${parts.map((p) => `<span>${p}</span>`).join("")}</div>`;
-}
-
-function scoreNote() {
-  if (!state.showScores) return "";
-  return `<p class="score-note">The Lexical and Semantic scores are on different scales, so each leg is
-    normalized (score ÷ its best) and a low-confidence leg is gated out before the weighted sum.
-    The fusion ranks by normalized score, not raw score.</p>`;
+// Two legs, collapsed, side by side.
+function compareView(a, b) {
+  const terms = queryTerms(state.fu.query);
+  const col = (leg) => {
+    const meta = LEG[leg];
+    const rows = legResults(leg).slice(0, TOP).map((r) => compactCard(r, terms)).join("")
+      || `<p class="placeholder">No results.</p>`;
+    return `<div class="cmp-col">
+      <h3 class="results-h"><span class="dot ${meta.dot}"></span>${meta.label}</h3>
+      <div class="rows">${rows}</div></div>`;
+  };
+  return `<div class="cmp-grid">${col(a)}${col(b)}</div>`;
 }
 
 boot();

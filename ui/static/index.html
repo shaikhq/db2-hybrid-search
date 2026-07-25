@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=53" />
+  <link rel="stylesheet" href="styles.css?v=56" />
 </head>
 <body>
   <header class="topbar">
@@ -52,24 +52,29 @@
   <main class="searchpage" id="page-search" hidden>
     <div class="search-intro">
       <h2>Search the library</h2>
-      <p>The top 5 <b>Hybrid</b> results. Use <b>Rerank</b> for the optional cross-encoder stage, or <b>Explain</b> for details.</p>
+      <p>The top 5 results. Pick a mode — <b>Keyword</b>, <b>Hybrid</b>, or <b>Rerank</b> — for the full list, or tick any two under <b>Compare</b> to see them side by side.</p>
     </div>
     <div class="controls">
-      <input id="searchbox" type="text" placeholder="Search your library — type anything…"
+      <input id="searchbox" type="text" placeholder="Search your library — type a query, then press Enter…"
              autocomplete="off" spellcheck="false" aria-label="search the library" />
-      <button id="run" class="run">Search</button>
-      <button id="btn-rerank" class="mode-btn" type="button" aria-pressed="false"
-        title="Rerank the fused candidates with a cross-encoder, then compare Hybrid vs Hybrid reranked side by side">Rerank</button>
-      <button id="btn-reset" class="reset-btn" type="button"
-        title="Clear the query, results, and all toggles">Reset</button>
+      <div class="mode-switch" role="group" aria-label="search mode">
+        <button id="mode-keyword" class="seg seg-keyword" type="button" aria-pressed="false"
+          title="Keyword (BM25) search only"><span class="dot" aria-hidden="true"></span>Keyword</button>
+        <button id="mode-hybrid" class="seg seg-hybrid" type="button" aria-pressed="true"
+          title="Hybrid: keyword + semantic, fused"><span class="dot" aria-hidden="true"></span>Hybrid</button>
+        <button id="mode-rerank" class="seg seg-rerank" type="button" aria-pressed="false"
+          title="Hybrid, then reranked by a cross-encoder"><span class="dot" aria-hidden="true"></span>Rerank</button>
+      </div>
     </div>
-    <div class="toggles" aria-label="result options">
-      <label class="search-toggle" title="Show which strategy found each result and how reranking changed the order">
-        <input type="checkbox" id="t-explain" /> Explain</label>
-      <label class="search-toggle"><input type="checkbox" id="t-scores" /> Show scores</label>
+    <div class="compare-row" role="group" aria-label="compare two strategies">
+      <span class="compare-label">Compare</span>
+      <label class="cmp-opt"><input type="checkbox" id="cmp-keyword" /><span class="dot bm25"></span>Keyword</label>
+      <label class="cmp-opt"><input type="checkbox" id="cmp-hybrid" /><span class="dot hyb"></span>Hybrid</label>
+      <label class="cmp-opt"><input type="checkbox" id="cmp-rerank" /><span class="dot rr"></span>Rerank</label>
+      <span class="compare-hint">tick any two → side by side</span>
     </div>
     <div id="output" class="output">
-      <p class="placeholder">Type a query and hit Search to see the top 5 Hybrid results.</p>
+      <p class="placeholder">Type a query and press Enter to see the top 5 results.</p>
     </div>
   </main>
 
@@ -132,9 +137,9 @@
     <div id="arch-canvas" class="arch-canvas"></div>
   </section>
 
-  <script src="app.js?v=53"></script>
-  <script src="demo.js?v=53"></script>
-  <script src="arch.js?v=53"></script>
-  <script src="start.js?v=53"></script>
+  <script src="app.js?v=56"></script>
+  <script src="demo.js?v=56"></script>
+  <script src="arch.js?v=56"></script>
+  <script src="start.js?v=56"></script>
 </body>
 </html>

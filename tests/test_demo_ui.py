@@ -48,9 +48,10 @@ check("matrix (queries x methods) rendered for narrow view", "dsb-matrix" in dem
 check("demo has a Shuffle control", 'id="demo-shuffle"' in idx and "shuffleDeck" in demojs)
 check("shuffle resets the scoreboard", "resetSession" in demojs and "D.seen.clear()" in demojs)
 check("demo has a Representative-set control", 'id="demo-representative"' in idx and "loadRepresentative" in demojs)
-# terminology: consistent Lexical/Semantic leg names; no Keyword/BM25/Vector as leg labels
+# terminology: "Keyword" is the Search-tab mode label (user-chosen); raw BM25/Vector
+# are still never surfaced as UI labels.
 appjs = read(os.path.join(STATIC, "app.js"))
-for bad in (">BM25<", ">Vector<", ">Keyword<", '"BM25"', '"Vector"', '"Keyword"'):
+for bad in (">BM25<", ">Vector<", '"BM25"', '"Vector"'):
     check(f"no leg label {bad!r} in app.js/demo.js/index.html",
           bad not in appjs and bad not in demojs and bad not in idx, bad)
 check("lexical results are highlighted (highlight+queryTerms wired)",
