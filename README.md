@@ -483,6 +483,18 @@ A web demo that shows each retriever's blind spot and how hybrid covers it.
 - **Live** (`./ui/run.sh --live`) answers ad-hoc queries against Db2 (needs Step 8's
   services up); API docs at `/docs`.
 
+Both modes bind `127.0.0.1`, so on a remote box you reach the app by forwarding port
+8000 to your laptop (VS Code Remote-SSH does this from its **PORTS** panel). `PORT`
+and `HOST` override the defaults:
+
+```bash
+PORT=8100 ./ui/run.sh --live          # a different port
+HOST=0.0.0.0 ./ui/run.sh --live       # every interface → http://<this-host-ip>:8000
+```
+
+`HOST=0.0.0.0` skips forwarding altogether, but publishes an **unauthenticated** app —
+and the staged copy of `.env` holds the Db2 password. Trusted networks only.
+
 See [ui/README.md](ui/README.md) for the tabs and design notes.
 
 ---
@@ -558,6 +570,24 @@ and `smoke-test.sh` catch that. Symptom → cause → fix:
 | `TO_EMBEDDING` fails during ingest/search | embedding server not up on `:8085` | `./scripts/0_start-services.sh`; re-run the Step 4.5 sanity test |
 | Embedding sanity prints a dim other than 384 | wrong model file or missing `--pooling cls` | re-download the GGUF and pass the flag |
 | Reranker returns near-zero / identical scores | a broken GGUF conversion | use the `gpustack` bge-reranker-v2-m3 GGUF above; avoid unverified Qwen3-Reranker GGUFs |
+| Browser won't load the app (blank page or "can't connect") while the terminal shows `Uvicorn running on http://127.0.0.1:8000` | **A stale VS Code port forward.** One created while the server was down — or surviving a restart — keeps showing as forwarded but tunnels nothing. The app is fine; requests never reach it | Delete the port entry in the VS Code **PORTS** panel, restart the app, let VS Code forward it again. See the check below before hunting for app bugs |
+
+`run.sh --live` runs uvicorn in the **foreground** — it prints `Uvicorn running …` and
+sits there without returning to a prompt. That is success, not a hang.
+
+Before debugging the app, confirm requests are arriving at all. On the host, while
+reloading the browser:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8000/   # 200 = app is fine
+ss -tn state established | grep ':8000'                           # empty = nothing reaches it
+```
+
+A 200 with no connections means the fault is between the browser and the tunnel, not in
+the app. Then, on your laptop: try `http://127.0.0.1:8000` rather than
+`http://localhost:8000` (browsers resolving `localhost` to IPv6 `::1` miss an IPv4-only
+forwarder), check the **Local Address** column in the PORTS panel in case VS Code
+remapped the local port, and make sure a corporate proxy isn't intercepting localhost.
 
 ## Repository layout
 

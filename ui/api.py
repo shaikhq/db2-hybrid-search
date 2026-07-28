@@ -40,8 +40,20 @@ with open(os.path.join(HERE, "demo_queries.json")) as f:
     DEMO_DECK = json.load(f)
 DEMO_GOLD = {d["query"]: set(d["gold_chunk_ids"]) for d in DEMO_DECK}
 DEMO_ITEM = {d["query"]: d for d in DEMO_DECK}
-_CORPUS = os.path.join(os.path.dirname(HERE), "data", "corpus.csv")
-BOOK_LOOKUP = dv.load_book_lookup(_CORPUS) if os.path.exists(_CORPUS) else {}
+# corpus.csv sits at <repo>/data/ when run from the repo, but --live runs from a
+# staged copy (/tmp/hybrid-ui-<port>) where run.sh drops it at <stage>/data/. Try both,
+# and say so when neither hits: without it label_for() silently falls back to parsing
+# "Title by Author." off the chunk text, which is easy to mistake for working.
+_CORPUS = next(
+    (p for p in (os.path.join(HERE, "data", "corpus.csv"),
+                 os.path.join(os.path.dirname(HERE), "data", "corpus.csv"))
+     if os.path.exists(p)), None)
+if _CORPUS:
+    BOOK_LOOKUP = dv.load_book_lookup(_CORPUS)
+else:
+    BOOK_LOOKUP = {}
+    logging.getLogger("uvicorn.error").warning(
+        "corpus.csv not found under %s — book titles fall back to text parsing.", HERE)
 
 app = FastAPI(title="Db2 Hybrid Search Demo", docs_url="/docs")
 
@@ -114,5 +126,19 @@ def demo(q: str = Query(..., description="search text")):
     return dv.view_model(responses, item, BOOK_LOOKUP, k=bf.K)
 
 
+class NoCacheHTML(StaticFiles):
+    """StaticFiles, but HTML always revalidates. index.html carries the ?v= busters
+    for the JS/CSS and nothing busts index.html itself, so a browser holding a stale
+    copy pairs old markup with new scripts — startBoot() then finds no #start-canvas
+    and returns silently, leaving a blank page and no console error. "no-cache" still
+    permits a 304 via the ETag, so the revalidation is cheap."""
+
+    def file_response(self, full_path, *args, **kwargs):
+        resp = super().file_response(full_path, *args, **kwargs)
+        if str(full_path).endswith(".html"):
+            resp.headers["Cache-Control"] = "no-cache, must-revalidate"
+        return resp
+
+
 # Serve the same static UI; API routes above take precedence over this mount.
-app.mount("/", StaticFiles(directory=os.path.join(HERE, "static"), html=True), name="static")
+app.mount("/", NoCacheHTML(directory=os.path.join(HERE, "static"), html=True), name="static")
