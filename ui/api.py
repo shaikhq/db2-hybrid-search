@@ -4,12 +4,15 @@ search engine returning the SAME JSON shape as fixtures.json, so the frontend is
 identical offline or live. The default demo is offline (static page + fixtures);
 this exists for ad-hoc queries during Q&A."""
 
+import hashlib
 import json
 import logging
 import os
+import random
+import tempfile
 from typing import Optional
 
-from fastapi import FastAPI, Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 import ibm_db
 
@@ -124,6 +127,142 @@ def demo(q: str = Query(..., description="search text")):
     finally:
         ibm_db.close(conn)
     return dv.view_model(responses, item, BOOK_LOOKUP, k=bf.K)
+
+
+# ---------------------------------------------------------------- Label tab
+# Pooled relevance labeling (TREC-style): union both legs' top-k, discard rank,
+# judge each unique document against the query. Spec + the approved interaction
+# contract live in docs/label-tab-plan.md.
+
+LABELS = {"relevant", "irrelevant", "skip"}
+
+
+def _judgments_path():
+    """Where judgments live — resolved per call, never cached at import.
+
+    The default is only correct when api.py runs from the repo. `--live` runs it from
+    a per-launch-wiped stage (/tmp/hybrid-ui-$PORT), where this default would point at
+    /tmp and lose every label on the next launch — so run.sh's --live branch exports
+    JUDGMENTS_PATH at the real repo. Resolving lazily is also what lets tests redirect
+    the store without reimporting the module."""
+    return os.environ.get("JUDGMENTS_PATH") or os.path.join(
+        os.path.dirname(HERE), "data", "eval", "judgments.json")
+
+
+def build_pool(query, lex, vec):
+    """Union the two legs, dedup by chunk id, DISCARD RANK, shuffle deterministically.
+
+    Rank and which leg surfaced a document never leave this function: showing either
+    anchors the assessor, which is the whole point of pooling. The shuffle is seeded on
+    the query so a resumed session sees the same order every time — judgments are keyed
+    by chunk id and survive regardless, but a list that reshuffles makes "next unlabeled
+    card" jump around and re-reading already-judged cards wastes the assessor's attention.
+    """
+    cids = sorted({int(cid) for cid, _ in lex} | {int(cid) for cid, _ in vec})
+    seed = int(hashlib.md5(query.encode("utf-8")).hexdigest()[:16], 16)
+    random.Random(seed).shuffle(cids)
+    return cids
+
+
+def _load_judgments():
+    """The store, or an empty one if it doesn't exist yet. A corrupt store raises
+    rather than resetting to empty — silently discarding hours of labeling is far
+    worse than a 500 that says so."""
+    try:
+        with open(_judgments_path()) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        return {"queries": {}}
+    data.setdefault("queries", {})
+    return data
+
+
+def _write_judgments(data):
+    """Write the whole store atomically: temp file in the same directory, fsync, then
+    os.replace. A crash mid-write leaves the previous store intact rather than a
+    truncated JSON file that would fail to parse on the next launch."""
+    path = _judgments_path()
+    directory = os.path.dirname(path) or "."
+    os.makedirs(directory, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=directory, prefix=".judgments-", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(data, f, indent=2, sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+        raise
+
+
+@app.get("/api/pool")
+def pool(q: str = Query(..., description="query to build a labeling pool for"),
+         k: int = Query(10, description="top-k taken from EACH leg before the union")):
+    """The unranked, deduped labeling pool for a query.
+
+    `legs` reports how many results each retriever returned *in aggregate* — enough for
+    the UI to say "pool built from 1 of 2 retrievers" when one leg comes back empty,
+    without revealing which leg surfaced any individual document."""
+    conn = h.connect()
+    try:
+        lex = h.lexical(conn, q, k)
+        vec = h.vector(conn, q, k)
+        docs = [{"chunk_id": cid, "snippet": h.snippet(conn, cid),
+                 **h.book_meta(conn, cid)} for cid in build_pool(q, lex, vec)]
+    finally:
+        ibm_db.close(conn)
+    return {"query": q, "pool_size": len(docs),
+            "legs": {"lexical": len(lex), "vector": len(vec)}, "pool": docs}
+
+
+@app.get("/api/judgments")
+def judgments():
+    """The whole judgments store — the frontend merges it into a freshly built pool so
+    a re-typed query resumes with its existing labels already applied."""
+    return _load_judgments()
+
+
+@app.post("/api/judgments")
+def post_judgment(payload: dict = Body(...)):
+    """Record one {query, cid, label, pool_size} judgment.
+
+    Idempotent per (query, cid): re-labeling overwrites in place, which is what makes
+    the UI's free relabeling free. Read-merge-write is safe here because the app is
+    single-user loopback; it would need locking if that ever changed."""
+    query = (payload.get("query") or "").strip()
+    label = payload.get("label")
+    if not query:
+        raise HTTPException(status_code=400, detail="query is required")
+    if label not in LABELS:
+        raise HTTPException(status_code=400,
+                            detail=f"label must be one of {sorted(LABELS)}")
+    try:
+        cid = int(payload.get("cid"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="cid must be an integer chunk id")
+    try:
+        pool_size = int(payload.get("pool_size"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400,
+                            detail="pool_size is required (the exporter's completeness "
+                                   "guard cannot reconstruct it later)")
+    if pool_size <= 0:
+        # A query whose pool came back empty has nothing to judge; recording it would
+        # later export as gold_ids: [] — an eval entry no retriever can ever satisfy.
+        raise HTTPException(status_code=400,
+                            detail="pool_size must be > 0 — an empty pool records nothing")
+
+    data = _load_judgments()
+    entry = data["queries"].setdefault(query, {"pool_size": pool_size, "labels": {}})
+    entry["pool_size"] = pool_size
+    entry["labels"][str(cid)] = label
+    _write_judgments(data)
+    labels = entry["labels"]
+    return {"ok": True, "query": query, "cid": cid, "label": label,
+            "pool_size": pool_size, "decided": len(labels),
+            "skipped": sum(1 for v in labels.values() if v == "skip")}
 
 
 class NoCacheHTML(StaticFiles):
