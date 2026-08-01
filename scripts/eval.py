@@ -19,16 +19,14 @@ Run:  DB2_HOST=local PYTHONPATH=src python scripts/eval.py
 """
 import glob
 import json
-import math
 import os
 import sys
 
 import ibm_db
 from hybrid_search import core as h
 from hybrid_search import evalset
-
-K = 5          # cutoff for Recall@K / nDCG@K (topical)
-RETRIEVE = 10  # depth pulled from each leg (MRR sees ranks up to here)
+from hybrid_search.metrics import (   # noqa: F401  (re-exported for tests)
+    K, RETRIEVE, rr, hit1, recall_at_k, ndcg_at_k, mean, score_block)
 
 
 # ---------- load ----------
@@ -55,27 +53,9 @@ def load_items():
     return path, items, merged
 
 
-# ---------- metrics ----------
-def rr(ranked, gold):
-    for i, cid in enumerate(ranked, start=1):
-        if cid in gold:
-            return 1.0 / i
-    return 0.0
-
-def hit1(ranked, gold):
-    return 1.0 if ranked and ranked[0] in gold else 0.0
-
-def recall_at_k(ranked, gold, k=K):
-    return len(set(ranked[:k]) & gold) / len(gold) if gold else 0.0
-
-def ndcg_at_k(ranked, gold, k=K):
-    dcg = sum(1.0 / math.log2(i + 1) for i, cid in enumerate(ranked[:k], start=1) if cid in gold)
-    ideal = sum(1.0 / math.log2(i + 1) for i in range(1, min(len(gold), k) + 1))
-    return dcg / ideal if ideal else 0.0
-
-def mean(xs):
-    xs = list(xs)
-    return sum(xs) / len(xs) if xs else float("nan")
+# Metrics live in hybrid_search.metrics — one implementation, imported above. The UI's
+# Evaluate tab imports the same functions, so the tab and this CLI cannot report
+# different numbers for the same test set.
 
 
 # ---------- run ----------
@@ -103,7 +83,8 @@ def main():
             mrr = mean(rr(ranked[(name, it["id"])], g(it)) for it in ki)
             h1  = mean(hit1(ranked[(name, it["id"])], g(it)) for it in ki)
             rec = mean(recall_at_k(ranked[(name, it["id"])], g(it)) for it in tp)
-            ndg = mean(ndcg_at_k(ranked[(name, it["id"])], g(it)) for it in tp)
+            ndg = mean(ndcg_at_k(ranked[(name, it["id"])], g(it),
+                                 grades=it.get("gold_grades")) for it in tp)
             print(f"  {name:8} | {mrr:6.3f} {h1:7.3f} | {rec:9.3f} {ndg:7.3f}")
 
     print(f"\nGolden set: {os.path.basename(path)}  ·  {len(items)} queries"
