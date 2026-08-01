@@ -2,13 +2,12 @@
 
 // Search tab = open-ended search: type anything, see the top 5 results from all
 // three strategies side by side. Needs the live backend (./ui/run.sh --live) since
-// arbitrary queries must hit Db2. The Golden-eval tab reads the frozen eval_set.json.
+// arbitrary queries must hit Db2. Test-set scoring lives in the Evaluate tab.
 
 // mode: the single-search leg (keyword|hybrid|rerank). compare: two of those legs to
 // show side by side. fu = plain (rerank=0) response; rr = reranked (rerank=1) response.
 const state = { mode: "hybrid", compare: [], fu: null, rr: null };
 let LIVE = false;      // /api/search reachable (live backend up)?
-let EVAL = null;       // eval_set.json (featured queries + their gold answers)
 
 const TOP = 5;         // results shown per strategy
 const $ = (sel) => document.querySelector(sel);
@@ -37,48 +36,7 @@ function highlight(escaped, terms) {
 async function boot() {
   try { LIVE = (await fetch("/api/queries", { cache: "no-store" })).ok; }
   catch (_) { LIVE = false; }
-  try { EVAL = await (await fetch("eval_set.json", { cache: "no-store" })).json(); }
-  catch (_) { EVAL = null; }
-  renderEval();
   wire();
-}
-
-/* ---------- golden eval set page ---------- */
-function renderEval() {
-  const host = $("#eval-list");
-  if (!host) return;
-  if (!EVAL || !EVAL.queries || !EVAL.queries.length) {
-    host.innerHTML = `<p class="placeholder">No eval set found —
-      run <code>./ui/build_eval_set.sh</code> to generate it.</p>`;
-    return;
-  }
-  host.innerHTML = EVAL.queries.map((q, i) => {
-    const type = TYPE_LABEL[q.query_type] || q.query_type;
-    const n = q.gold.length;
-    const passages = q.gold.map((g) => {
-      const preview = String(g.text).replace(/\s+/g, " ").trim();
-      return `
-      <div class="gold-passage" title="Click to expand">
-        <span class="cid">#${g.chunk_id}</span>
-        <div class="gp-body">
-          <span class="snip">${esc(preview)}</span>
-          <div class="full">${esc(g.text)}</div>
-        </div>
-        <span class="gp-caret" aria-hidden="true">▸</span>
-      </div>`;
-    }).join("");
-    return `<article class="eval-card">
-      <div class="eval-q">
-        <span class="qnum">${i + 1}</span>
-        <span class="qtext">${esc(q.query)}</span>
-        <span class="type type-${q.query_type}">${type}</span>
-      </div>
-      ${q.note ? `<p class="eval-why">${esc(q.note)}</p>` : ""}
-      <div class="eval-gold-head">Gold answer${n > 1 ? "s" : ""}
-        <span>· the book${n > 1 ? "s" : ""} search should find</span></div>
-      ${passages}
-    </article>`;
-  }).join("");
 }
 
 /* ---------- nav ---------- */
@@ -139,9 +97,6 @@ function wire() {
   $("#tabs").addEventListener("click", (e) => {
     const t = e.target.closest(".tab"); if (!t) return;
     setPage(t.dataset.page);
-  });
-  $("#eval-list").addEventListener("click", (e) => {
-    const gp = e.target.closest(".gold-passage"); if (gp) gp.classList.toggle("open");
   });
   // Enter searches: a two-leg Compare if two are ticked, else the current single mode.
   $("#searchbox").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });

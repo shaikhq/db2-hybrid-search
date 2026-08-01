@@ -57,26 +57,8 @@ body { margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg)
 .evalpage { max-width:1100px; margin:0 auto; padding:20px 28px 32px; }
 .eval-intro h2 { font-size:1.1rem; margin:0 0 6px; }
 .eval-intro p { color:var(--muted); margin:0 0 20px; max-width:72ch; }
-.eval-list { display:flex; flex-direction:column; gap:16px; }
-.eval-card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
-.eval-q { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .qnum { font-family:var(--mono); font-size:.8rem; font-weight:700; color:var(--muted); background:#eef0f4;
   width:1.8em; height:1.8em; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; }
-.eval-q .qtext { font-size:1.05rem; font-weight:600; }
-.eval-why { color:var(--muted); font-size:.92rem; margin:10px 0 14px; max-width:72ch; }
-.eval-gold-head { font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; color:var(--gold);
-  font-weight:700; margin-bottom:8px; }
-.eval-gold-head span { color:var(--muted); font-weight:600; text-transform:none; letter-spacing:0; }
-.gold-passage { display:flex; align-items:flex-start; gap:11px; background:var(--gold-soft);
-  border:1px solid var(--gold); border-radius:10px; padding:11px 13px; margin-bottom:8px; cursor:pointer; }
-.gold-passage .cid { background:#fff; color:var(--gold); border:1px solid var(--gold); height:fit-content; }
-.gold-passage .gp-body { flex:1; min-width:0; }
-.gold-passage .snip { display:block; font-size:.92rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.gold-passage .full { display:none; margin:0; font-size:.92rem; white-space:pre-wrap; color:#274430; }
-.gold-passage.open .snip { display:none; }
-.gold-passage.open .full { display:block; }
-.gp-caret { color:var(--gold); font-size:.8rem; line-height:1.8; transition:transform .12s; flex:none; }
-.gold-passage.open .gp-caret { transform:rotate(90deg); }
 .stage { min-width:0; }   /* allow the center column to shrink instead of overflowing */
 
 /* ---- left deck ---- */
@@ -556,4 +538,137 @@ mark { background: #fff3bf; color: inherit; padding: 0 1px; border-radius: 2px; 
   .ba-before, .ba-after { flex: 1 1 auto; }
   .door-head { font-size: 2rem; }
   .door-head br { display: none; }
+}
+
+/* ---- Label tab: pooled relevance judging (docs/label-tab-plan.md) ---- */
+.labelpage { padding:22px 28px 40px; }
+.label-intro h2 { margin:0 0 6px; }
+.label-intro p { color:var(--muted); margin:0 0 18px; max-width:78ch; }
+.label-controls { display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+.label-controls input { flex:1; font:inherit; padding:12px 14px; border-radius:12px;
+  border:1px solid var(--line); background:var(--card); }
+.label-progress { font-size:.95rem; color:var(--muted); margin:0 0 6px; min-height:1.5em; }
+.lcomplete { color:var(--gold); font-weight:700; }
+.lincomplete { color:var(--muted); }
+.lerror { color:var(--bm25); font-weight:700; }
+.label-hint { font-size:.85rem; color:var(--muted); margin:0 0 16px; }
+kbd { font-family:var(--mono); font-size:.78rem; background:#eef0f4; border:1px solid var(--line);
+  border-bottom-width:2px; border-radius:5px; padding:1px 5px; color:#374151; }
+.label-list { display:flex; flex-direction:column; gap:8px; }
+
+/* A pool card. No position badge and no retriever chip anywhere: which leg surfaced a
+   book, and where, is withheld on purpose — seeing either anchors the judgment. */
+.lcard { display:flex; gap:14px; align-items:flex-start; background:var(--card);
+  border:1px solid var(--line); border-left:4px solid var(--line); border-radius:10px;
+  padding:12px 14px; cursor:pointer; transition:border-color .12s, background .12s; }
+.lcard:hover { border-color:#c9ced8; }
+.lcard > .cover { width:60px; height:90px; }
+.lbody { flex:1; min-width:0; }
+.ltitle { font-weight:600; font-size:1rem; line-height:1.3; }
+.lby { font-size:.85rem; color:var(--muted); margin-top:2px; }
+/* The card being judged shows its full description; the rest stay compact so the pool
+   remains scannable. Clamping is inherited from .rdesc. */
+.lcard-active .ldesc { -webkit-line-clamp:unset; overflow:visible; }
+.lcard-active { border-color:var(--ink); box-shadow:0 2px 12px rgba(20,24,40,.10); }
+
+/* Contract 1: a judged card COLLAPSES in place — it is never removed. Keeping it in the
+   list is what lets you recalibrate against earlier judgments and revise them. */
+.lcard-labeled { background:#fbfbfc; }
+.lcard-labeled:not(.lcard-active) .ldesc { display:none; }
+.lcard-labeled:not(.lcard-active) > .cover { width:34px; height:50px; }
+/* Graded 0-2: the border weight tracks the grade, so a scanned column of collapsed
+   cards reads as a distribution rather than a list of ticks. */
+.lcard-highly_relevant { border-left-color:var(--gold); border-left-width:7px; }
+.lcard-relevant        { border-left-color:var(--vec); }
+.lcard-irrelevant      { border-left-color:var(--miss); }
+.lcard-skip            { border-left-color:var(--line); }
+
+.lactions { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex:none; }
+.lbtn { font:inherit; font-size:.85rem; font-weight:600; cursor:pointer; white-space:nowrap;
+  border:1px solid var(--line); background:var(--card); color:var(--muted);
+  border-radius:999px; padding:6px 12px; }
+.lbtn:hover { border-color:#c9ced8; color:var(--ink); }
+.lbtn:focus-visible { outline:2px solid var(--hyb); outline-offset:2px; }
+.lbtn-highly_relevant[aria-pressed="true"] { background:var(--gold-soft); color:var(--gold);
+  border-color:var(--gold); }
+.lbtn-relevant[aria-pressed="true"]   { background:var(--vec-soft); color:var(--vec);
+  border-color:var(--vec); }
+.lbtn-irrelevant[aria-pressed="true"] { background:var(--miss-soft); color:var(--miss);
+  border-color:var(--miss); }
+.lbtn-skip[aria-pressed="true"]       { background:#eef0f4; color:#374151; border-color:#c9ced8; }
+/* Colour is never the only signal — the chip repeats the verdict as text. */
+.lchip { font-size:.78rem; font-weight:700; padding:2px 9px; border-radius:999px; }
+.lchip-highly_relevant { background:var(--gold-soft); color:var(--gold); border:1px solid var(--gold); }
+.lchip-relevant   { background:var(--vec-soft);  color:var(--vec);   border:1px solid var(--vec); }
+.lchip-irrelevant { background:var(--miss-soft); color:var(--miss);  border:1px solid var(--miss); }
+.lchip-skip       { background:#eef0f4;          color:#374151;      border:1px solid #c9ced8; }
+
+@media (max-width: 640px) {
+  .labelpage { padding:16px 14px 32px; }
+  .lcard { flex-wrap:wrap; }
+  .lactions { flex-direction:row; width:100%; justify-content:flex-start; flex-wrap:wrap; }
+}
+
+/* Label tab sidebar: reuses .demo-layout / .demo-sidebar / .dchip from the Demo tab. */
+.label-setmeta { font-size:.82rem; color:var(--muted); margin:0 0 10px; }
+.label-addto { display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  font-size:.85rem; color:var(--muted); margin:0 0 14px; }
+.label-addto select { font:inherit; font-size:.85rem; padding:5px 8px; border-radius:8px;
+  border:1px solid var(--line); background:var(--card); color:var(--ink); }
+.label-addto select:disabled { color:var(--muted); background:#f3f4f7; }
+.label-addmsg { font-size:.82rem; color:var(--vec); }
+.lset { font-family:var(--mono); font-size:.82rem; background:#eef0f4; color:#374151;
+  padding:2px 8px; border-radius:6px; }
+.labelpage .demo-sidebar-actions select { font:inherit; font-size:.85rem; padding:6px 8px;
+  border-radius:8px; border:1px solid var(--line); background:var(--card); flex:1; }
+
+/* ---- Evaluate tab: one test set, three legs, scored by the backend ---- */
+.evaluatepage { padding:22px 28px 40px; }
+.ev-controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+.ev-controls label { font-size:.9rem; color:var(--muted); }
+.ev-controls select { font:inherit; padding:9px 10px; border-radius:10px;
+  border:1px solid var(--line); background:var(--card); color:var(--ink); min-width:200px; }
+.ev-status { font-size:.85rem; color:var(--muted); }
+.ev-meta { font-size:.85rem; color:var(--muted); margin:0 0 18px; }
+.ev-frozen { background:#eef0f4; color:#374151; padding:2px 8px; border-radius:6px;
+  font-family:var(--mono); font-size:.78rem; }
+.ev-blocks { display:flex; flex-direction:column; gap:18px; margin-bottom:26px; }
+.ev-block h3 { font-size:.82rem; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--muted); margin:0 0 8px; font-weight:700; }
+.ev-block h3 span { text-transform:none; letter-spacing:0; font-weight:600; }
+.ev-table { border-collapse:collapse; background:var(--card); border:1px solid var(--line);
+  border-radius:12px; overflow:hidden; font-variant-numeric:tabular-nums; min-width:420px; }
+.ev-table th, .ev-table td { padding:8px 16px; text-align:right; font-size:.92rem;
+  border-bottom:1px solid var(--line); }
+.ev-table th { font-size:.78rem; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--muted); background:#fafbfc; }
+.ev-table tr:last-child td { border-bottom:0; }
+.ev-table th:first-child, .ev-leg { text-align:left; font-weight:600; }
+
+.ev-qh { font-size:.82rem; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--muted); margin:0 0 8px; }
+.ev-queries { display:flex; flex-direction:column; gap:6px; }
+.evq { background:var(--card); border:1px solid var(--line); border-radius:10px; }
+.evq-head { display:flex; align-items:baseline; gap:10px; width:100%; text-align:left;
+  font:inherit; background:none; border:0; cursor:pointer; padding:11px 14px; }
+.evq-head:focus-visible { outline:2px solid var(--hyb); outline-offset:-2px; }
+.evq-caret { color:var(--muted); font-size:.8rem; transition:transform .12s; }
+.evq.open .evq-caret { transform:rotate(90deg); }
+.evq-q { flex:1; min-width:0; font-weight:600; }
+.evq-t { font-size:.8rem; color:var(--muted); white-space:nowrap; }
+.evq-body { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:16px;
+  padding:0 14px 14px; }
+.evq-leg h4 { font-size:.78rem; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--muted); margin:0 0 6px; }
+.evq-leg ol { margin:0; padding-left:20px; }
+.evq-leg li { font-size:.88rem; line-height:1.45; margin-bottom:4px; }
+.evq-gold { color:var(--gold); font-weight:600; }
+.evq-by { color:var(--muted); font-weight:400; font-size:.82rem; margin-left:6px; }
+.evq-mark { background:var(--gold-soft); color:var(--gold); border:1px solid var(--gold);
+  border-radius:999px; padding:1px 7px; font-size:.72rem; font-weight:700; margin-left:6px; }
+
+@media (max-width: 640px) {
+  .evaluatepage { padding:16px 14px 32px; }
+  .evq-body { grid-template-columns:1fr; }
+  .ev-table { min-width:0; }
 }

@@ -95,7 +95,10 @@ if [ "${1:-}" = "--live" ]; then
         echo "         fail to save. Fix with: chmod a+rwx '$REPO/data/eval'" >&2
     fi
     echo "LIVE  → http://$SHOWN:$PORT   (real Db2 search as $OWNER; docs at /docs)"
-    as_owner "cd '$STAGE' && DB2_HOST=local JUDGMENTS_PATH='$JUDGMENTS_PATH' '$PY' -m uvicorn api:app --host $HOST --port $PORT"
+    # Same reason as JUDGMENTS_PATH: the exported test-set decks live under the repo,
+    # and the stage does not carry data/eval/.
+    EVAL_SETS_DIR="$REPO/data/eval/sets"
+    as_owner "cd '$STAGE' && DB2_HOST=local JUDGMENTS_PATH='$JUDGMENTS_PATH' EVAL_SETS_DIR='$EVAL_SETS_DIR' '$PY' -m uvicorn api:app --host $HOST --port $PORT"
 else
     [ -f "$HERE/static/fixtures.json" ] || {
         echo "No fixtures yet — run ./ui/build_fixtures.sh first." >&2; exit 1; }
