@@ -1,0 +1,75 @@
+{
+  "queries": {
+    "q001": {
+      "labels": {
+        "10": "relevant",
+        "17": "irrelevant",
+        "19": "highly_relevant",
+        "2": "irrelevant",
+        "22": "irrelevant",
+        "23": "relevant",
+        "29": "irrelevant",
+        "38": "irrelevant",
+        "39": "relevant",
+        "40": "relevant",
+        "56": "irrelevant",
+        "66": "relevant",
+        "82": "irrelevant",
+        "83": "irrelevant",
+        "91": "relevant"
+      },
+      "pool_size": 15,
+      "text": "managing stress"
+    },
+    "q002": {
+      "labels": {
+        "14": "irrelevant",
+        "15": "relevant",
+        "27": "highly_relevant",
+        "29": "irrelevant",
+        "3": "irrelevant",
+        "31": "irrelevant",
+        "35": "relevant",
+        "48": "relevant",
+        "51": "relevant",
+        "56": "highly_relevant",
+        "60": "relevant",
+        "65": "relevant",
+        "72": "relevant",
+        "82": "irrelevant",
+        "83": "relevant",
+        "9": "relevant",
+        "96": "highly_relevant"
+      },
+      "pool_size": 17,
+      "text": "building career"
+    }
+  },
+  "sets": {
+    "pooled_v1": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q001",
+        "q002"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "stress_probe": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q001"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    }
+  }
+}
