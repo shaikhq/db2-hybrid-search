@@ -12,6 +12,7 @@ import os
 import random
 import re
 import shutil
+import sys
 import tempfile
 from typing import Optional
 
@@ -25,6 +26,15 @@ from hybrid_search import rerank as rr          # optional post-fusion cross-enc
 from hybrid_search import metrics as mx         # the ONE metrics implementation
 import build_fixtures as bf   # responses_for()
 import demo_view as dv         # outcome-translation (verdicts + book labels)
+
+# The Evaluate tab builds decks straight from the judgments store using the exporter's
+# own select()/record_for(), so the tab and the exported qrels can never disagree about
+# which queries are exportable or what counts as gold. scripts/ sits beside the repo root
+# when run from a checkout; run.sh stages the file next to api.py for --live.
+_SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts")
+if os.path.isdir(_SCRIPTS) and _SCRIPTS not in sys.path:
+    sys.path.insert(0, _SCRIPTS)
+import export_judgments as xj  # noqa: E402
 
 # Log hybrid_search.core's SQL to the uvicorn console (reuse uvicorn's handler; fall
 # back to a basic one if run standalone).
@@ -523,19 +533,30 @@ def _eval_sets_dir():
 
 
 def _eval_decks():
-    """{name: path} for every deck that can be evaluated — the exported labeled sets plus
-    the synthetic golden set. Being able to switch between them is the whole point of
-    keeping human-judged and generated judgments in separate files."""
+    """Every deck that can be evaluated, newest source winning.
+
+    Three origins: exported decks in data/eval/sets, the synthetic golden set, and — most
+    importantly — the sets that exist in the judgments store right now. Without that last
+    one a set created in the Label tab stays invisible here until someone remembers to run
+    the exporter, which breaks the obvious workflow of create -> label -> evaluate.
+
+    The store wins over an exported file of the same name: the file is a snapshot for
+    external tools, the store is the live truth."""
     decks = {}
     directory = _eval_sets_dir()
     if os.path.isdir(directory):
         for fn in sorted(os.listdir(directory)):
             if fn.endswith(".json") and fn != "manifest.json":
-                decks[fn[:-5]] = os.path.join(directory, fn)
+                decks[fn[:-5]] = {"kind": "file", "path": os.path.join(directory, fn)}
     try:
         from hybrid_search import evalset
-        decks.setdefault("golden_set", evalset.resolve())
+        decks.setdefault("golden_set", {"kind": "file", "path": evalset.resolve()})
     except Exception:
+        pass
+    try:
+        for name in _load_judgments()["sets"]:
+            decks[name] = {"kind": "store", "name": name}
+    except (OSError, json.JSONDecodeError):
         pass
     return decks
 
@@ -550,6 +571,33 @@ def _load_deck(path):
     return items
 
 
+def _deck_from_store(set_name):
+    """Build a deck straight from the judgments store, via the exporter's own functions.
+
+    Deliberately NOT a reimplementation: xj.select applies the completeness and
+    zero-relevant guards, and xj.record_for does the grade -> gold_ids/gold_grades
+    binarization. Duplicating either here would let the tab and the exported qrels
+    disagree about the same judgments — the mistake the shared metrics module exists to
+    prevent. Returns (items, skipped) so the UI can say WHY a query is missing."""
+    meta, queries = xj.load_set(_judgments_path(), set_name)
+    keep, skipped = xj.select(queries, include_partial=False)
+    items = []
+    for i, (qid, s) in enumerate(keep, start=1):
+        rec = xj.record_for(qid, s, set_name, {})
+        rec["id"] = int(qid[1:]) if qid[1:].isdigit() else i
+        rec["qid"] = qid
+        rec["gold_ids"] = [int(g) for g in rec["gold_ids"]]
+        items.append(rec)
+    return items, [{"qid": q, "query": t, "why": w} for q, t, w in skipped]
+
+
+def _deck(name, spec):
+    """(items, skipped) for a deck of either origin."""
+    if spec["kind"] == "store":
+        return _deck_from_store(spec["name"])
+    return _load_deck(spec["path"]), []
+
+
 def _finite(v):
     """Strict JSON has no nan. mean() yields nan for an empty slice — MRR over zero
     known-item queries, say — and that means "not measured here", so it is sent as null.
@@ -561,13 +609,15 @@ def _finite(v):
 def eval_sets():
     """The decks available to evaluate, with enough provenance to tell them apart."""
     out = {}
-    for name, path in _eval_decks().items():
+    for name, spec in _eval_decks().items():
         try:
-            items = _load_deck(path)
-        except (OSError, json.JSONDecodeError, KeyError):
+            items, skipped = _deck(name, spec)
+        except (OSError, json.JSONDecodeError, KeyError, SystemExit):
             continue
         sources = sorted({it.get("source", "?") for it in items})
         out[name] = {"queries": len(items), "sources": sources,
+                     "origin": spec["kind"],          # "store" = live, "file" = exported
+                     "skipped": len(skipped),         # judged but not yet exportable
                      "graded": any(it.get("gold_grades") for it in items),
                      "known_item": sum(1 for it in items if it["query_class"] == "known_item"),
                      "topical": sum(1 for it in items if it["query_class"] == "topical")}
@@ -585,7 +635,12 @@ def evaluate(name: str = Query(..., alias="set",
     if name not in decks:
         raise HTTPException(status_code=404,
                             detail=f"no such test set {name!r} — have: {sorted(decks)}")
-    items = _load_deck(decks[name])
+    items, skipped = _deck(name, decks[name])
+    if not items:
+        # An empty or entirely-unfinished set is a state, not an error: say which queries
+        # are missing and why, rather than rendering a table of dashes.
+        return {"set": name, "queries": 0, "k": mx.K, "retrieve": mx.RETRIEVE,
+                "legs": list(EVAL_LEGS), "blocks": {}, "per_query": [], "skipped": skipped}
 
     conn = h.connect()
     try:
@@ -619,7 +674,8 @@ def evaluate(name: str = Query(..., alias="set",
                      for leg in EVAL_LEGS},
         })
     return {"set": name, "queries": len(items), "k": mx.K, "retrieve": mx.RETRIEVE,
-            "legs": list(EVAL_LEGS), "blocks": blocks, "per_query": per_query}
+            "legs": list(EVAL_LEGS), "blocks": blocks, "per_query": per_query,
+            "skipped": skipped}
 
 
 class NoCacheHTML(StaticFiles):

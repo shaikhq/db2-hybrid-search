@@ -53,9 +53,19 @@ function labelBoot() {
   // Sidebar: pick a set, create one, or open a query already in it.
   $("#label-set").addEventListener("change", (e) => {
     LAB.set = e.target.value;
+    // Same hazard as creating a set: a pool left on screen after switching would file its
+    // next grade into the newly selected set. Use "Add to test set" to file a query
+    // deliberately; never as a side effect of changing the dropdown.
+    resetPool();
     renderSets();
   });
-  $("#label-newset").addEventListener("click", createSet);
+  $("#label-newset").addEventListener("click", toggleNewSet);
+  $("#label-newset-cancel").addEventListener("click", () => toggleNewSet(false));
+  $("#label-newset-create").addEventListener("click", createSet);
+  $("#label-newset-name").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") createSet();
+    if (e.key === "Escape") toggleNewSet(false);
+  });
   $("#label-addset").addEventListener("change", refreshAddTo);
   $("#label-add").addEventListener("click", addToSet);
   $("#label-members").addEventListener("click", (e) => {
@@ -121,19 +131,55 @@ function refreshAddTo() {
   $("#label-addmsg").textContent = LAB.qid && already ? `already in ${target}` : "";
 }
 
+// An inline form rather than prompt(): a native modal cannot show the naming rule the
+// server enforces, cannot render its error next to the field, and is suppressed outright
+// in some embedded contexts.
+function toggleNewSet(open) {
+  const form = $("#label-newset-form");
+  const show = open === undefined ? form.hidden : open;
+  form.hidden = !show;
+  $("#label-newset").setAttribute("aria-expanded", String(show));
+  $("#label-newset-err").textContent = "";
+  if (show) { $("#label-newset-name").value = ""; $("#label-newset-name").focus(); }
+}
+
 async function createSet() {
-  const name = (prompt("Name for the new test set (letters, digits, . _ -):") || "").trim();
-  if (!name) return;
+  const name = $("#label-newset-name").value.trim();
+  if (!name) { $("#label-newset-err").textContent = "Give the set a name."; return; }
   const r = await fetch("/api/sets", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name }),
   });
   if (!r.ok) {
-    $("#label-addmsg").textContent = (await r.json()).detail || "could not create set";
+    // The server owns the rule; show its own words rather than a paraphrase that can drift.
+    let detail = "Could not create the set.";
+    try { detail = (await r.json()).detail || detail; } catch (_) {}
+    $("#label-newset-err").textContent = detail;
+    $("#label-newset-name").focus();
     return;
   }
+  toggleNewSet(false);
   LAB.set = name;
+  // Clear the pool on screen. A new set is empty, so leaving the previous query's cards
+  // up implies they belong to it — and worse, the next grade WOULD be filed there, since
+  // POST /api/judgments takes the active set. Resetting makes the switch unambiguous.
+  resetPool();
   await loadSets();
+}
+
+function resetPool() {
+  LAB.query = "";
+  LAB.qid = "";
+  LAB.pool = [];
+  LAB.labels = {};
+  LAB.legs = null;
+  LAB.terms = [];
+  LAB.active = 0;
+  $("#label-query").value = "";
+  $("#label-progress").innerHTML = "";
+  $("#label-addmsg").textContent = "";
+  $("#label-list").innerHTML =
+    `<p class="placeholder">Type a query above and press Enter to build its pool.</p>`;
 }
 
 // Files the CURRENT query into another set. Nothing is copied — the set gains a reference
@@ -181,8 +227,7 @@ async function buildLabelPool() {
   const q = $("#label-query").value.trim();
   if (!q) return;
   if (!LIVE) {
-    $("#label-list").innerHTML = `<p class="placeholder">Labeling needs the live backend —
-      run <code>./ui/run.sh --live</code>, then build a pool here.</p>`;
+    $("#label-list").innerHTML = needsLive("Labeling");
     return;
   }
   $("#label-list").innerHTML = `<p class="placeholder">Building pool…</p>`;
@@ -213,8 +258,7 @@ async function buildLabelPool() {
     renderLabelPool();
     renderSets();                        // reflect the newly-active query in the sidebar
   } catch (_) {
-    $("#label-list").innerHTML =
-      `<p class="placeholder">Could not build the pool — is the live backend running?</p>`;
+    $("#label-list").innerHTML = backendFailed("Building the pool");
   }
 }
 

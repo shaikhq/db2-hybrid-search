@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=60" />
+  <link rel="stylesheet" href="styles.css?v=62" />
 </head>
 <body>
   <header class="topbar">
@@ -30,6 +30,7 @@
       </div>
     </div>
     <div class="legend" aria-label="color legend">
+      <span id="live-chip" class="live-chip" aria-live="polite"></span>
       <span class="chip chip-bm25">Lexical</span>
       <span class="chip chip-vector">Semantic</span>
       <span class="chip chip-both">Hybrid</span>
@@ -37,20 +38,20 @@
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="pages">
-    <button class="tab" data-page="start" role="tab" aria-selected="true">Start here</button>
-    <button class="tab" data-page="search" role="tab" aria-selected="false">Search</button>
-    <button class="tab" data-page="demo" role="tab" aria-selected="false">Demo</button>
-    <button class="tab" data-page="evaluate" role="tab" aria-selected="false">Evaluate</button>
-    <button class="tab" data-page="arch" role="tab" aria-selected="false">Architecture</button>
-    <button class="tab" data-page="label" role="tab" aria-selected="false">Label</button>
+    <button class="tab" id="tab-start" data-page="start" role="tab" aria-selected="true" aria-controls="page-start" tabindex="0">Start here</button>
+    <button class="tab" id="tab-search" data-page="search" role="tab" aria-selected="false" aria-controls="page-search" tabindex="-1">Search</button>
+    <button class="tab" id="tab-demo" data-page="demo" role="tab" aria-selected="false" aria-controls="page-demo" tabindex="-1">Demo</button>
+    <button class="tab" id="tab-evaluate" data-page="evaluate" role="tab" aria-selected="false" aria-controls="page-evaluate" tabindex="-1">Evaluate</button>
+    <button class="tab" id="tab-arch" data-page="arch" role="tab" aria-selected="false" aria-controls="page-arch" tabindex="-1">Architecture</button>
+    <button class="tab" id="tab-label" data-page="label" role="tab" aria-selected="false" aria-controls="page-label" tabindex="-1">Label</button>
   </nav>
 
   <!-- FIRST TAB (leftmost): the "Start here" doorway — the default landing. -->
-  <section class="startpage" id="page-start" aria-label="start here">
+  <section class="startpage" id="page-start" role="tabpanel" aria-labelledby="tab-start">
     <div id="start-canvas"></div>
   </section>
 
-  <main class="searchpage" id="page-search" hidden>
+  <main class="searchpage" id="page-search" role="tabpanel" aria-labelledby="tab-search" hidden>
     <div class="search-intro">
       <h2>Search the library</h2>
       <p>The top 5 results. Pick a mode — <b>Keyword</b>, <b>Hybrid</b>, or <b>Rerank</b> — for the full list, or tick any two under <b>Compare</b> to see them side by side.</p>
@@ -79,29 +80,9 @@
     </div>
   </main>
 
-  <!-- SECOND PAGE: Evaluate — score a named test set across the three Db2 legs.
-       Metrics come from the backend (hybrid_search.metrics), the same code
-       scripts/eval.py uses, so this tab and the CLI cannot disagree. -->
-  <section class="evaluatepage" id="page-evaluate" hidden aria-label="evaluate a test set">
-    <div class="eval-intro">
-      <h2>Evaluate</h2>
-      <p>Pick a test set and score it across all three retrievers. Judgments come from the
-        <b>Label</b> tab; the numbers are computed by the same code as
-        <code>scripts/eval.py</code>, so they always agree.</p>
-    </div>
-    <div class="ev-controls">
-      <label for="ev-set">Test set</label>
-      <select id="ev-set" aria-label="test set to evaluate"></select>
-      <button id="ev-run" class="run" type="button">Run</button>
-      <span id="ev-status" class="ev-status" aria-live="polite"></span>
-    </div>
-    <p id="ev-meta" class="ev-meta" aria-live="polite"></p>
-    <div id="ev-blocks" class="ev-blocks"></div>
-    <div id="ev-queries" class="ev-queries"></div>
-  </section>
 
   <!-- THIRD PAGE (additive): mixed-audience demo — "will search find my book?" -->
-  <section class="demopage" id="page-demo" hidden aria-label="will search find my book">
+  <section class="demopage" id="page-demo" role="tabpanel" aria-labelledby="tab-demo" hidden>
     <div class="demo-intro">
       <h2>Will search find my book?</h2>
       <p>A rough memory of a book, run through three strategies at once. Each has a blind spot;
@@ -134,8 +115,29 @@
     </div>
   </section>
 
+  <!-- SECOND PAGE: Evaluate — score a named test set across the three Db2 legs.
+       Metrics come from the backend (hybrid_search.metrics), the same code
+       scripts/eval.py uses, so this tab and the CLI cannot disagree. -->
+  <section class="evaluatepage" id="page-evaluate" role="tabpanel" aria-labelledby="tab-evaluate" hidden>
+    <div class="eval-intro">
+      <h2>Evaluate</h2>
+      <p>Pick a test set and score it across all three retrievers. Judgments come from the
+        <b>Label</b> tab; the numbers are computed by the same code as
+        <code>scripts/eval.py</code>, so they always agree.</p>
+    </div>
+    <div class="ev-controls">
+      <label for="ev-set">Test set</label>
+      <select id="ev-set" aria-label="test set to evaluate"></select>
+      <button id="ev-run" class="run" type="button">Run</button>
+      <span id="ev-status" class="ev-status" aria-live="polite"></span>
+    </div>
+    <p id="ev-meta" class="ev-meta" aria-live="polite"></p>
+    <div id="ev-blocks" class="ev-blocks"></div>
+    <div id="ev-queries" class="ev-queries"></div>
+  </section>
+
   <!-- FOURTH PAGE (additive): architecture, for a technical audience -->
-  <section class="archpage" id="page-arch" hidden aria-label="architecture">
+  <section class="archpage" id="page-arch" role="tabpanel" aria-labelledby="tab-arch" hidden>
     <div class="arch-intro">
       <h2>Architecture</h2>
       <p>One Db2 database for retrieval + fusion, with a local model-serving layer. Pick a view.</p>
@@ -150,7 +152,7 @@
   </section>
 
   <!-- FIFTH PAGE (internal tool): pooled relevance labeling, to grow the eval set. -->
-  <section class="labelpage" id="page-label" hidden aria-label="label test queries">
+  <section class="labelpage" id="page-label" role="tabpanel" aria-labelledby="tab-label" hidden>
     <div class="label-intro">
       <h2>Label test queries</h2>
       <p>Type a query, build its <b>pool</b> — every unique result both retrievers return —
@@ -164,7 +166,20 @@
           <span class="demo-sidebar-title">Test set</span>
           <div class="demo-sidebar-actions">
             <select id="label-set" aria-label="test set being labeled"></select>
-            <button id="label-newset" class="demo-shuffle" type="button">+ New set</button>
+            <button id="label-newset" class="demo-shuffle" type="button"
+                    aria-expanded="false" aria-controls="label-newset-form">+ New set</button>
+          </div>
+          <div id="label-newset-form" class="newset-form" hidden>
+            <input id="label-newset-name" type="text" placeholder="my-test-set"
+                   autocomplete="off" spellcheck="false"
+                   aria-describedby="label-newset-hint"
+                   aria-label="name for the new test set" />
+            <p id="label-newset-hint" class="newset-hint">Letters, digits, dot, underscore, hyphen.</p>
+            <div class="newset-actions">
+              <button id="label-newset-create" class="demo-shuffle" type="button">Create</button>
+              <button id="label-newset-cancel" class="demo-shuffle" type="button">Cancel</button>
+            </div>
+            <p id="label-newset-err" class="newset-err" aria-live="polite"></p>
           </div>
         </div>
         <p id="label-setmeta" class="label-setmeta" aria-live="polite"></p>
@@ -196,11 +211,11 @@
     </div>
   </section>
 
-  <script src="app.js?v=60"></script>
-  <script src="demo.js?v=60"></script>
-  <script src="arch.js?v=60"></script>
-  <script src="start.js?v=60"></script>
-  <script src="evaluate.js?v=60"></script>
-  <script src="label.js?v=60"></script>
+  <script src="app.js?v=62"></script>
+  <script src="demo.js?v=62"></script>
+  <script src="arch.js?v=62"></script>
+  <script src="start.js?v=62"></script>
+  <script src="evaluate.js?v=62"></script>
+  <script src="label.js?v=62"></script>
 </body>
 </html>

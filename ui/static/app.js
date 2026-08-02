@@ -33,16 +33,46 @@ function highlight(escaped, terms) {
 }
 
 /* ---------- boot ---------- */
+// One shared shape for "this needs the live backend": what · why · what to do next.
+// Search, Label and Evaluate each used to phrase it differently, and only after a
+// failure — so the same condition read as three unrelated problems.
+function needsLive(what) {
+  return `<p class="placeholder"><b>${what} needs the live backend.</b>
+    This build is running offline against frozen fixtures.
+    Start it with <code>./ui/run.sh --live</code>, then try again.</p>`;
+}
+function backendFailed(what) {
+  return `<p class="placeholder"><b>${what} failed.</b>
+    The live backend did not answer — check that <code>./ui/run.sh --live</code>
+    is still running.</p>`;
+}
+
+// State the mode once, up front, rather than letting each tab discover it on failure.
+function renderLiveChip() {
+  const el = $("#live-chip"); if (!el) return;
+  el.className = "live-chip " + (LIVE ? "live-on" : "live-off");
+  el.textContent = LIVE ? "live · Db2" : "offline · frozen fixtures";
+  el.title = LIVE ? "Answering from Db2 in real time"
+                  : "Serving frozen fixtures — run ./ui/run.sh --live for live queries";
+}
+
 async function boot() {
   try { LIVE = (await fetch("/api/queries", { cache: "no-store" })).ok; }
   catch (_) { LIVE = false; }
+  renderLiveChip();
   wire();
 }
 
 /* ---------- nav ---------- */
 function setPage(page) {
-  document.querySelectorAll("#tabs .tab").forEach((t) =>
-    t.setAttribute("aria-selected", String(t.dataset.page === page)));
+  // Roving tabindex: only the selected tab is in the tab order, and arrow keys move
+  // between them (see wire()). Without this the role="tab" markup promises keyboard
+  // behaviour the widget does not have.
+  document.querySelectorAll("#tabs .tab").forEach((t) => {
+    const on = t.dataset.page === page;
+    t.setAttribute("aria-selected", String(on));
+    t.tabIndex = on ? 0 : -1;
+  });
   // Generic: show #page-<page>, hide the rest. Force display too, so hiding works
   // even if an older/cached stylesheet lacks the [hidden] override.
   document.querySelectorAll('[id^="page-"]').forEach((sec) => {
@@ -98,6 +128,22 @@ function wire() {
     const t = e.target.closest(".tab"); if (!t) return;
     setPage(t.dataset.page);
   });
+  // Arrow / Home / End across the tablist, as the ARIA tab pattern requires. Selection
+  // follows focus, which is the expected behaviour when switching panels is cheap.
+  $("#tabs").addEventListener("keydown", (e) => {
+    const keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
+    if (!(e.key in keys)) return;
+    const tabs = [...document.querySelectorAll("#tabs .tab")];
+    const here = tabs.indexOf(e.target.closest(".tab"));
+    if (here === -1) return;
+    e.preventDefault();
+    const step = keys[e.key];
+    const next = step === "first" ? 0
+      : step === "last" ? tabs.length - 1
+      : (here + step + tabs.length) % tabs.length;
+    setPage(tabs[next].dataset.page);
+    tabs[next].focus();
+  });
   // Enter searches: a two-leg Compare if two are ticked, else the current single mode.
   $("#searchbox").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
   MODES.forEach((m) => {
@@ -123,8 +169,7 @@ async function run() {
   const text = $("#searchbox").value.trim();
   if (!text) return;
   if (!LIVE) {
-    $("#output").innerHTML = `<p class="placeholder">Open-ended search needs the live backend —
-      run <code>./ui/run.sh --live</code>, then search any query here.</p>`;
+    $("#output").innerHTML = needsLive("Open-ended search");
     state.fu = null; return;
   }
   const legs = state.compare.length === 2 ? state.compare : [state.mode];
@@ -148,7 +193,7 @@ async function run() {
     state.fu = fu; state.rr = rr;
     render();
   } catch (_) {
-    $("#output").innerHTML = `<p class="placeholder">Search failed — is the live backend running?</p>`;
+    $("#output").innerHTML = backendFailed("Search");
     state.fu = null;
   }
 }
@@ -217,7 +262,7 @@ function singleView(leg) {
   const meta = LEG[leg];
   const terms = queryTerms(state.fu.query);
   const results = legResults(leg).slice(0, TOP);
-  if (!results.length) return `<p class="placeholder">No results.</p>`;
+  if (!results.length) return `<p class="placeholder">No results for this query.</p>`;
   return `<h3 class="results-h"><span class="dot ${meta.dot}"></span>Top ${results.length} · ${meta.label}</h3>
     <div class="rows">${results.map((r) => resultCard(r, terms)).join("")}</div>`;
 }
@@ -228,7 +273,7 @@ function compareView(a, b) {
   const col = (leg) => {
     const meta = LEG[leg];
     const rows = legResults(leg).slice(0, TOP).map((r) => compactCard(r, terms)).join("")
-      || `<p class="placeholder">No results.</p>`;
+      || `<p class="placeholder">No results for this query.</p>`;
     return `<div class="cmp-col">
       <h3 class="results-h"><span class="dot ${meta.dot}"></span>${meta.label}</h3>
       <div class="rows">${rows}</div></div>`;

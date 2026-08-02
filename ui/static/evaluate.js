@@ -47,23 +47,41 @@ async function evaluateBoot() {
     renderQueries();
   });
 
+  // Sets are created in the Label tab while this page is already loaded, so a one-shot
+  // fetch at boot goes stale the moment you make one. Re-read the list whenever the tab
+  // is opened.
+  $("#tabs").addEventListener("click", (e) => {
+    const t = e.target.closest(".tab");
+    if (t && t.dataset.page === "evaluate") loadEvalSets();
+  });
+
   try { EV.frozen = await (await fetch("eval_fixtures.json", { cache: "no-store" })).json(); }
   catch (_) { EV.frozen = null; }
+  await loadEvalSets();
+}
+
+async function loadEvalSets() {
+  const previous = EV.set;
   try {
     const j = await (await fetch("/api/eval_sets", { cache: "no-store" })).json();
     EV.sets = j.sets || {};
   } catch (_) {
     EV.sets = (EV.frozen && EV.frozen.available) || {};
   }
-  EV.set = Object.keys(EV.sets)[0] || "";
-  EV.data = (EV.frozen && EV.frozen.sets && EV.frozen.sets[EV.set]) || null;
+  // Keep the selection across a refresh; fall back to the first set only if it vanished.
+  EV.set = (previous && EV.sets[previous]) ? previous : (Object.keys(EV.sets).sort()[0] || "");
+  if (EV.set !== previous) {
+    EV.data = (EV.frozen && EV.frozen.sets && EV.frozen.sets[EV.set]) || null;
+    EV.open = null;
+  }
   renderEvaluation();
 }
 
 /* ---------- run ---------- */
 async function runEvaluation() {
   if (!LIVE) {
-    $("#ev-status").textContent = "needs the live backend — run ./ui/run.sh --live";
+    $("#ev-blocks").innerHTML = needsLive("Evaluation");
+    $("#ev-status").textContent = "";
     return;
   }
   if (!EV.set) return;
@@ -79,7 +97,8 @@ async function runEvaluation() {
     $("#ev-status").textContent = "";
     renderEvaluation();
   } catch (_) {
-    $("#ev-status").textContent = "evaluation failed — is the backend running?";
+    $("#ev-blocks").innerHTML = backendFailed("Evaluation");
+    $("#ev-status").textContent = "";
   } finally {
     $("#ev-run").disabled = false;
   }
@@ -96,10 +115,13 @@ function renderEvaluation() {
   const info = EV.sets[EV.set] || {};
   const provenance = [
     info.queries !== undefined ? `${info.queries} queries` : null,
+    info.skipped ? `${info.skipped} not yet complete` : null,
     info.known_item !== undefined
       ? `${info.known_item} known-item · ${info.topical} topical` : null,
     info.graded === true ? "graded 0–2" : info.graded === false ? "binary judgments" : null,
     (info.sources || []).length ? `source: ${info.sources.join(", ")}` : null,
+    // Where the deck came from: the live judgments store, or an exported snapshot.
+    info.origin === "store" ? "live judgments" : info.origin === "file" ? "exported deck" : null,
   ].filter(Boolean).join(" · ");
   const frozen = EV.data && EV.data.computed
     ? ` <span class="ev-frozen">frozen · computed ${esc(EV.data.computed)}</span>` : "";
@@ -110,6 +132,18 @@ function renderEvaluation() {
       ? "Press Run to score this set."
       : "No frozen results for this set — run <code>./ui/run.sh --live</code> and press Run, "
         + "or rebuild them with <code>./ui/build_eval_fixtures.sh</code>."}</p>`;
+    $("#ev-queries").innerHTML = "";
+    return;
+  }
+  // An empty or entirely-unfinished set is a state, not a table of dashes. Say which
+  // queries are missing and why — a half-judged query is excluded on purpose, because
+  // query_class is derived from the complete relevant set.
+  if (!EV.data.queries) {
+    const why = (EV.data.skipped || []).map((s) =>
+      `<li><b>${esc(s.query || s.qid)}</b> — ${esc(s.why)}</li>`).join("");
+    $("#ev-blocks").innerHTML = `<p class="placeholder">Nothing to score in this set yet.${
+      why ? ` Judged but not exportable:<ul class="ev-skipped">${why}</ul>`
+          : " Label some queries into it from the <b>Label</b> tab."}</p>`;
     $("#ev-queries").innerHTML = "";
     return;
   }

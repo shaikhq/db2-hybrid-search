@@ -61,6 +61,18 @@ check("<mark> styled for highlights", "mark {" in css or "mark{" in css)
 check("no 'ranked best' language in demo.js", "ranked best" not in demojs.lower())
 check("demo.js has no hardcoded book titles (renders from data)",
       "Psychology of Money" not in demojs and "Atomic Habits" not in demojs)
+# The landing page is marketing copy, which is exactly where an absolute-success claim
+# slips in. It held "never empty" while hybrid sits at Recall@5 = 0.310 on the labeled
+# set -- the one place in the app that oversold. Same honesty bar as demo.js above.
+startjs = read(os.path.join(STATIC, "start.js"))
+for _claim in ("never empty", "always finds", "always find", "guaranteed", "every time"):
+    check(f"start.js makes no absolute-success claim ({_claim!r})",
+          _claim not in startjs.lower(), _claim)
+check("start.js still says what the app is (grunt test: what / why / what next)",
+      "searching your audiobook library" in startjs
+      and "keyword and meaning" in startjs.lower(), "landing copy lost the offer")
+check("start.js primary CTA still closes the loop into Search",
+      "setPage" in startjs and "START_QUERY" in startjs and "run()" in startjs)
 
 # ---------------- Evaluate tab (replaces "Golden eval set") ----------------
 print("\nEvaluate tab (static):")
@@ -80,6 +92,16 @@ check("app.js no longer fetches eval_set.json", "eval_set.json" not in appjs)
 check("evaluate.js computes no metrics of its own",
       "Math.log2" not in evaljs and "/api/evaluate" in evaljs)
 check("evaluate.js reads the available sets from the backend", "/api/eval_sets" in evaljs)
+# A set created in the Label tab must show up here without an export step, and without
+# a page reload -- the two causes of "my new set is missing from the dropdown".
+check("evaluate.js refreshes its set list when the tab is opened",
+      "loadEvalSets" in evaljs and 'dataset.page === "evaluate"' in evaljs)
+check("evaluate.js keeps the current selection across a refresh",
+      "const previous = EV.set" in evaljs)
+check("evaluate.js reports where a deck came from (live store vs exported file)",
+      "live judgments" in evaljs and "exported deck" in evaljs)
+check("evaluate.js explains an empty set instead of rendering dashes",
+      "Nothing to score in this set yet" in evaljs and "EV.data.skipped" in evaljs)
 check("per-query drill-down present (aggregates hide WHICH queries fail)",
       "per_query" in evaljs and "renderQueries" in evaljs)
 check("offline: falls back to frozen eval_fixtures.json",
@@ -101,7 +123,7 @@ check("index.html registers label tab", 'data-page="label"' in idx)
 check("index.html has #page-label section", 'id="page-label"' in idx)
 check("index.html loads label.js", 'src="label.js' in idx)
 check("label.js defines labelBoot()", "function labelBoot" in labeljs)
-check("cache-bust bumped to v=60 everywhere", "?v=59" not in idx and "?v=60" in idx)
+check("cache-bust bumped to v=62 everywhere", "?v=61" not in idx and "?v=62" in idx)
 # Test sets: a set is a named LIST of qids, browsed from a sidebar in this same tab
 # (reviewing a set IS re-labeling it, so it must not live behind another tab).
 check("sidebar: set picker + New set + member list present",
@@ -112,6 +134,10 @@ check("sidebar reuses the Demo tab layout rather than a new one",
 check("\"Add to test set\" control is wired", 'id="label-add"' in idx
       and 'id="label-addset"' in idx and "addToSet" in labeljs)
 check("sidebar reads GET /api/sets", "/api/sets" in labeljs and "loadSets" in labeljs)
+# Creating or switching a set must clear the pool: POST /api/judgments files into the
+# ACTIVE set, so a stale pool would silently change membership on the next keystroke.
+check("label.js resets the pool when a set is created or switched",
+      "function resetPool" in labeljs and labeljs.count("resetPool()") >= 2)
 check("membership adds a reference, never a copy of the judgments",
       "/members" in labeljs and "no copy" in labeljs)
 check("keyboard grades are suppressed while a SELECT has focus",
@@ -151,6 +177,52 @@ _labelcode = re.sub(r"//.*", "", labeljs)
 check("anti-anchoring: no per-document position or leg badge on label cards",
       'class="rank"' not in _labelcode and "legChip" not in _labelcode
       and "resultCard(" not in _labelcode)
+
+# ---------------- Design review remediation: a11y + shared UI state ----------------
+print("\nDesign review (a11y + shared state):")
+# role="tablist"/"tab" without tabpanel/aria-controls promises keyboard behaviour the
+# widget does not have -- half the pattern is worse than none.
+_nav_html = idx.split('id="tabs"')[1].split("</nav>")[0]
+check("every tab declares aria-controls and an id",
+      _nav_html.count('role="tab"') == _nav_html.count("aria-controls=")
+      == _nav_html.count('id="tab-') == 6, _nav_html.count("aria-controls="))
+check("every panel is a tabpanel labelled by its tab",
+      idx.count('role="tabpanel"') == 6 and idx.count("aria-labelledby=\"tab-") == 6)
+check("roving tabindex + arrow-key navigation implemented",
+      "t.tabIndex = on ? 0 : -1" in appjs and "ArrowRight" in appjs and "End" in appjs)
+# Nav order and DOM order must agree, or sequential navigation contradicts the tabs.
+_nav = re.findall(r'data-page="([a-z]+)"', idx)
+_dom = re.findall(r'id="page-([a-z]+)"', idx)
+check("panel order in the DOM matches the tab order", _nav == _dom, f"{_nav} vs {_dom}")
+# A control with :hover and no :focus-visible is invisible to the keyboard.
+check("the primary nav has a visible focus state", ".tab:focus-visible" in css)
+check("focus ring covers buttons, rows, selects and inputs",
+      all(sel in css for sel in (".run:focus-visible", ".row:focus-visible",
+                                 "input:focus-visible", ".ev-controls select:focus-visible")))
+check("html does not pin px font-size over the reader's preference",
+      "font-size:100%" in css and "font-size:15px" not in css)
+# overflow-x:auto INSIDE a wide container is right; hiding it on <body> is the hack.
+check("no body-level overflow-x hack masking layout bugs",
+      "overflow-x:hidden;" not in css.replace(" ", ""))
+check("token vocabulary matches the UI's own words (--lexical, not --bm25)",
+      "--lexical:" in css and "var(--bm25)" not in css)
+# One statement of live-vs-offline, before failure -- not three after it.
+check("live/offline is stated once in the header",
+      'id="live-chip"' in idx and "renderLiveChip" in appjs)
+check("all three tabs share one 'needs the backend' message",
+      "function needsLive" in appjs and "needsLive(" in labeljs and "needsLive(" in evaljs)
+check("all three share one backend-failure message",
+      "function backendFailed" in appjs and "backendFailed(" in labeljs
+      and "backendFailed(" in evaljs)
+# prompt() cannot show the server's naming rule or render its error in place.
+check("no native modal dialogs anywhere",
+      not re.search(r'(?<!//.)\bprompt\(', re.sub(r"//.*", "", labeljs))
+      and "alert(" not in labeljs and "confirm(" not in labeljs)
+check("new-set form is inline, with the rule and the server's error shown in place",
+      'id="label-newset-form"' in idx and 'id="label-newset-err"' in idx
+      and "toggleNewSet" in labeljs)
+check("the disclosure button reports its expanded state",
+      'aria-expanded' in idx and 'aria-controls="label-newset-form"' in idx)
 
 # ---------------- D-substitute + E: TestClient smoke ----------------
 print("\nD (TestClient smoke) + E (regression):")
@@ -435,6 +507,34 @@ if have_client:
     check("eval_sets reports whether a deck carries grades",
           j["sets"]["golden_set"]["graded"] is False, j["sets"]["golden_set"])
     check("unknown set 404s", client.get("/api/evaluate", params={"set": "nope"}).status_code == 404)
+    # Store-backed decks: a set created in the Label tab is evaluatable immediately.
+    _evdir = tempfile.mkdtemp(prefix="evalsets-")
+    _evstore = os.path.join(_evdir, "judgments.json")
+    os.environ["JUDGMENTS_PATH"] = _evstore
+    os.environ["EVAL_SETS_DIR"] = os.path.join(_evdir, "sets")   # no exported decks at all
+    client.post("/api/sets", json={"name": "brand_new"})
+    j = client.get("/api/eval_sets").json()["sets"]
+    check("a set created in the Label tab appears without being exported first",
+          "brand_new" in j and j["brand_new"]["queries"] == 0, list(j))
+    check("its origin is reported as the live store",
+          j["brand_new"]["origin"] == "store", j.get("brand_new"))
+    r = client.get("/api/evaluate", params={"set": "brand_new"})
+    check("evaluating an empty set is a state, not an error",
+          r.status_code == 200 and r.json()["queries"] == 0, r.status_code)
+    # A half-judged query is excluded, with the reason surfaced rather than swallowed.
+    for cid, lab in ((1, "relevant"), (2, "irrelevant")):
+        client.post("/api/judgments", json={"query": "half done", "cid": cid,
+                                            "label": lab, "pool_size": 9,
+                                            "set": "brand_new"})
+    r = client.get("/api/evaluate", params={"set": "brand_new"}).json()
+    check("an incomplete query is skipped with its reason given",
+          r["queries"] == 0 and r["skipped"]
+          and "incomplete" in r["skipped"][0]["why"], r.get("skipped"))
+    check("the exporter's guards are reused, not reimplemented",
+          "xj.select" in read(os.path.join(UI, "api.py")))
+    os.environ["JUDGMENTS_PATH"] = _store
+    os.environ.pop("EVAL_SETS_DIR", None)
+
     _fx = os.path.join(STATIC, "eval_fixtures.json")
     check("offline eval fixtures exist and parse",
           os.path.exists(_fx) and isinstance(_json.load(open(_fx)).get("sets"), dict), _fx)

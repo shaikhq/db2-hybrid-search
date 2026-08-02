@@ -63,6 +63,8 @@ if [ "${1:-}" = "--live" ]; then
     rm -rf "$STAGE"; mkdir -p "$STAGE"
     cp "$HERE/api.py" "$HERE/build_fixtures.py" "$HERE/demo_view.py" \
        "$HERE/queries.json" "$HERE/demo_queries.json" "$STAGE/"
+    # api.py imports the exporter to build eval decks from the judgments store.
+    cp "$REPO/scripts/export_judgments.py" "$STAGE/"
     cp -r "$REPO/src/hybrid_search" "$STAGE/"      # the search engine package
     cp -r "$HERE/static" "$STAGE/static"
     # api.py's book title/author lookup. Staged under the stage root because api.py

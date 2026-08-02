@@ -43,6 +43,91 @@
       },
       "pool_size": 17,
       "text": "building career"
+    },
+    "q003": {
+      "labels": {
+        "13": "highly_relevant",
+        "2": "irrelevant",
+        "29": "irrelevant",
+        "36": "irrelevant",
+        "42": "irrelevant",
+        "60": "irrelevant",
+        "82": "irrelevant",
+        "83": "relevant",
+        "85": "relevant",
+        "89": "irrelevant",
+        "90": "irrelevant",
+        "93": "irrelevant"
+      },
+      "pool_size": 12,
+      "text": "emotional intelligence"
+    },
+    "q004": {
+      "labels": {
+        "10": "irrelevant",
+        "16": "relevant",
+        "29": "irrelevant",
+        "42": "relevant",
+        "48": "relevant",
+        "53": "irrelevant",
+        "54": "irrelevant",
+        "58": "highly_relevant",
+        "63": "irrelevant",
+        "73": "highly_relevant",
+        "74": "irrelevant",
+        "79": "highly_relevant",
+        "83": "highly_relevant",
+        "9": "highly_relevant",
+        "90": "highly_relevant"
+      },
+      "pool_size": 15,
+      "text": "how can I become effective communicator"
+    },
+    "q005": {
+      "labels": {
+        "1": "relevant",
+        "16": "relevant",
+        "19": "irrelevant",
+        "27": "irrelevant",
+        "3": "highly_relevant",
+        "36": "irrelevant",
+        "41": "irrelevant",
+        "42": "relevant",
+        "58": "highly_relevant",
+        "63": "irrelevant",
+        "72": "irrelevant",
+        "73": "highly_relevant",
+        "79": "highly_relevant",
+        "83": "highly_relevant",
+        "9": "highly_relevant",
+        "90": "highly_relevant"
+      },
+      "pool_size": 16,
+      "text": "I am looking for a book on public speaking"
+    },
+    "q006": {
+      "labels": {
+        "15": "relevant",
+        "24": "highly_relevant",
+        "27": "irrelevant",
+        "28": "irrelevant",
+        "31": "irrelevant",
+        "40": "irrelevant",
+        "42": "irrelevant",
+        "5": "irrelevant",
+        "56": "irrelevant",
+        "6": "irrelevant",
+        "65": "irrelevant",
+        "73": "irrelevant",
+        "8": "irrelevant",
+        "81": "relevant",
+        "82": "irrelevant",
+        "84": "irrelevant",
+        "86": "irrelevant",
+        "9": "irrelevant"
+      },
+      "pool_size": 18,
+      "text": "I want to be a better writer"
     }
   },
   "sets": {
@@ -54,7 +139,21 @@
       ],
       "members": [
         "q001",
-        "q002"
+        "q002",
+        "q005"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "shaikh-test-set1": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q003",
+        "q004"
       ],
       "pool_depth": 10,
       "scale": "graded3"
@@ -67,6 +166,28 @@
       ],
       "members": [
         "q001"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "test_query_set3": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "test_set4": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q006"
       ],
       "pool_depth": 10,
       "scale": "graded3"

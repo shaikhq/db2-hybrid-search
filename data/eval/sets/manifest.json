@@ -7,7 +7,31 @@
       "qrels": "data/eval/qrels/pooled_v1.qrels",
       "topics": "data/eval/topics/pooled_v1.tsv"
     },
-    "judgments": 32,
+    "judgments": 48,
+    "legs": [
+      "lexical",
+      "vector"
+    ],
+    "levels": {
+      "highly_relevant": 2,
+      "irrelevant": 0,
+      "relevant": 1
+    },
+    "method": "pooled human judgment, rank discarded",
+    "pool_depth": 10,
+    "queries": 3,
+    "relevance": "graded 0-2 (2=highly relevant, 1=relevant, 0=not relevant; skips omitted — a skip is a gap, not a 0)",
+    "scale": "graded3"
+  },
+  "shaikh-test-set1": {
+    "assessor": "",
+    "binarization": "gold_ids = grade >= 1",
+    "files": {
+      "eval_set": "data/eval/sets/shaikh-test-set1.json",
+      "qrels": "data/eval/qrels/shaikh-test-set1.qrels",
+      "topics": "data/eval/topics/shaikh-test-set1.tsv"
+    },
+    "judgments": 27,
     "legs": [
       "lexical",
       "vector"
