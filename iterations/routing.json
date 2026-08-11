@@ -1,0 +1,111 @@
+{
+  "_comment": [
+    "Which files imply which scenarios, and whether frozen fixtures can even SEE the",
+    "change. `iterate start` consults this so the target stops being a flag you have to",
+    "remember, and `iterate end` re-checks it against what you actually touched.",
+    "",
+    "The rule that matters: target 'live' means the offline UI serves this behavior from",
+    "a frozen fixture, so an offline capture would show your change as 'unchanged'. That",
+    "is a false negative — the worst outcome for this tool — so live wins any tie.",
+    "",
+    "Patterns are fnmatch against repo-relative paths. Add rules as the app grows; an",
+    "unmatched file falls through to `default`."
+  ],
+
+  "rules": [
+    {
+      "match": ["ui/static/styles.css", "ui/static/index.html"],
+      "scenarios": ["start-page", "demo-run", "demo-technical", "evaluate-set", "arch-search"],
+      "target": "offline",
+      "why": "shared presentation — any tab can shift, but nothing about it needs Db2"
+    },
+    {
+      "match": ["ui/static/demo.js"],
+      "scenarios": ["demo-run", "demo-technical"],
+      "target": "offline",
+      "why": "Demo tab renders from demo_fixtures.json offline"
+    },
+    {
+      "match": ["ui/static/start.js"],
+      "scenarios": ["start-page"],
+      "target": "offline",
+      "why": "static landing page"
+    },
+    {
+      "match": ["ui/static/arch.js"],
+      "scenarios": ["arch-search"],
+      "target": "offline",
+      "why": "static diagram"
+    },
+    {
+      "match": ["ui/static/evaluate.js"],
+      "scenarios": ["evaluate-set"],
+      "target": "offline",
+      "why": "Evaluate tab renders frozen numbers from eval_fixtures.json offline"
+    },
+    {
+      "match": ["ui/static/app.js"],
+      "scenarios": ["start-page", "demo-run", "evaluate-set", "arch-search",
+                    "search-hybrid", "search-compare"],
+      "target": "offline",
+      "why": "shared shell: nav, tab switching, result cards. Touches every tab, so capture broadly"
+    },
+    {
+      "match": ["ui/static/label.js"],
+      "scenarios": ["label-pool"],
+      "target": "live",
+      "why": "the Label tab has no offline path — pool building calls the backend"
+    },
+    {
+      "match": ["ui/static/*fixtures.json", "ui/static/eval_set.json",
+                "ui/static/queries.json"],
+      "scenarios": ["demo-run", "demo-technical", "evaluate-set"],
+      "target": "offline",
+      "why": "the fixtures ARE the offline behavior; capturing offline is the point"
+    },
+
+    {
+      "match": ["src/hybrid_search/core.py", "scripts/2_search.sql", ".env"],
+      "scenarios": ["search-hybrid", "search-compare", "demo-run"],
+      "target": "live",
+      "why": "retrieval + fusion. Offline serves frozen results, so it would show your change as unchanged"
+    },
+    {
+      "match": ["src/hybrid_search/rerank.py"],
+      "scenarios": ["search-hybrid", "search-compare"],
+      "target": "live",
+      "why": "the reranker runs outside Db2, downstream of search — only visible live"
+    },
+    {
+      "match": ["src/hybrid_search/metrics.py", "src/hybrid_search/evalset.py",
+                "scripts/eval.py", "scripts/export_judgments.py"],
+      "scenarios": ["evaluate-set"],
+      "target": "live",
+      "why": "metrics are computed by the backend; the offline tab shows a frozen snapshot"
+    },
+    {
+      "match": ["src/hybrid_search/understanding.py"],
+      "scenarios": ["search-hybrid", "search-compare"],
+      "target": "live",
+      "why": "query understanding runs in the request path"
+    },
+    {
+      "match": ["ui/api.py"],
+      "scenarios": ["search-hybrid", "search-compare", "label-pool", "evaluate-set"],
+      "target": "live",
+      "why": "the API only exists live; offline never calls it"
+    },
+    {
+      "match": ["data/corpus.csv", "data/eval/*"],
+      "scenarios": ["search-hybrid", "evaluate-set"],
+      "target": "live",
+      "why": "corpus and judgments change what the engine returns, not what the page looks like"
+    }
+  ],
+
+  "default": {
+    "scenarios": [],
+    "target": "offline",
+    "why": "no rule matched — not known to affect the UI"
+  }
+}
