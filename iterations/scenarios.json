@@ -1,0 +1,146 @@
+{
+  "_comment": [
+    "The catalogue of user-facing flows worth snapshotting. Each iteration picks the",
+    "subset it touches — `iterate start <slug> --scenarios demo-run,demo-technical` —",
+    "so a one-tab change does not re-capture the whole app.",
+    "",
+    "  needs: offline  runs against frozen fixtures, no Db2. Deterministic — these are",
+    "                  the ones whose diffs you can trust pixel-for-pixel.",
+    "  needs: live     requires ./ui/run.sh --live (Db2 + embedding server). Captured",
+    "                  only when a live server is reachable; skipped cleanly otherwise,",
+    "                  and its results move with the corpus, so read those diffs as",
+    "                  'what the engine said today', not as a regression alarm.",
+    "",
+    "Step vocabulary (that's all of it): click, fill, press, select, wait_for, wait_ms,",
+    "hover, eval. capture.shot is the element photographed; capture.text is the element",
+    "whose visible text is dumped. Both accept 'page' for the whole document."
+  ],
+
+  "viewport": { "width": 1280, "height": 900 },
+
+  "scenarios": [
+    {
+      "name": "start-page",
+      "needs": "offline",
+      "about": "The landing page a first-time visitor sees.",
+      "steps": [
+        { "wait_for": "#start-canvas .startwrap, #start-canvas > *" }
+      ],
+      "capture": { "shot": "#page-start", "text": "#page-start" }
+    },
+
+    {
+      "name": "demo-run",
+      "needs": "offline",
+      "about": "Demo tab: tap a canned query, see all three legs side by side. The core 'what does hybrid buy you' moment.",
+      "steps": [
+        { "click": "#tab-demo" },
+        { "click": ".dchip[data-id=\"r2\"]" },
+        { "click": "#demo-run" },
+        { "wait_for": "#demo-panels > *" }
+      ],
+      "capture": { "shot": "#page-demo", "text": "#demo-panels" }
+    },
+
+    {
+      "name": "demo-technical",
+      "needs": "offline",
+      "about": "Same query with 'Technical details' on — the scores and gates behind the verdict.",
+      "steps": [
+        { "click": "#tab-demo" },
+        { "click": ".dchip[data-id=\"r2\"]" },
+        { "click": "#demo-run" },
+        { "wait_for": "#demo-panels > *" },
+        { "click": "#demo-tech" },
+        { "wait_ms": 150 }
+      ],
+      "capture": { "shot": "#page-demo", "text": "#demo-panels" }
+    },
+
+    {
+      "name": "evaluate-set",
+      "needs": "offline",
+      "about": "Evaluate tab showing the frozen metric blocks for pooled_v1 (HELDOUT / TRAIN / ALL).",
+      "steps": [
+        { "click": "#tab-evaluate" },
+        { "select": "#ev-set", "value": "pooled_v1" },
+        { "wait_for": "#ev-blocks > *" }
+      ],
+      "capture": { "shot": "#page-evaluate", "text": "#ev-blocks" }
+    },
+
+    {
+      "name": "arch-search",
+      "needs": "offline",
+      "about": "Architecture tab, Search view — the diagram explaining the two legs and the fusion.",
+      "steps": [
+        { "click": "#tab-arch" },
+        { "click": "#arch-subnav button[data-view=\"search\"]" },
+        { "wait_for": "#arch-canvas > *" },
+        { "wait_ms": 150 }
+      ],
+      "capture": { "shot": "#page-arch", "text": "#arch-canvas" }
+    },
+
+    {
+      "name": "search-hybrid",
+      "needs": "live",
+      "about": "Search tab: a free-typed query answered by Db2 through the hybrid leg.",
+      "steps": [
+        { "click": "#tab-search" },
+        { "click": "#mode-hybrid" },
+        { "fill": "#searchbox", "text": "books about building better habits" },
+        { "press": "Enter", "on": "#searchbox" },
+        { "wait_for": "#output .card, #output .placeholder" },
+        { "wait_ms": 400 }
+      ],
+      "capture": { "shot": "#page-search", "text": "#output" }
+    },
+
+    {
+      "name": "search-compare",
+      "needs": "live",
+      "about": "Search tab with Keyword and Hybrid shown side by side — where the legs disagree.",
+      "steps": [
+        { "click": "#tab-search" },
+        { "fill": "#searchbox", "text": "walter dixon" },
+        { "click": "#cmp-keyword" },
+        { "click": "#cmp-hybrid" },
+        { "press": "Enter", "on": "#searchbox" },
+        { "wait_for": "#output .card, #output .placeholder" },
+        { "wait_ms": 400 }
+      ],
+      "capture": { "shot": "#page-search", "text": "#output" }
+    },
+
+    {
+      "name": "label-generate",
+      "needs": "live",
+      "about": "Label tab: generate candidate topics and review them (edit the wording, discard with ×) before they join a test set.",
+      "steps": [
+        { "click": "#tab-label" },
+        { "click": "#label-gen" },
+        { "wait_for": "#label-gen-themes input" },
+        { "fill": "#label-gen-n", "text": "8" },
+        { "click": "#label-gen-run" },
+        { "wait_for": ".cand" },
+        { "wait_ms": 500 }
+      ],
+      "capture": { "shot": "#page-label", "text": "#cand-count" }
+    },
+
+    {
+      "name": "label-pool",
+      "needs": "live",
+      "about": "Label tab: build a pool for a query and show the judging cards (leg + position hidden, by design).",
+      "steps": [
+        { "click": "#tab-label" },
+        { "fill": "#label-query", "text": "stoic philosophy for everyday life" },
+        { "click": "#label-build" },
+        { "wait_for": "#label-list .lcard, #label-list .placeholder" },
+        { "wait_ms": 400 }
+      ],
+      "capture": { "shot": "#page-label", "text": "#label-progress" }
+    }
+  ]
+}

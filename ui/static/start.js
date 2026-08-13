@@ -29,7 +29,8 @@ function startView() {
     <div class="door-hero">
       <div class="eyebrow">${HP} searching your audiobook library</div>
       <h2 class="door-head">You've forgotten more<br>than you can find</h2>
-      <p class="door-sub">Hybrid search gives back the library you already own.</p>
+      <p class="door-sub">Describe what you remember — keyword and meaning search together,
+        and the book comes back.</p>
     </div>
 
     <div class="door-grid">
@@ -63,10 +64,13 @@ function startView() {
             </div>
           </div>
         </div>
+        <!-- Step 3 must not promise the right book always appears: hybrid sits at
+             Recall@5 = 0.310 on the labeled set. "Covers what either alone would miss"
+             is what the data supports, and it matches the header's own tagline. -->
         <ol class="door-plan">
           <li><span class="pnum">1</span><span>Describe what you remember.</span></li>
           <li><span class="pnum">2</span><span>It searches by keyword and meaning at once.</span></li>
-          <li><span class="pnum">3</span><span>The match surfaces — never empty.</span></li>
+          <li><span class="pnum">3</span><span>Between them, they catch what either alone would miss.</span></li>
         </ol>
       </div>
     </div>

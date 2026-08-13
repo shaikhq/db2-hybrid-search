@@ -1,0 +1,643 @@
+{
+  "queries": {
+    "q001": {
+      "labels": {
+        "10": "relevant",
+        "17": "irrelevant",
+        "19": "highly_relevant",
+        "2": "irrelevant",
+        "22": "irrelevant",
+        "23": "relevant",
+        "29": "irrelevant",
+        "38": "irrelevant",
+        "39": "relevant",
+        "40": "relevant",
+        "56": "irrelevant",
+        "66": "relevant",
+        "82": "irrelevant",
+        "83": "irrelevant",
+        "91": "relevant"
+      },
+      "pool_size": 15,
+      "text": "managing stress"
+    },
+    "q002": {
+      "labels": {
+        "14": "irrelevant",
+        "15": "relevant",
+        "27": "highly_relevant",
+        "29": "irrelevant",
+        "3": "irrelevant",
+        "31": "irrelevant",
+        "35": "relevant",
+        "48": "relevant",
+        "51": "relevant",
+        "56": "highly_relevant",
+        "60": "relevant",
+        "65": "relevant",
+        "72": "relevant",
+        "82": "irrelevant",
+        "83": "relevant",
+        "9": "relevant",
+        "96": "highly_relevant"
+      },
+      "pool_size": 17,
+      "text": "building career"
+    },
+    "q003": {
+      "labels": {
+        "13": "highly_relevant",
+        "2": "irrelevant",
+        "29": "irrelevant",
+        "36": "irrelevant",
+        "42": "irrelevant",
+        "60": "irrelevant",
+        "82": "irrelevant",
+        "83": "relevant",
+        "85": "relevant",
+        "89": "irrelevant",
+        "90": "irrelevant",
+        "93": "irrelevant"
+      },
+      "pool_size": 12,
+      "text": "emotional intelligence"
+    },
+    "q004": {
+      "labels": {
+        "10": "irrelevant",
+        "16": "relevant",
+        "29": "irrelevant",
+        "42": "relevant",
+        "48": "relevant",
+        "53": "irrelevant",
+        "54": "irrelevant",
+        "58": "highly_relevant",
+        "63": "irrelevant",
+        "73": "highly_relevant",
+        "74": "irrelevant",
+        "79": "highly_relevant",
+        "83": "highly_relevant",
+        "9": "highly_relevant",
+        "90": "highly_relevant"
+      },
+      "pool_size": 15,
+      "text": "how can I become effective communicator"
+    },
+    "q005": {
+      "labels": {
+        "1": "relevant",
+        "16": "relevant",
+        "19": "irrelevant",
+        "27": "irrelevant",
+        "3": "highly_relevant",
+        "36": "irrelevant",
+        "41": "irrelevant",
+        "42": "relevant",
+        "58": "highly_relevant",
+        "63": "irrelevant",
+        "72": "irrelevant",
+        "73": "highly_relevant",
+        "79": "highly_relevant",
+        "83": "highly_relevant",
+        "9": "highly_relevant",
+        "90": "highly_relevant"
+      },
+      "pool_size": 16,
+      "text": "I am looking for a book on public speaking"
+    },
+    "q006": {
+      "labels": {
+        "15": "relevant",
+        "24": "highly_relevant",
+        "27": "irrelevant",
+        "28": "irrelevant",
+        "31": "irrelevant",
+        "40": "irrelevant",
+        "42": "irrelevant",
+        "5": "irrelevant",
+        "56": "irrelevant",
+        "6": "irrelevant",
+        "65": "irrelevant",
+        "73": "irrelevant",
+        "8": "irrelevant",
+        "81": "relevant",
+        "82": "irrelevant",
+        "84": "irrelevant",
+        "86": "irrelevant",
+        "9": "irrelevant"
+      },
+      "pool_size": 18,
+      "text": "I want to be a better writer"
+    },
+    "q007": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "how to become more organized"
+    },
+    "q008": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "leadership skills for small business owners"
+    },
+    "q009": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "effective communication tips for remote workers"
+    },
+    "q010": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "time management strategies for freelancers"
+    },
+    "q011": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "how to improve productivity at work"
+    },
+    "q012": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "improving interpersonal skills for better team performance"
+    },
+    "q013": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "getting ahead in a corporate setting"
+    },
+    "q014": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "networking techniques for career advancement"
+    },
+    "q015": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "self improvement goals for personal development"
+    },
+    "q016": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T17:19:47",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Personal Success, Management & Leadership, productivity"
+      },
+      "pool_size": 0,
+      "text": "how to handle conflict in the workplace effectively"
+    },
+    "q017": {
+      "labels": {
+        "10": "irrelevant",
+        "15": "irrelevant",
+        "16": "relevant",
+        "29": "irrelevant",
+        "47": "irrelevant",
+        "53": "irrelevant",
+        "56": "relevant",
+        "59": "irrelevant",
+        "63": "irrelevant",
+        "64": "irrelevant",
+        "65": "irrelevant",
+        "72": "irrelevant",
+        "82": "irrelevant",
+        "83": "relevant",
+        "89": "irrelevant",
+        "9": "relevant",
+        "93": "irrelevant",
+        "96": "highly_relevant"
+      },
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T19:40:04",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Health & Wellness, productivity"
+      },
+      "pool_size": 18,
+      "text": "How to improve social media skills for career growth."
+    },
+    "q018": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T19:40:04",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Health & Wellness, productivity"
+      },
+      "pool_size": 0,
+      "text": "Need a quick guide to better communication."
+    },
+    "q019": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T19:40:04",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Health & Wellness, productivity"
+      },
+      "pool_size": 0,
+      "text": "Effective stress management techniques for a busy week."
+    },
+    "q020": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T19:40:04",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Health & Wellness, productivity"
+      },
+      "pool_size": 0,
+      "text": "What are the best resources for improving productivity?"
+    },
+    "q021": {
+      "labels": {},
+      "origin": "llm_edited",
+      "origin_detail": {
+        "generated_at": "2026-08-11T19:40:04",
+        "model": "topics",
+        "original_text": "How can I better manage my time with a hectic schedule?",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Health & Wellness, productivity"
+      },
+      "pool_size": 0,
+      "text": "How can I better manage my time?"
+    },
+    "q022": {
+      "labels": {},
+      "origin": "llm_edited",
+      "origin_detail": {
+        "generated_at": "2026-08-11T19:40:04",
+        "model": "topics",
+        "original_text": "Looking for a comprehensive health and wellness plan to manage chronic pain.",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Health & Wellness, productivity"
+      },
+      "pool_size": 0,
+      "text": "Looking for a comprehensive health and wellness plan"
+    },
+    "q023": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-11T19:40:04",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Health & Wellness, productivity"
+      },
+      "pool_size": 0,
+      "text": "improve public speaking skills"
+    },
+    "q024": {
+      "labels": {
+        "13": "irrelevant",
+        "19": "irrelevant",
+        "21": "irrelevant",
+        "28": "irrelevant",
+        "38": "relevant",
+        "42": "relevant",
+        "46": "irrelevant",
+        "5": "irrelevant",
+        "54": "relevant",
+        "56": "irrelevant",
+        "60": "irrelevant",
+        "73": "irrelevant",
+        "78": "irrelevant",
+        "88": "highly_relevant",
+        "96": "irrelevant"
+      },
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-13T09:22:49",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Personal Development, Health & Wellness"
+      },
+      "pool_size": 15,
+      "text": "Find info on starting a successful freelance business."
+    },
+    "q025": {
+      "labels": {},
+      "origin": "llm_edited",
+      "origin_detail": {
+        "generated_at": "2026-08-13T09:22:49",
+        "model": "topics",
+        "original_text": "How do I improve my time management to handle a busy schedule?",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Personal Development, Health & Wellness"
+      },
+      "pool_size": 0,
+      "text": "How do I improve my time management"
+    },
+    "q026": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-13T09:22:49",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Personal Development, Health & Wellness"
+      },
+      "pool_size": 0,
+      "text": "Looking for a simple guide to improve my work-life balance."
+    },
+    "q027": {
+      "labels": {},
+      "origin": "llm",
+      "origin_detail": {
+        "generated_at": "2026-08-13T09:22:49",
+        "model": "topics",
+        "prompt_version": "topics-v1",
+        "theme": "Business & Careers, Personal Development, Health & Wellness"
+      },
+      "pool_size": 0,
+      "text": "how to negotiate salary"
+    }
+  },
+  "sets": {
+    "my-test-set2": {
+      "assessor": "",
+      "discarded": [
+        {
+          "at": "2026-08-11T19:40:04",
+          "reason": "",
+          "text": "What are the latest business trends?",
+          "theme": "Business & Careers, Health & Wellness, productivity"
+        },
+        {
+          "at": "2026-08-11T19:40:04",
+          "reason": "",
+          "text": "business plan writing",
+          "theme": "Business & Careers, Health & Wellness, productivity"
+        },
+        {
+          "at": "2026-08-11T19:40:04",
+          "reason": "",
+          "text": "stress relief techniques",
+          "theme": "Business & Careers, Health & Wellness, productivity"
+        }
+      ],
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q017",
+        "q018",
+        "q019",
+        "q020",
+        "q021",
+        "q022",
+        "q023"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "new-test-set5": {
+      "assessor": "",
+      "discarded": [
+        {
+          "at": "2026-08-13T09:22:49",
+          "reason": "",
+          "text": "What are the best strategies for boosting my sales?",
+          "theme": "Business & Careers, Personal Development, Health & Wellness"
+        },
+        {
+          "at": "2026-08-13T09:22:49",
+          "reason": "",
+          "text": "Need advice on quitting smoking.",
+          "theme": "Business & Careers, Personal Development, Health & Wellness"
+        },
+        {
+          "at": "2026-08-13T09:22:49",
+          "reason": "",
+          "text": "What are the latest health risks associated with chronic stress?",
+          "theme": "Business & Careers, Personal Development, Health & Wellness"
+        },
+        {
+          "at": "2026-08-13T09:22:49",
+          "reason": "",
+          "text": "How can I better manage my stress levels?",
+          "theme": "Business & Careers, Personal Development, Health & Wellness"
+        },
+        {
+          "at": "2026-08-13T09:22:49",
+          "reason": "",
+          "text": "work from home benefits explained",
+          "theme": "Business & Careers, Personal Development, Health & Wellness"
+        },
+        {
+          "at": "2026-08-13T09:22:49",
+          "reason": "",
+          "text": "depression symptoms and treatment",
+          "theme": "Business & Careers, Personal Development, Health & Wellness"
+        }
+      ],
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q024",
+        "q025",
+        "q026",
+        "q027"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "pooled_v1": {
+      "assessor": "",
+      "discarded": [
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "understanding management theories",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "getting unstuck in personal growth",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "career advancement tips for professionals",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "personal development goals",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "effective time management techniques",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "networking skills for career advancement",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "professional communication tips",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "stress reduction methods for busy professionals",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        },
+        {
+          "at": "2026-08-11T17:19:47",
+          "reason": "",
+          "text": "team leadership skills for small businesses",
+          "theme": "Personal Success, Management & Leadership, productivity"
+        }
+      ],
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q001",
+        "q002",
+        "q005",
+        "q007",
+        "q008",
+        "q009",
+        "q010",
+        "q011",
+        "q012",
+        "q013",
+        "q014",
+        "q015",
+        "q016"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "shaikh-test-set1": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q003",
+        "q004"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "stress_probe": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q001"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "test_query_set3": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [],
+      "pool_depth": 10,
+      "scale": "graded3"
+    },
+    "test_set4": {
+      "assessor": "",
+      "legs": [
+        "lexical",
+        "vector"
+      ],
+      "members": [
+        "q006"
+      ],
+      "pool_depth": 10,
+      "scale": "graded3"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "query": "emotional intelligence",
+    "gold_ids": [
+      13,
+      83,
+      85
+    ],
+    "gold_grades": {
+      "13": 2,
+      "83": 1,
+      "85": 1
+    },
+    "query_class": "topical",
+    "rationale": "human-labeled pool (shaikh-test-set1/q003): 3 relevant of 12 pooled",
+    "review_status": "verified",
+    "source": "labeled",
+    "split": "train",
+    "query_type": "mixed",
+    "difficulty": "easy",
+    "diag": {
+      "lex_rank": 1,
+      "vec_rank": 1,
+      "hyb_rank": 1
+    },
+    "id": 3,
+    "qid": "q003"
+  },
+  {
+    "query": "how can I become effective communicator",
+    "gold_ids": [
+      9,
+      16,
+      42,
+      48,
+      58,
+      73,
+      79,
+      83,
+      90
+    ],
+    "gold_grades": {
+      "9": 2,
+      "16": 1,
+      "42": 1,
+      "48": 1,
+      "58": 2,
+      "73": 2,
+      "79": 2,
+      "83": 2,
+      "90": 2
+    },
+    "query_class": "topical",
+    "rationale": "human-labeled pool (shaikh-test-set1/q004): 9 relevant of 15 pooled",
+    "review_status": "verified",
+    "source": "labeled",
+    "split": "train",
+    "query_type": "mixed",
+    "difficulty": "easy",
+    "diag": {
+      "lex_rank": 1,
+      "vec_rank": 1,
+      "hyb_rank": 1
+    },
+    "id": 4,
+    "qid": "q004"
+  }
+]

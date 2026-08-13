@@ -18,6 +18,7 @@
 *.swp
 .idea/
 .vscode/
+.claude/
 
 # --- Python ---
 __pycache__/
@@ -46,6 +47,13 @@ logs/
 # The PUBLISHED copies under ui/static/ ARE tracked: they power the offline demo.
 /ui/fixtures.json
 /ui/eval_set.json
+
+# --- Iteration ledger (scripts/iterate) ---
+# The PNG + .txt snapshots under iterations/ ARE tracked on purpose: they are the
+# before/after record, and reviewing them in the diff is the whole point. Videos are
+# megabytes each and regenerable, and index.html is a generated view of meta.json.
+iterations/**/*.webm
+iterations/index.html
 
 # Local-only working artifacts (kept on disk, never shipped).
 backup/

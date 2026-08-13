@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Thin wrapper so you can type ./scripts/iterate instead of picking a python.
+# Uses the repo venv (playwright + PIL live there), falling back to python3.
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(dirname "$HERE")"
+PY="$REPO/.venv/bin/python"; [ -x "$PY" ] || PY="python3"
+exec "$PY" "$HERE/iterate.py" "$@"

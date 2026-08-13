@@ -63,6 +63,8 @@ if [ "${1:-}" = "--live" ]; then
     rm -rf "$STAGE"; mkdir -p "$STAGE"
     cp "$HERE/api.py" "$HERE/build_fixtures.py" "$HERE/demo_view.py" \
        "$HERE/queries.json" "$HERE/demo_queries.json" "$STAGE/"
+    # api.py imports the exporter to build eval decks from the judgments store.
+    cp "$REPO/scripts/export_judgments.py" "$STAGE/"
     cp -r "$REPO/src/hybrid_search" "$STAGE/"      # the search engine package
     cp -r "$HERE/static" "$STAGE/static"
     # api.py's book title/author lookup. Staged under the stage root because api.py
@@ -84,8 +86,21 @@ if [ "${1:-}" = "--live" ]; then
         as_owner "fuser -k ${PORT}/tcp" >/dev/null 2>&1 || true
         sleep 1
     fi
+    # Label-tab judgments must outlive the stage: $STAGE is wiped on every launch, and
+    # api.py's default store path resolves relative to its own location (i.e. inside the
+    # stage), so without this every label collected would vanish at the next start.
+    # Point it at the real repo, and make sure $OWNER can actually write there.
+    mkdir -p "$REPO/data/eval"
+    JUDGMENTS_PATH="$REPO/data/eval/judgments.json"
+    if ! as_owner "test -w '$REPO/data/eval'" 2>/dev/null; then
+        echo "WARNING: $OWNER cannot write $REPO/data/eval — Label-tab judgments will" >&2
+        echo "         fail to save. Fix with: chmod a+rwx '$REPO/data/eval'" >&2
+    fi
     echo "LIVE  → http://$SHOWN:$PORT   (real Db2 search as $OWNER; docs at /docs)"
-    as_owner "cd '$STAGE' && DB2_HOST=local '$PY' -m uvicorn api:app --host $HOST --port $PORT"
+    # Same reason as JUDGMENTS_PATH: the exported test-set decks live under the repo,
+    # and the stage does not carry data/eval/.
+    EVAL_SETS_DIR="$REPO/data/eval/sets"
+    as_owner "cd '$STAGE' && DB2_HOST=local JUDGMENTS_PATH='$JUDGMENTS_PATH' EVAL_SETS_DIR='$EVAL_SETS_DIR' '$PY' -m uvicorn api:app --host $HOST --port $PORT"
 else
     [ -f "$HERE/static/fixtures.json" ] || {
         echo "No fixtures yet — run ./ui/build_fixtures.sh first." >&2; exit 1; }

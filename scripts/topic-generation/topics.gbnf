@@ -1,0 +1,18 @@
+# Constrains the model to {"queries": ["...", ...]} and nothing else.
+#
+# Server-side grammar, same approach as scripts/query-understanding/qu_gen.gbnf. Without
+# it a 3B model reliably wraps its JSON in "Sure! Here are ten queries:" prose, and the
+# parser in hybrid_search/topicgen.py then has to guess. It still CAN guess (_parse falls
+# back to regex then to lines), but guessing is the fallback, not the plan.
+#
+# Note this is why topic generation needs its own llama-server instance: the grammar is
+# bound at server start, so the query-understanding server on :8086 (which loads
+# qu_gen.gbnf) cannot also serve this schema.
+
+root        ::= "{" ws "\"queries\"" ws ":" ws array ws "}"
+array       ::= "[" ws string (ws "," ws string)* ws "]"
+string      ::= "\"" char* "\""
+char        ::= [^"\\\x7F\x00-\x1F] | "\\" escape
+escape      ::= ["\\bfnrt/] | "u" hex hex hex hex
+hex         ::= [0-9a-fA-F]
+ws          ::= [ \t\n]*

@@ -1,0 +1,123 @@
+[
+  {
+    "query": "managing stress",
+    "gold_ids": [
+      10,
+      19,
+      23,
+      39,
+      40,
+      66,
+      91
+    ],
+    "gold_grades": {
+      "10": 1,
+      "19": 2,
+      "23": 1,
+      "39": 1,
+      "40": 1,
+      "66": 1,
+      "91": 1
+    },
+    "query_class": "topical",
+    "rationale": "human-labeled pool (pooled_v1/q001): 7 relevant of 15 pooled",
+    "review_status": "verified",
+    "source": "labeled",
+    "split": "train",
+    "query_type": "mixed",
+    "difficulty": "easy",
+    "diag": {
+      "lex_rank": 4,
+      "vec_rank": 1,
+      "hyb_rank": 1
+    },
+    "id": 1,
+    "qid": "q001"
+  },
+  {
+    "query": "building career",
+    "gold_ids": [
+      9,
+      15,
+      27,
+      35,
+      48,
+      51,
+      56,
+      60,
+      65,
+      72,
+      83,
+      96
+    ],
+    "gold_grades": {
+      "9": 1,
+      "15": 1,
+      "27": 2,
+      "35": 1,
+      "48": 1,
+      "51": 1,
+      "56": 2,
+      "60": 1,
+      "65": 1,
+      "72": 1,
+      "83": 1,
+      "96": 2
+    },
+    "query_class": "topical",
+    "rationale": "human-labeled pool (pooled_v1/q002): 12 relevant of 17 pooled",
+    "review_status": "verified",
+    "source": "labeled",
+    "split": "train",
+    "query_type": "mixed",
+    "difficulty": "easy",
+    "diag": {
+      "lex_rank": 1,
+      "vec_rank": 1,
+      "hyb_rank": 1
+    },
+    "id": 2,
+    "qid": "q002"
+  },
+  {
+    "query": "I am looking for a book on public speaking",
+    "gold_ids": [
+      1,
+      3,
+      9,
+      16,
+      42,
+      58,
+      73,
+      79,
+      83,
+      90
+    ],
+    "gold_grades": {
+      "1": 1,
+      "3": 2,
+      "9": 2,
+      "16": 1,
+      "42": 1,
+      "58": 2,
+      "73": 2,
+      "79": 2,
+      "83": 2,
+      "90": 2
+    },
+    "query_class": "topical",
+    "rationale": "human-labeled pool (pooled_v1/q005): 10 relevant of 16 pooled",
+    "review_status": "verified",
+    "source": "labeled",
+    "split": "train",
+    "query_type": "mixed",
+    "difficulty": "easy",
+    "diag": {
+      "lex_rank": 1,
+      "vec_rank": 1,
+      "hyb_rank": 1
+    },
+    "id": 5,
+    "qid": "q005"
+  }
+]

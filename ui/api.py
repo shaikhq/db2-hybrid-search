@@ -4,20 +4,40 @@ search engine returning the SAME JSON shape as fixtures.json, so the frontend is
 identical offline or live. The default demo is offline (static page + fixtures);
 this exists for ad-hoc queries during Q&A."""
 
+import csv
+import datetime
+import hashlib
 import json
+import math
 import logging
 import os
+import random
+import re
+import shutil
+import sys
+import tempfile
 from typing import Optional
 
-from fastapi import FastAPI, Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 import ibm_db
 
 from hybrid_search import core as h
 from hybrid_search import understanding as qu   # adaptive query-understanding layer
 from hybrid_search import rerank as rr          # optional post-fusion cross-encoder stage
+from hybrid_search import metrics as mx         # the ONE metrics implementation
+from hybrid_search import topicgen as tg        # LLM topic proposals (authoring only)
 import build_fixtures as bf   # responses_for()
 import demo_view as dv         # outcome-translation (verdicts + book labels)
+
+# The Evaluate tab builds decks straight from the judgments store using the exporter's
+# own select()/record_for(), so the tab and the exported qrels can never disagree about
+# which queries are exportable or what counts as gold. scripts/ sits beside the repo root
+# when run from a checkout; run.sh stages the file next to api.py for --live.
+_SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts")
+if os.path.isdir(_SCRIPTS) and _SCRIPTS not in sys.path:
+    sys.path.insert(0, _SCRIPTS)
+import export_judgments as xj  # noqa: E402
 
 # Log hybrid_search.core's SQL to the uvicorn console (reuse uvicorn's handler; fall
 # back to a basic one if run standalone).
@@ -124,6 +144,659 @@ def demo(q: str = Query(..., description="search text")):
     finally:
         ibm_db.close(conn)
     return dv.view_model(responses, item, BOOK_LOOKUP, k=bf.K)
+
+
+# ---------------------------------------------------------------- Label tab
+# Pooled relevance labeling (TREC-style): union both legs' top-k, discard rank,
+# judge each unique document against the query. Spec + the approved interaction
+# contract live in docs/label-tab-plan.md.
+
+# Graded relevance, 3-point. Modern IR judges on a scale rather than a binary: nDCG is
+# built on graded gain, so binary judgments make a perfect answer and a marginally
+# on-topic one score identically. Three levels rather than TREC Deep Learning's four —
+# a solo assessor over ~300 judgments stays far more self-consistent, and this domain has
+# no equivalent of DL's "answers but buried in extraneous information" distinction.
+# gold_ids binarizes at grade >= 1, so hit-rate / MRR / Recall are unaffected.
+GRADES = {"irrelevant": 0, "relevant": 1, "highly_relevant": 2}
+SCALE = "graded3"
+LABELS = set(GRADES) | {"skip"}  # skip is not a grade: it is a gap, never a 0
+POOL_K = 10                      # top-k taken from EACH leg before the union
+
+
+def _set_name():
+    """The default test set. A collection is (corpus, topics, qrels); one corpus supports
+    many named sets, and the exporter emits one topics + one qrels file per set. The Label
+    tab picks a set per request; this is only the fallback when it doesn't."""
+    return os.environ.get("JUDGMENTS_SET") or "pooled_v1"
+
+
+def _new_set():
+    """A set owns membership and provenance — never judgments. `members` (not `queries`)
+    is also what distinguishes a v3 set from a v2 one during migration detection."""
+    return {"assessor": os.environ.get("JUDGMENTS_ASSESSOR", ""),
+            "pool_depth": POOL_K, "legs": ["lexical", "vector"],
+            "scale": SCALE, "members": []}
+
+
+def _norm(text):
+    """Identity key for a query: case- and whitespace-insensitive. Retyping "Managing
+    Stress" must resolve to the qid already holding its judgments rather than silently
+    opening a second, empty entry. The text is still STORED exactly as typed."""
+    return " ".join(str(text or "").split()).casefold()
+
+
+def _judgments_path():
+    """Where judgments live — resolved per call, never cached at import.
+
+    The default is only correct when api.py runs from the repo. `--live` runs it from
+    a per-launch-wiped stage (/tmp/hybrid-ui-$PORT), where this default would point at
+    /tmp and lose every label on the next launch — so run.sh's --live branch exports
+    JUDGMENTS_PATH at the real repo. Resolving lazily is also what lets tests redirect
+    the store without reimporting the module."""
+    return os.environ.get("JUDGMENTS_PATH") or os.path.join(
+        os.path.dirname(HERE), "data", "eval", "judgments.json")
+
+
+def build_pool(query, lex, vec):
+    """Union the two legs, dedup by chunk id, DISCARD RANK, shuffle deterministically.
+
+    Rank and which leg surfaced a document never leave this function: showing either
+    anchors the assessor, which is the whole point of pooling. The shuffle is seeded on
+    the query so a resumed session sees the same order every time — judgments are keyed
+    by chunk id and survive regardless, but a list that reshuffles makes "next unlabeled
+    card" jump around and re-reading already-judged cards wastes the assessor's attention.
+    """
+    cids = sorted({int(cid) for cid, _ in lex} | {int(cid) for cid, _ in vec})
+    seed = int(hashlib.md5(query.encode("utf-8")).hexdigest()[:16], 16)
+    random.Random(seed).shuffle(cids)
+    return cids
+
+
+def _load_judgments():
+    """The store, or an empty one if it doesn't exist yet. A corrupt store raises
+    rather than resetting to empty — silently discarding hours of labeling is far
+    worse than a 500 that says so."""
+    try:
+        with open(_judgments_path()) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        return {"queries": {}, "sets": {}}
+    if "sets" not in data and "queries" in data:
+        data = _migrate_v1(data)
+    if any("queries" in s for s in (data.get("sets") or {}).values()):
+        data = _migrate_v2(data)
+    data.setdefault("queries", {})
+    data.setdefault("sets", {})
+    return data
+
+
+def _migrate_v1(old):
+    """Convert the first-generation store — {"queries": {<query text>: {...}}} — into
+    named sets with stable qids.
+
+    Query text was the key there, so retyping a query with different casing stranded its
+    judgments on the old spelling. qids fix that. Ordered by text so the mapping is
+    reproducible if this ever has to be re-run. _write_judgments() backs the old file up
+    before the first write in the new shape."""
+    queries = {}
+    for i, (text, entry) in enumerate(sorted((old.get("queries") or {}).items()), start=1):
+        queries[f"q{i:03d}"] = {"text": text,
+                                "pool_size": entry.get("pool_size", 0),
+                                "labels": dict(entry.get("labels") or {})}
+    # Emits the v2 shape; _load_judgments() then runs _migrate_v2 over it, so the two
+    # conversions compose instead of each needing to know about the other.
+    set_ = _new_set()
+    set_.pop("members", None)
+    set_["queries"] = queries
+    return {"sets": {_set_name(): set_}}
+
+
+def _migrate_v2(old):
+    """Convert set-owned judgments into the membership model.
+
+    v2 nested each query INSIDE a set, so filing one query into two sets meant copying
+    its judgments — and revising one copy left the other stale. A relevance judgment is a
+    fact about (query, document), independent of which collection you file it in; a test
+    set is a named LIST of query ids that references those facts. Same separation TREC and
+    BEIR make between topics and collections.
+
+    Two sets holding the same query text collapse to one qid with membership in both —
+    which is the whole point, and is lossless as long as their labels agree. When they
+    disagree, the later set's labels win per (qid, cid) and the loss is reported in the
+    server log rather than passed off as a clean conversion."""
+    queries, by_text, sets = {}, {}, {}
+    for name, set_ in sorted((old.get("sets") or {}).items()):
+        members = []
+        for qid, entry in sorted((set_.get("queries") or {}).items()):
+            key = _norm(entry.get("text"))
+            if key in by_text:
+                target = by_text[key]
+                clashes = {c for c, v in (entry.get("labels") or {}).items()
+                           if c in queries[target]["labels"]
+                           and queries[target]["labels"][c] != v}
+                if clashes:
+                    logging.getLogger("uvicorn.error").warning(
+                        "judgments migration: %r appears in more than one set with "
+                        "conflicting labels for chunk(s) %s — keeping %r's.",
+                        entry.get("text"), sorted(clashes), name)
+                queries[target]["labels"].update(entry.get("labels") or {})
+                queries[target]["pool_size"] = max(queries[target]["pool_size"],
+                                                   entry.get("pool_size", 0))
+            else:
+                target = f"q{len(queries) + 1:03d}"
+                by_text[key] = target
+                queries[target] = {"text": entry.get("text", ""),
+                                   "pool_size": entry.get("pool_size", 0),
+                                   "labels": dict(entry.get("labels") or {})}
+            if target not in members:
+                members.append(target)
+        meta = {k: v for k, v in set_.items() if k != "queries"}
+        sets[name] = {**meta, "members": members}
+    return {"queries": queries, "sets": sets}
+
+
+def _active_set(data, name=None):
+    """Get-or-create a set. Sets own membership and provenance only — never judgments."""
+    set_ = data.setdefault("sets", {}).setdefault(name or _set_name(), _new_set())
+    set_.setdefault("members", [])
+    return set_
+
+
+def _qid_for(data, text):
+    """The existing qid for this query text, or the next free one.
+
+    Store-scoped, not set-scoped: qids are the join key every set's members list and every
+    exported qrels file references, so they must be unique across the whole store. Stable
+    and immutable once assigned — renumbering would silently invalidate exported qrels."""
+    key = _norm(text)
+    for qid, entry in data["queries"].items():
+        if _norm(entry.get("text")) == key:
+            return qid
+    # max()+1, never len()+1 — a deleted query would otherwise cause a collision.
+    nums = [int(q[1:]) for q in data["queries"] if q[1:].isdigit()]
+    return f"q{max(nums, default=0) + 1:03d}"
+
+
+def _summarize(entry):
+    labels = entry.get("labels") or {}
+    counts = {name: sum(1 for v in labels.values() if v == name) for name in sorted(LABELS)}
+    gold = sum(n for name, n in counts.items() if GRADES.get(name, -1) >= 1)
+    return {"text": entry.get("text", ""), "pool_size": entry.get("pool_size", 0),
+            "decided": len(labels), "gold": gold, "counts": counts,
+            # Absent origin means the topic predates provenance tracking, i.e. it was
+            # typed by hand. Defaulting to "human" keeps the old topics correctly
+            # attributed rather than lumping them in as unknown.
+            "origin": entry.get("origin", "human"),
+            "complete": bool(entry.get("pool_size")) and len(labels) >= entry["pool_size"]}
+
+
+def _write_judgments(data):
+    """Write the whole store atomically: temp file in the same directory, fsync, then
+    os.replace. A crash mid-write leaves the previous store intact rather than a
+    truncated JSON file that would fail to parse on the next launch."""
+    path = _judgments_path()
+    directory = os.path.dirname(path) or "."
+    os.makedirs(directory, exist_ok=True)
+    # One-time safety net: the first write after a v1 -> sets migration keeps a copy of
+    # the pre-migration file. Judgments are hand-produced and unrecoverable if a schema
+    # change goes wrong. (*.bak is already gitignored.)
+    if not os.path.exists(path + ".bak"):
+        try:
+            with open(path) as f:
+                on_disk = json.load(f)
+            stale = ("sets" not in on_disk                                  # v1
+                     or any("queries" in s for s in on_disk["sets"].values()))  # v2
+            if stale:
+                shutil.copy2(path, path + ".bak")
+        except (FileNotFoundError, json.JSONDecodeError, AttributeError):
+            pass
+    fd, tmp = tempfile.mkstemp(dir=directory, prefix=".judgments-", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(data, f, indent=2, sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+        raise
+
+
+@app.get("/api/pool")
+def pool(q: str = Query(..., description="query to build a labeling pool for"),
+         k: int = Query(POOL_K, description="top-k taken from EACH leg before the union")):
+    """The unranked, deduped labeling pool for a query.
+
+    `legs` reports how many results each retriever returned *in aggregate* — enough for
+    the UI to say "pool built from 1 of 2 retrievers" when one leg comes back empty,
+    without revealing which leg surfaced any individual document."""
+    conn = h.connect()
+    try:
+        lex = h.lexical(conn, q, k)
+        vec = h.vector(conn, q, k)
+        docs = [{"chunk_id": cid, "snippet": h.snippet(conn, cid),
+                 **h.book_meta(conn, cid)} for cid in build_pool(q, lex, vec)]
+    finally:
+        ibm_db.close(conn)
+    return {"query": q, "pool_size": len(docs),
+            "legs": {"lexical": len(lex), "vector": len(vec)}, "pool": docs}
+
+
+@app.get("/api/judgments")
+def judgments():
+    """Every judged query — the frontend merges these into a freshly built pool so a
+    re-typed query resumes with its existing labels already applied.
+
+    Judgments are store-wide, not per set: a query judged once is judged for every set it
+    belongs to. `by_text` is a normalized-text index onto the same entries, because the UI
+    knows the string the user typed, not its qid.
+
+    `sets` maps each set name to its members, so the UI can show which sets a query is
+    already filed in without a second round trip."""
+    data = _load_judgments()
+    by_text = {_norm(e.get("text")): {"qid": qid, "pool_size": e.get("pool_size", 0),
+                                      "labels": e.get("labels", {})}
+               for qid, e in data["queries"].items()}
+    return {"set": _set_name(), "scale": SCALE, "queries": data["queries"],
+            "sets": {n: list(s.get("members") or []) for n, s in data["sets"].items()},
+            "by_text": by_text}
+
+
+@app.get("/api/sets")
+def get_sets():
+    """Every test set with its provenance and a per-member summary — the one response the
+    Label tab's sidebar renders. This is what "browse a test set" means: its topics, how
+    far each is judged, and how many gold documents each yielded."""
+    data = _load_judgments()
+    out = {}
+    for name, set_ in sorted(data["sets"].items()):
+        members = [q for q in (set_.get("members") or []) if q in data["queries"]]
+        summaries = {qid: _summarize(data["queries"][qid]) for qid in members}
+        out[name] = {**{k: v for k, v in set_.items() if k != "members"},
+                     "members": members, "queries": summaries,
+                     "complete": sum(1 for s in summaries.values() if s["complete"]),
+                     "judgments": sum(s["decided"] for s in summaries.values())}
+    return {"active": _set_name(), "scale": SCALE, "sets": out}
+
+
+@app.post("/api/sets")
+def create_set(payload: dict = Body(...)):
+    """Create an empty test set. Names are the identity of an assessment effort and end up
+    in exported filenames, so they are restricted to path-safe characters."""
+    name = (payload.get("name") or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="name is required")
+    if not re.fullmatch(r"[A-Za-z0-9._-]+", name):
+        raise HTTPException(status_code=400,
+                            detail="name may contain only letters, digits, . _ and -")
+    data = _load_judgments()
+    if name in data["sets"]:
+        raise HTTPException(status_code=400, detail=f"set {name!r} already exists")
+    _active_set(data, name)
+    _write_judgments(data)
+    return {"ok": True, "name": name}
+
+
+@app.post("/api/sets/{name}/members")
+def add_member(name: str, payload: dict = Body(...)):
+    """File an already-judged query into another set. Idempotent.
+
+    Nothing is copied: the set gains a reference to the qid, and both sets read the same
+    judgments. Correcting a grade later fixes it in every set at once."""
+    qid = (payload.get("qid") or "").strip()
+    data = _load_judgments()
+    if name not in data["sets"]:
+        raise HTTPException(status_code=404, detail=f"no such set {name!r}")
+    if qid not in data["queries"]:
+        raise HTTPException(status_code=404, detail=f"no such query {qid!r}")
+    set_ = _active_set(data, name)
+    if qid not in set_["members"]:
+        set_["members"].append(qid)
+        _write_judgments(data)
+    return {"ok": True, "set": name, "qid": qid, "members": set_["members"]}
+
+
+@app.delete("/api/sets/{name}/members/{qid}")
+def remove_member(name: str, qid: str):
+    """Unfile a query from a set. Removes MEMBERSHIP ONLY — the judgments belong to the
+    query, not the set, and are still there for every other set that references them."""
+    data = _load_judgments()
+    if name not in data["sets"]:
+        raise HTTPException(status_code=404, detail=f"no such set {name!r}")
+    set_ = _active_set(data, name)
+    if qid in set_["members"]:
+        set_["members"].remove(qid)
+        _write_judgments(data)
+    return {"ok": True, "set": name, "qid": qid, "members": set_["members"]}
+
+
+# ------------------------------------------------ Topic generation (an authoring aid)
+# Proposes candidate QUERIES for a human to edit, discard and then judge by hand. See
+# hybrid_search/topicgen.py for the one rule that makes this safe: generation never sees
+# document text and never runs retrieval. Nothing here calls h.lexical/h.vector/h.hybrid,
+# and tests/test_topicgen.py enforces that by making those raise.
+
+_THEMES = None       # cached collection profile; corpus.csv does not change at runtime
+
+
+def _themes():
+    """Collection-level themes, read once from corpus.csv's genres/pillar columns."""
+    global _THEMES
+    if _THEMES is None:
+        rows = []
+        if _CORPUS:
+            try:
+                with open(_CORPUS, newline="") as f:
+                    rows = list(csv.DictReader(f))
+            except OSError:
+                rows = []
+        _THEMES = tg.collection_profile(rows)
+    return _THEMES
+
+
+@app.get("/api/topics/themes")
+def topic_themes():
+    """The theme vocabulary the generate control offers as chips."""
+    return {"themes": _themes()}
+
+
+@app.post("/api/topics/generate")
+def generate_topics(payload: dict = Body(...)):
+    """Generate candidate topics. Stateless: writes nothing, retrieves nothing.
+
+    Candidates are returned to the UI for editing and discarding. They become part of a
+    test set only via POST /api/sets/{name}/topics, after a person has seen every one.
+    """
+    try:
+        n = int(payload.get("n") or 10)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="n must be an integer")
+    themes = [str(t).strip() for t in (payload.get("themes") or []) if str(t).strip()]
+    backstory = (payload.get("backstory") or "").strip() or None
+    try:
+        candidates = tg.generate(themes or _themes(), n=n, backstory=backstory)
+    except RuntimeError as e:
+        # 503, not 500: the server being down is an expected operational state with a
+        # specific fix, and the UI prints this detail verbatim.
+        raise HTTPException(status_code=503, detail=str(e))
+    return {"candidates": candidates, "asked": n,
+            "themes": themes or _themes(), "backstory": backstory or "",
+            "model": tg.TOPICS_MODEL, "prompt_version": tg.PROMPT_VERSION}
+
+
+@app.post("/api/sets/{name}/topics")
+def add_topics(name: str, payload: dict = Body(...)):
+    """File curated topics into a set, and record what was thrown away.
+
+    Accepted topics get a qid and provenance; discarded ones are kept ON THE SET without
+    a qid. Two deliberate choices:
+
+    - Discards are logged because the ✕ is itself a filter. An unlogged filter is the
+      same failure mode as the consistency filtering that made golden_set agree with the
+      retriever that generated it — you could quietly delete every hard query and no
+      later reader could tell.
+    - Discards get no qid. qids are the join key every exported qrels file references;
+      minting one for a candidate nobody will ever judge would pollute that namespace.
+    """
+    data = _load_judgments()
+    if name not in data["sets"]:
+        raise HTTPException(status_code=404, detail=f"no such set {name!r}")
+    set_ = _active_set(data, name)
+    now = datetime.datetime.now().isoformat(timespec="seconds")
+
+    added, reused = [], []
+    for item in (payload.get("accepted") or []):
+        text = " ".join(str(item.get("text") or "").split())
+        if not text:
+            continue
+        qid = _qid_for(data, text)
+        existing = data["queries"].get(qid)
+        if existing:
+            # The text matches a query that already exists — most likely one you typed
+            # by hand, or generated in an earlier round. Reuse it and DO NOT restamp its
+            # origin: rewriting a hand-typed topic's provenance to "llm" would corrupt
+            # the human-vs-LLM comparison this field exists to make possible.
+            if qid not in set_["members"]:
+                set_["members"].append(qid)
+            reused.append(qid)
+            continue
+        detail = tg.origin_detail(item.get("theme"))
+        detail["generated_at"] = now
+        edited = bool(item.get("edited"))
+        if edited and item.get("original_text"):
+            detail["original_text"] = " ".join(str(item["original_text"]).split())
+        data["queries"][qid] = {"text": text, "pool_size": 0, "labels": {},
+                                "origin": "llm_edited" if edited else "llm",
+                                "origin_detail": detail}
+        set_["members"].append(qid)
+        added.append(qid)
+
+    discarded = set_.setdefault("discarded", [])
+    for item in (payload.get("discarded") or []):
+        text = " ".join(str(item.get("text") or "").split())
+        if text:
+            discarded.append({"text": text, "theme": item.get("theme") or "",
+                              "reason": (item.get("reason") or "").strip(), "at": now})
+
+    _write_judgments(data)
+    return {"ok": True, "set": name, "added": added, "reused": reused,
+            "discarded": len(payload.get("discarded") or []),
+            "members": set_["members"]}
+
+
+@app.post("/api/judgments")
+def post_judgment(payload: dict = Body(...)):
+    """Record one {query, cid, label, pool_size} judgment.
+
+    Idempotent per (query, cid): re-labeling overwrites in place, which is what makes
+    the UI's free relabeling free. Read-merge-write is safe here because the app is
+    single-user loopback; it would need locking if that ever changed."""
+    query = (payload.get("query") or "").strip()
+    label = payload.get("label")
+    if not query:
+        raise HTTPException(status_code=400, detail="query is required")
+    if label not in LABELS:
+        raise HTTPException(status_code=400,
+                            detail=f"label must be one of {sorted(LABELS)}")
+    try:
+        cid = int(payload.get("cid"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="cid must be an integer chunk id")
+    try:
+        pool_size = int(payload.get("pool_size"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400,
+                            detail="pool_size is required (the exporter's completeness "
+                                   "guard cannot reconstruct it later)")
+    if pool_size <= 0:
+        # A query whose pool came back empty has nothing to judge; recording it would
+        # later export as gold_ids: [] — an eval entry no retriever can ever satisfy.
+        raise HTTPException(status_code=400,
+                            detail="pool_size must be > 0 — an empty pool records nothing")
+
+    data = _load_judgments()
+    set_name = (payload.get("set") or "").strip() or _set_name()
+    set_ = _active_set(data, set_name)
+    qid = _qid_for(data, query)
+    entry = data["queries"].setdefault(
+        qid, {"text": query, "pool_size": pool_size, "labels": {}})
+    entry["pool_size"] = pool_size
+    entry["labels"][str(cid)] = label
+    # Judging a query into a set files it there; membership is the only per-set state.
+    if qid not in set_["members"]:
+        set_["members"].append(qid)
+    _write_judgments(data)
+    labels = entry["labels"]
+    counts = {name: sum(1 for v in labels.values() if v == name)
+              for name in sorted(LABELS)}
+    return {"ok": True, "set": set_name, "scale": SCALE, "qid": qid,
+            "query": entry["text"], "cid": cid, "label": label, "pool_size": pool_size,
+            "decided": len(labels), "skipped": counts["skip"], "counts": counts}
+
+
+# ------------------------------------------------------------- Evaluate tab
+# Run a named test set through all three Db2 legs and score it. The metrics come from
+# hybrid_search.metrics — the SAME functions scripts/eval.py uses — so this tab and the
+# CLI can never report different numbers for the same set. The reranker is deliberately
+# not a fourth leg: it consumes hybrid's output rather than competing with it, and it
+# runs outside Db2 (see scripts/rerank/rerank_eval.py).
+
+EVAL_LEGS = {"lexical": h.lexical, "vector": h.vector, "hybrid": h.hybrid}
+
+
+def _eval_sets_dir():
+    """Where the exported test-set decks live. Same trap as JUDGMENTS_PATH: `--live` runs
+    from a wiped stage that does not carry data/eval/, so run.sh exports this at the real
+    repo. Resolved per call so tests can redirect it."""
+    return os.environ.get("EVAL_SETS_DIR") or os.path.join(
+        os.path.dirname(HERE), "data", "eval", "sets")
+
+
+def _eval_decks():
+    """Every deck that can be evaluated, newest source winning.
+
+    Three origins: exported decks in data/eval/sets, the synthetic golden set, and — most
+    importantly — the sets that exist in the judgments store right now. Without that last
+    one a set created in the Label tab stays invisible here until someone remembers to run
+    the exporter, which breaks the obvious workflow of create -> label -> evaluate.
+
+    The store wins over an exported file of the same name: the file is a snapshot for
+    external tools, the store is the live truth."""
+    decks = {}
+    directory = _eval_sets_dir()
+    if os.path.isdir(directory):
+        for fn in sorted(os.listdir(directory)):
+            if fn.endswith(".json") and fn != "manifest.json":
+                decks[fn[:-5]] = {"kind": "file", "path": os.path.join(directory, fn)}
+    try:
+        from hybrid_search import evalset
+        decks.setdefault("golden_set", {"kind": "file", "path": evalset.resolve()})
+    except Exception:
+        pass
+    try:
+        for name in _load_judgments()["sets"]:
+            decks[name] = {"kind": "store", "name": name}
+    except (OSError, json.JSONDecodeError):
+        pass
+    return decks
+
+
+def _load_deck(path):
+    items = json.load(open(path, encoding="utf-8"))
+    items = items["queries"] if isinstance(items, dict) else items
+    for it in items:
+        it["gold_ids"] = [int(g) for g in it.get("gold_ids", [])]
+        it.setdefault("split", "train")
+        it.setdefault("query_class", "known_item" if len(it["gold_ids"]) == 1 else "topical")
+    return items
+
+
+def _deck_from_store(set_name):
+    """Build a deck straight from the judgments store, via the exporter's own functions.
+
+    Deliberately NOT a reimplementation: xj.select applies the completeness and
+    zero-relevant guards, and xj.record_for does the grade -> gold_ids/gold_grades
+    binarization. Duplicating either here would let the tab and the exported qrels
+    disagree about the same judgments — the mistake the shared metrics module exists to
+    prevent. Returns (items, skipped) so the UI can say WHY a query is missing."""
+    meta, queries = xj.load_set(_judgments_path(), set_name)
+    keep, skipped = xj.select(queries, include_partial=False)
+    items = []
+    for i, (qid, s) in enumerate(keep, start=1):
+        rec = xj.record_for(qid, s, set_name, {})
+        rec["id"] = int(qid[1:]) if qid[1:].isdigit() else i
+        rec["qid"] = qid
+        rec["gold_ids"] = [int(g) for g in rec["gold_ids"]]
+        items.append(rec)
+    return items, [{"qid": q, "query": t, "why": w} for q, t, w in skipped]
+
+
+def _deck(name, spec):
+    """(items, skipped) for a deck of either origin."""
+    if spec["kind"] == "store":
+        return _deck_from_store(spec["name"])
+    return _load_deck(spec["path"]), []
+
+
+def _finite(v):
+    """Strict JSON has no nan. mean() yields nan for an empty slice — MRR over zero
+    known-item queries, say — and that means "not measured here", so it is sent as null.
+    Coercing it to 0.0 would read as "measured, and the worst possible score"."""
+    return None if isinstance(v, float) and not math.isfinite(v) else v
+
+
+@app.get("/api/eval_sets")
+def eval_sets():
+    """The decks available to evaluate, with enough provenance to tell them apart."""
+    out = {}
+    for name, spec in _eval_decks().items():
+        try:
+            items, skipped = _deck(name, spec)
+        except (OSError, json.JSONDecodeError, KeyError, SystemExit):
+            continue
+        sources = sorted({it.get("source", "?") for it in items})
+        out[name] = {"queries": len(items), "sources": sources,
+                     "origin": spec["kind"],          # "store" = live, "file" = exported
+                     "skipped": len(skipped),         # judged but not yet exportable
+                     "graded": any(it.get("gold_grades") for it in items),
+                     "known_item": sum(1 for it in items if it["query_class"] == "known_item"),
+                     "topical": sum(1 for it in items if it["query_class"] == "topical")}
+    return {"sets": out}
+
+
+@app.get("/api/evaluate")
+def evaluate(name: str = Query(..., alias="set",
+                               description="name of the test set to evaluate")):
+    """Score one test set across all three legs.
+
+    Returns the same blocks scripts/eval.py prints (heldout / train / all) plus per-query
+    rows, because an aggregate alone hides WHICH queries are failing."""
+    decks = _eval_decks()
+    if name not in decks:
+        raise HTTPException(status_code=404,
+                            detail=f"no such test set {name!r} — have: {sorted(decks)}")
+    items, skipped = _deck(name, decks[name])
+    if not items:
+        # An empty or entirely-unfinished set is a state, not an error: say which queries
+        # are missing and why, rather than rendering a table of dashes.
+        return {"set": name, "queries": 0, "k": mx.K, "retrieve": mx.RETRIEVE,
+                "legs": list(EVAL_LEGS), "blocks": {}, "per_query": [], "skipped": skipped}
+
+    conn = h.connect()
+    try:
+        ranked = {(leg, it["id"]): [int(cid) for cid, _ in fn(conn, it["query"], mx.RETRIEVE)]
+                  for it in items for leg, fn in EVAL_LEGS.items()}
+        meta = {cid: h.book_meta(conn, cid)
+                for cid in {c for ids in ranked.values() for c in ids[:mx.K]}}
+    finally:
+        ibm_db.close(conn)
+
+    blocks = {}
+    for title, keep in (("heldout", lambda it: it["split"] == "holdout"),
+                        ("train", lambda it: it["split"] == "train"),
+                        ("all", lambda it: True)):
+        rows = [it for it in items if keep(it)]
+        blocks[title] = {
+            leg: {k: _finite(v) for k, v in
+                  mx.score_block(rows, lambda it, l=leg: ranked[(l, it["id"])]).items()}
+            for leg in EVAL_LEGS}
+
+    per_query = []
+    for it in items:
+        grades = it.get("gold_grades") or {}
+        gold = set(it["gold_ids"])
+        per_query.append({
+            "id": it["id"], "query": it["query"], "query_class": it["query_class"],
+            "split": it["split"], "gold_ids": it["gold_ids"], "gold_grades": grades,
+            "legs": {leg: [{"chunk_id": cid, "gold": cid in gold,
+                            "grade": grades.get(str(cid)),
+                            **meta.get(cid, {})} for cid in ranked[(leg, it["id"])][:mx.K]]
+                     for leg in EVAL_LEGS},
+        })
+    return {"set": name, "queries": len(items), "k": mx.K, "retrieve": mx.RETRIEVE,
+            "legs": list(EVAL_LEGS), "blocks": blocks, "per_query": per_query,
+            "skipped": skipped}
 
 
 class NoCacheHTML(StaticFiles):

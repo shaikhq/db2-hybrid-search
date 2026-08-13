@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=56" />
+  <link rel="stylesheet" href="styles.css?v=64" />
 </head>
 <body>
   <header class="topbar">
@@ -30,6 +30,7 @@
       </div>
     </div>
     <div class="legend" aria-label="color legend">
+      <span id="live-chip" class="live-chip" aria-live="polite"></span>
       <span class="chip chip-bm25">Lexical</span>
       <span class="chip chip-vector">Semantic</span>
       <span class="chip chip-both">Hybrid</span>
@@ -37,19 +38,20 @@
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="pages">
-    <button class="tab" data-page="start" role="tab" aria-selected="true">Start here</button>
-    <button class="tab" data-page="search" role="tab" aria-selected="false">Search</button>
-    <button class="tab" data-page="demo" role="tab" aria-selected="false">Demo</button>
-    <button class="tab" data-page="eval" role="tab" aria-selected="false">Golden eval set</button>
-    <button class="tab" data-page="arch" role="tab" aria-selected="false">Architecture</button>
+    <button class="tab" id="tab-start" data-page="start" role="tab" aria-selected="true" aria-controls="page-start" tabindex="0">Start here</button>
+    <button class="tab" id="tab-search" data-page="search" role="tab" aria-selected="false" aria-controls="page-search" tabindex="-1">Search</button>
+    <button class="tab" id="tab-demo" data-page="demo" role="tab" aria-selected="false" aria-controls="page-demo" tabindex="-1">Demo</button>
+    <button class="tab" id="tab-evaluate" data-page="evaluate" role="tab" aria-selected="false" aria-controls="page-evaluate" tabindex="-1">Evaluate</button>
+    <button class="tab" id="tab-arch" data-page="arch" role="tab" aria-selected="false" aria-controls="page-arch" tabindex="-1">Architecture</button>
+    <button class="tab" id="tab-label" data-page="label" role="tab" aria-selected="false" aria-controls="page-label" tabindex="-1">Label</button>
   </nav>
 
   <!-- FIRST TAB (leftmost): the "Start here" doorway — the default landing. -->
-  <section class="startpage" id="page-start" aria-label="start here">
+  <section class="startpage" id="page-start" role="tabpanel" aria-labelledby="tab-start">
     <div id="start-canvas"></div>
   </section>
 
-  <main class="searchpage" id="page-search" hidden>
+  <main class="searchpage" id="page-search" role="tabpanel" aria-labelledby="tab-search" hidden>
     <div class="search-intro">
       <h2>Search the library</h2>
       <p>The top 5 results. Pick a mode — <b>Keyword</b>, <b>Hybrid</b>, or <b>Rerank</b> — for the full list, or tick any two under <b>Compare</b> to see them side by side.</p>
@@ -78,18 +80,9 @@
     </div>
   </main>
 
-  <!-- SECOND PAGE: the golden eval set, explained for newcomers -->
-  <section class="evalpage" id="page-eval" hidden>
-    <div class="eval-intro">
-      <h2>Golden eval set</h2>
-      <p>The test questions behind the demo. Each has a <b>gold answer</b> — the book search should
-        return — used to grade the strategies (hit-rate, MRR).</p>
-    </div>
-    <div id="eval-list" class="eval-list"></div>
-  </section>
 
   <!-- THIRD PAGE (additive): mixed-audience demo — "will search find my book?" -->
-  <section class="demopage" id="page-demo" hidden aria-label="will search find my book">
+  <section class="demopage" id="page-demo" role="tabpanel" aria-labelledby="tab-demo" hidden>
     <div class="demo-intro">
       <h2>Will search find my book?</h2>
       <p>A rough memory of a book, run through three strategies at once. Each has a blind spot;
@@ -122,8 +115,29 @@
     </div>
   </section>
 
+  <!-- SECOND PAGE: Evaluate — score a named test set across the three Db2 legs.
+       Metrics come from the backend (hybrid_search.metrics), the same code
+       scripts/eval.py uses, so this tab and the CLI cannot disagree. -->
+  <section class="evaluatepage" id="page-evaluate" role="tabpanel" aria-labelledby="tab-evaluate" hidden>
+    <div class="eval-intro">
+      <h2>Evaluate</h2>
+      <p>Pick a test set and score it across all three retrievers. Judgments come from the
+        <b>Label</b> tab; the numbers are computed by the same code as
+        <code>scripts/eval.py</code>, so they always agree.</p>
+    </div>
+    <div class="ev-controls">
+      <label for="ev-set">Test set</label>
+      <select id="ev-set" aria-label="test set to evaluate"></select>
+      <button id="ev-run" class="run" type="button">Run</button>
+      <span id="ev-status" class="ev-status" aria-live="polite"></span>
+    </div>
+    <p id="ev-meta" class="ev-meta" aria-live="polite"></p>
+    <div id="ev-blocks" class="ev-blocks"></div>
+    <div id="ev-queries" class="ev-queries"></div>
+  </section>
+
   <!-- FOURTH PAGE (additive): architecture, for a technical audience -->
-  <section class="archpage" id="page-arch" hidden aria-label="architecture">
+  <section class="archpage" id="page-arch" role="tabpanel" aria-labelledby="tab-arch" hidden>
     <div class="arch-intro">
       <h2>Architecture</h2>
       <p>One Db2 database for retrieval + fusion, with a local model-serving layer. Pick a view.</p>
@@ -137,9 +151,115 @@
     <div id="arch-canvas" class="arch-canvas"></div>
   </section>
 
-  <script src="app.js?v=56"></script>
-  <script src="demo.js?v=56"></script>
-  <script src="arch.js?v=56"></script>
-  <script src="start.js?v=56"></script>
+  <!-- FIFTH PAGE (internal tool): pooled relevance labeling, to grow the eval set. -->
+  <section class="labelpage" id="page-label" role="tabpanel" aria-labelledby="tab-label" hidden>
+    <div class="label-intro">
+      <h2>Label test queries</h2>
+      <p>Type a query, build its <b>pool</b> — every unique result both retrievers return —
+        and judge each one. Which retriever found a book, and in what position, is hidden
+        on purpose: seeing either biases the judgment. Relevant documents become the
+        query's gold answers.</p>
+    </div>
+    <div class="demo-layout">
+      <aside class="demo-sidebar">
+        <div class="demo-sidebar-head">
+          <span class="demo-sidebar-title">Test set</span>
+          <div class="demo-sidebar-actions">
+            <select id="label-set" aria-label="test set being labeled"></select>
+            <button id="label-newset" class="demo-shuffle" type="button"
+                    aria-expanded="false" aria-controls="label-newset-form">+ New set</button>
+            <button id="label-gen" class="demo-shuffle" type="button"
+                    aria-expanded="false" aria-controls="label-gen-form">Generate topics</button>
+          </div>
+          <div id="label-newset-form" class="newset-form" hidden>
+            <input id="label-newset-name" type="text" placeholder="my-test-set"
+                   autocomplete="off" spellcheck="false"
+                   aria-describedby="label-newset-hint"
+                   aria-label="name for the new test set" />
+            <p id="label-newset-hint" class="newset-hint">Letters, digits, dot, underscore, hyphen.</p>
+            <div class="newset-actions">
+              <button id="label-newset-create" class="demo-shuffle" type="button">Create</button>
+              <button id="label-newset-cancel" class="demo-shuffle" type="button">Cancel</button>
+            </div>
+            <p id="label-newset-err" class="newset-err" aria-live="polite"></p>
+          </div>
+          <!-- Topic generation. The model is shown the library's SUBJECT AREAS only —
+               never a book's text — and no retrieval is run, so a query is never
+               dropped for being hard to find. Both rules are why these candidates are
+               usable as a test collection at all: see hybrid_search/topicgen.py. -->
+          <div id="label-gen-form" class="newset-form" hidden>
+            <div class="gen-row">
+              <label for="label-gen-n">How many</label>
+              <input id="label-gen-n" type="number" min="1" max="40" value="10"
+                     aria-label="how many topics to generate" />
+            </div>
+            <p class="newset-hint">Subject areas to draw on (none = all):</p>
+            <div id="label-gen-themes" class="gen-themes" role="group"
+                 aria-label="subject areas"></div>
+            <textarea id="label-gen-backstory" class="gen-backstory" rows="3"
+                      placeholder="Optional: describe one person's situation, and get variations on their need."
+                      aria-label="optional backstory"></textarea>
+            <div class="newset-actions">
+              <button id="label-gen-run" class="demo-shuffle" type="button">Generate</button>
+              <button id="label-gen-cancel" class="demo-shuffle" type="button">Cancel</button>
+            </div>
+            <p id="label-gen-err" class="newset-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <p id="label-setmeta" class="label-setmeta" aria-live="polite"></p>
+        <div id="label-members" class="demo-chips" role="group"
+             aria-label="queries in this test set"></div>
+      </aside>
+      <div class="demo-main">
+        <!-- Curation step. Candidates live here, unsaved, until you click Add: the model
+             proposes, a person disposes. Discards are recorded rather than dropped —
+             silently deleting the queries you dislike is the same bias as keeping only
+             the ones your retriever already answers. -->
+        <section id="label-candidates" class="label-candidates" hidden
+                 aria-label="generated topic candidates">
+          <div class="cand-head">
+            <b>Review generated topics</b>
+            <span id="cand-count" class="cand-count" aria-live="polite"></span>
+          </div>
+          <p class="cand-hint">Edit the wording, or <kbd>×</kbd> to discard. What remains is
+            added to <b id="cand-set"></b>, ready to judge. <b>Nothing is saved until you
+            click Add.</b></p>
+          <div id="cand-list" class="cand-list"></div>
+          <div class="cand-actions">
+            <button id="cand-add" class="run" type="button">Add to test set</button>
+            <button id="cand-cancel" class="demo-shuffle" type="button">Cancel</button>
+            <span id="cand-msg" class="label-addmsg" aria-live="polite"></span>
+          </div>
+        </section>
+        <div class="label-controls">
+          <input id="label-query" type="text" placeholder="Type a test query, then press Enter…"
+                 autocomplete="off" spellcheck="false" aria-label="query to label" />
+          <button id="label-build" class="run" type="button">Build pool</button>
+        </div>
+        <p id="label-progress" class="label-progress" aria-live="polite"></p>
+        <div class="label-addto">
+          <label for="label-addset">Also add this query to</label>
+          <select id="label-addset" disabled aria-label="add this query to another test set"></select>
+          <button id="label-add" class="demo-shuffle" type="button" disabled>Add to test set</button>
+          <span id="label-addmsg" class="label-addmsg" aria-live="polite"></span>
+        </div>
+    <p class="label-hint">Graded 0–2 — the key <em>is</em> the grade:
+      <kbd>2</kbd> highly relevant (the book you'd hand them) · <kbd>1</kbd> relevant
+      (a reasonable answer) · <kbd>0</kbd> not relevant · <kbd>s</kbd> skip ·
+      <kbd>↑</kbd>/<kbd>↓</kbd> move · <kbd>u</kbd> back.
+      Every judgment saves as you click; re-grading a card just overwrites it.</p>
+        <div id="label-list" class="label-list">
+          <p class="placeholder">Type a query above and press Enter to build its pool.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js?v=64"></script>
+  <script src="demo.js?v=64"></script>
+  <script src="arch.js?v=64"></script>
+  <script src="start.js?v=64"></script>
+  <script src="evaluate.js?v=64"></script>
+  <script src="label.js?v=64"></script>
 </body>
 </html>

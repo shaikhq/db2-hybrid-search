@@ -76,7 +76,9 @@ try:
 
         # nav tabs do not overlap each other (the reported bug)
         boxes = [t.bounding_box() for t in page.query_selector_all("#tabs .tab")]
-        check("5 nav tabs present", len(boxes) == 5, len(boxes))
+        # 6 since the Label tab landed in 0b902b5; this assertion was left at 5 and has
+        # been failing ever since. Start · Search · Demo · Evaluate · Architecture · Label.
+        check("6 nav tabs present", len(boxes) == 6, len(boxes))
         pairwise_ok = all(not overlap(boxes[i], boxes[j])
                           for i in range(len(boxes)) for j in range(i + 1, len(boxes)))
         check("nav tabs do not overlap each other", pairwise_ok, boxes)
@@ -90,7 +92,7 @@ try:
         page.click('.tab[data-page="demo"]')
         check("Demo tab shows #page-demo", page.is_visible("#page-demo"))
         check("Demo tab HIDES #page-search (no page overlap)", not page.is_visible("#page-search"))
-        check("Demo tab HIDES #page-eval", not page.is_visible("#page-eval"))
+        check("Demo tab HIDES #page-evaluate", not page.is_visible("#page-evaluate"))
         db = page.query_selector("#page-demo").bounding_box()
         sb_ = page.query_selector("#page-search").bounding_box()  # hidden -> None
         check("hidden page-search has no box (truly display:none)", sb_ is None, sb_)
@@ -154,14 +156,23 @@ try:
         check("Search tab renders open-ended box (deck removed)",
               page.is_visible("#page-search") and page.is_visible("#searchbox")
               and page.query_selector("#deck-list") is None)
-        page.click('.tab[data-page="eval"]')
-        check("Golden-eval tab still renders cards", page.is_visible("#page-eval") and
-              len(page.query_selector_all(".eval-card")) >= 1)
+        # Was '.tab[data-page="eval"]' / '#page-eval' / '.eval-card' — the old "Golden
+        # eval set" tab that 0b902b5 REPLACED with the Evaluate tab. The selectors stopped
+        # existing then, so this click timed out and took the whole suite down with it.
+        page.click('.tab[data-page="evaluate"]')
+        page.wait_for_selector("#ev-blocks > *", timeout=10000)
+        check("Evaluate tab renders frozen metric blocks offline",
+              page.is_visible("#page-evaluate") and
+              len(page.query_selector_all("#ev-blocks > *")) >= 1)
 
         # no real JS errors; 404s only for the expected live-probe endpoints
         check("no JS errors (pageerror / non-network console errors)", not errors, errors)
-        unexpected404 = [u for u in bad404
-                         if not (u.endswith("/api/queries") or u.endswith("/api/demo_deck"))]
+        # Every tab probes its live endpoint at boot and falls back to fixtures on 404 —
+        # that IS the offline path, so these 404s are the design working. /api/sets and
+        # /api/eval_sets joined the list when the Label and Evaluate tabs landed (0b902b5)
+        # and the allowlist was not updated with them.
+        EXPECTED_404 = ("/api/queries", "/api/demo_deck", "/api/sets", "/api/eval_sets")
+        unexpected404 = [u for u in bad404 if not u.endswith(EXPECTED_404)]
         check("only expected live-probe /api 404s (offline fallback by design)",
               not unexpected404, unexpected404)
         browser.close()

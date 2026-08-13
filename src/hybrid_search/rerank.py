@@ -36,7 +36,7 @@ RERANK_URL       = h.setting("RERANK_URL", "http://127.0.0.1:8087").rstrip("/")
 RERANK_MODEL     = h.setting("RERANK_MODEL", "reranker")
 RERANK_N         = int(h.setting("RERANK_N", "25"))          # fusion candidates to rerank
 RERANK_K         = int(h.setting("RERANK_K", "3"))           # final count returned to UI
-RERANK_TIMEOUT   = float(h.setting("RERANK_TIMEOUT", "8.0"))  # seconds, wall clock
+RERANK_TIMEOUT   = float(h.setting("RERANK_TIMEOUT", "30.0"))  # seconds, wall clock; generous so a slow CPU doesn't spuriously fall back
 RERANK_DOC_CHARS = int(h.setting("RERANK_DOC_CHARS", "1200"))  # truncate long candidate text
 RERANK_PATH      = h.setting("RERANK_PATH", "")              # e.g. '/v1/reranking'; else auto-detect
 
