@@ -701,4 +701,46 @@ kbd { font-family:var(--mono); font-size:.78rem; background:#eef0f4; border:1px 
 .newset-hint { font-size:.75rem; color:var(--muted); margin:6px 0 8px; }
 .newset-actions { display:flex; gap:6px; }
 .newset-err { font-size:.78rem; color:var(--lexical); margin:8px 0 0; font-weight:600; }
+
+/* ---- topic generation: the generate form, then the curation list ---- */
+.gen-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.gen-row label { font-size:.82rem; color:var(--muted); white-space:nowrap; }
+.gen-row input { width:70px; }
+.gen-themes { display:flex; flex-wrap:wrap; gap:4px 10px; margin-bottom:8px;
+  max-height:132px; overflow-y:auto; }
+.gen-theme { display:flex; align-items:center; gap:4px; font-size:.78rem;
+  color:var(--ink); white-space:nowrap; cursor:pointer; }
+.gen-theme input { width:auto; }
+.gen-backstory { width:100%; font:inherit; font-size:.85rem; padding:7px 9px;
+  margin-bottom:8px; border:1px solid var(--line); border-radius:8px;
+  background:var(--card); color:var(--ink); resize:vertical; }
+
+/* The curation list sits above the query box: it is a step you pass THROUGH on the way
+   to judging, not a parallel mode, so it reads top-to-bottom in the order you act. */
+.label-candidates { background:var(--card); border:1px solid var(--line);
+  border-radius:10px; padding:14px 16px; margin-bottom:14px; }
+.cand-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.cand-count { font-size:.8rem; color:var(--muted); }
+.cand-hint { font-size:.8rem; color:var(--muted); margin:6px 0 10px; }
+.cand-hint kbd { font-size:.75rem; }
+.cand-list { display:flex; flex-direction:column; gap:6px; max-height:46vh;
+  overflow-y:auto; margin-bottom:12px; }
+.cand { display:flex; align-items:center; gap:6px; }
+.cand-text { flex:1; font:inherit; font-size:.88rem; padding:6px 9px;
+  border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink); }
+.cand-text:focus-visible { outline:2px solid var(--hyb); outline-offset:1px; }
+/* Discarded rows stay visible rather than vanishing: seeing what you rejected, next to
+   what you kept, is what makes the discard decision reviewable — and the ↺ reversible. */
+.cand.dropped .cand-text { text-decoration:line-through; opacity:.45; }
+ /* Text, not an icon font: U+2715/U+21BA are absent from some system font stacks and
+    render as an empty box — and this button has no label to fall back on. '×' is
+    Latin-1 and 'undo' is ASCII, so both always draw. */
+.cand-x { flex:none; min-width:34px; height:30px; padding:0 8px;
+  border:1px solid var(--line); border-radius:8px; background:var(--card);
+  color:var(--muted); cursor:pointer; font-size:.85rem; line-height:1; }
+.cand-x:hover { border-color:var(--lexical); color:var(--lexical); }
+.cand.dropped .cand-x { border-color:var(--vec); color:var(--vec); }
+.cand-actions { display:flex; align-items:center; gap:8px; }
+.otag { font-weight:600; opacity:.75; }
+
 .ev-skipped { margin:8px 0 0; padding-left:20px; font-size:.88rem; }

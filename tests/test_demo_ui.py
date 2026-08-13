@@ -123,7 +123,7 @@ check("index.html registers label tab", 'data-page="label"' in idx)
 check("index.html has #page-label section", 'id="page-label"' in idx)
 check("index.html loads label.js", 'src="label.js' in idx)
 check("label.js defines labelBoot()", "function labelBoot" in labeljs)
-check("cache-bust bumped to v=62 everywhere", "?v=61" not in idx and "?v=62" in idx)
+check("cache-bust bumped to v=64 everywhere", "?v=63" not in idx and "?v=64" in idx)
 # Test sets: a set is a named LIST of qids, browsed from a sidebar in this same tab
 # (reviewing a set IS re-labeling it, so it must not live behind another tab).
 check("sidebar: set picker + New set + member list present",

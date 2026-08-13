@@ -4,6 +4,8 @@ search engine returning the SAME JSON shape as fixtures.json, so the frontend is
 identical offline or live. The default demo is offline (static page + fixtures);
 this exists for ad-hoc queries during Q&A."""
 
+import csv
+import datetime
 import hashlib
 import json
 import math
@@ -24,6 +26,7 @@ from hybrid_search import core as h
 from hybrid_search import understanding as qu   # adaptive query-understanding layer
 from hybrid_search import rerank as rr          # optional post-fusion cross-encoder stage
 from hybrid_search import metrics as mx         # the ONE metrics implementation
+from hybrid_search import topicgen as tg        # LLM topic proposals (authoring only)
 import build_fixtures as bf   # responses_for()
 import demo_view as dv         # outcome-translation (verdicts + book labels)
 
@@ -320,6 +323,10 @@ def _summarize(entry):
     gold = sum(n for name, n in counts.items() if GRADES.get(name, -1) >= 1)
     return {"text": entry.get("text", ""), "pool_size": entry.get("pool_size", 0),
             "decided": len(labels), "gold": gold, "counts": counts,
+            # Absent origin means the topic predates provenance tracking, i.e. it was
+            # typed by hand. Defaulting to "human" keeps the old topics correctly
+            # attributed rather than lumping them in as unknown.
+            "origin": entry.get("origin", "human"),
             "complete": bool(entry.get("pool_size")) and len(labels) >= entry["pool_size"]}
 
 
@@ -462,6 +469,120 @@ def remove_member(name: str, qid: str):
         set_["members"].remove(qid)
         _write_judgments(data)
     return {"ok": True, "set": name, "qid": qid, "members": set_["members"]}
+
+
+# ------------------------------------------------ Topic generation (an authoring aid)
+# Proposes candidate QUERIES for a human to edit, discard and then judge by hand. See
+# hybrid_search/topicgen.py for the one rule that makes this safe: generation never sees
+# document text and never runs retrieval. Nothing here calls h.lexical/h.vector/h.hybrid,
+# and tests/test_topicgen.py enforces that by making those raise.
+
+_THEMES = None       # cached collection profile; corpus.csv does not change at runtime
+
+
+def _themes():
+    """Collection-level themes, read once from corpus.csv's genres/pillar columns."""
+    global _THEMES
+    if _THEMES is None:
+        rows = []
+        if _CORPUS:
+            try:
+                with open(_CORPUS, newline="") as f:
+                    rows = list(csv.DictReader(f))
+            except OSError:
+                rows = []
+        _THEMES = tg.collection_profile(rows)
+    return _THEMES
+
+
+@app.get("/api/topics/themes")
+def topic_themes():
+    """The theme vocabulary the generate control offers as chips."""
+    return {"themes": _themes()}
+
+
+@app.post("/api/topics/generate")
+def generate_topics(payload: dict = Body(...)):
+    """Generate candidate topics. Stateless: writes nothing, retrieves nothing.
+
+    Candidates are returned to the UI for editing and discarding. They become part of a
+    test set only via POST /api/sets/{name}/topics, after a person has seen every one.
+    """
+    try:
+        n = int(payload.get("n") or 10)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="n must be an integer")
+    themes = [str(t).strip() for t in (payload.get("themes") or []) if str(t).strip()]
+    backstory = (payload.get("backstory") or "").strip() or None
+    try:
+        candidates = tg.generate(themes or _themes(), n=n, backstory=backstory)
+    except RuntimeError as e:
+        # 503, not 500: the server being down is an expected operational state with a
+        # specific fix, and the UI prints this detail verbatim.
+        raise HTTPException(status_code=503, detail=str(e))
+    return {"candidates": candidates, "asked": n,
+            "themes": themes or _themes(), "backstory": backstory or "",
+            "model": tg.TOPICS_MODEL, "prompt_version": tg.PROMPT_VERSION}
+
+
+@app.post("/api/sets/{name}/topics")
+def add_topics(name: str, payload: dict = Body(...)):
+    """File curated topics into a set, and record what was thrown away.
+
+    Accepted topics get a qid and provenance; discarded ones are kept ON THE SET without
+    a qid. Two deliberate choices:
+
+    - Discards are logged because the ✕ is itself a filter. An unlogged filter is the
+      same failure mode as the consistency filtering that made golden_set agree with the
+      retriever that generated it — you could quietly delete every hard query and no
+      later reader could tell.
+    - Discards get no qid. qids are the join key every exported qrels file references;
+      minting one for a candidate nobody will ever judge would pollute that namespace.
+    """
+    data = _load_judgments()
+    if name not in data["sets"]:
+        raise HTTPException(status_code=404, detail=f"no such set {name!r}")
+    set_ = _active_set(data, name)
+    now = datetime.datetime.now().isoformat(timespec="seconds")
+
+    added, reused = [], []
+    for item in (payload.get("accepted") or []):
+        text = " ".join(str(item.get("text") or "").split())
+        if not text:
+            continue
+        qid = _qid_for(data, text)
+        existing = data["queries"].get(qid)
+        if existing:
+            # The text matches a query that already exists — most likely one you typed
+            # by hand, or generated in an earlier round. Reuse it and DO NOT restamp its
+            # origin: rewriting a hand-typed topic's provenance to "llm" would corrupt
+            # the human-vs-LLM comparison this field exists to make possible.
+            if qid not in set_["members"]:
+                set_["members"].append(qid)
+            reused.append(qid)
+            continue
+        detail = tg.origin_detail(item.get("theme"))
+        detail["generated_at"] = now
+        edited = bool(item.get("edited"))
+        if edited and item.get("original_text"):
+            detail["original_text"] = " ".join(str(item["original_text"]).split())
+        data["queries"][qid] = {"text": text, "pool_size": 0, "labels": {},
+                                "origin": "llm_edited" if edited else "llm",
+                                "origin_detail": detail}
+        set_["members"].append(qid)
+        added.append(qid)
+
+    discarded = set_.setdefault("discarded", [])
+    for item in (payload.get("discarded") or []):
+        text = " ".join(str(item.get("text") or "").split())
+        if text:
+            discarded.append({"text": text, "theme": item.get("theme") or "",
+                              "reason": (item.get("reason") or "").strip(), "at": now})
+
+    _write_judgments(data)
+    return {"ok": True, "set": name, "added": added, "reused": reused,
+            "discarded": len(payload.get("discarded") or []),
+            "members": set_["members"]}
 
 
 @app.post("/api/judgments")

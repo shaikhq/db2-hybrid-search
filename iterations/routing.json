@@ -52,9 +52,15 @@
     },
     {
       "match": ["ui/static/label.js"],
-      "scenarios": ["label-pool"],
+      "scenarios": ["label-pool", "label-generate"],
       "target": "live",
       "why": "the Label tab has no offline path — pool building calls the backend"
+    },
+    {
+      "match": ["src/hybrid_search/topicgen.py", "scripts/topic-generation/*"],
+      "scenarios": ["label-generate"],
+      "target": "live",
+      "why": "topic generation needs its own llama-server; there is no frozen fixture for it"
     },
     {
       "match": ["ui/static/*fixtures.json", "ui/static/eval_set.json",

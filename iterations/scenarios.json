@@ -114,6 +114,22 @@
     },
 
     {
+      "name": "label-generate",
+      "needs": "live",
+      "about": "Label tab: generate candidate topics and review them (edit the wording, discard with ×) before they join a test set.",
+      "steps": [
+        { "click": "#tab-label" },
+        { "click": "#label-gen" },
+        { "wait_for": "#label-gen-themes input" },
+        { "fill": "#label-gen-n", "text": "8" },
+        { "click": "#label-gen-run" },
+        { "wait_for": ".cand" },
+        { "wait_ms": 500 }
+      ],
+      "capture": { "shot": "#page-label", "text": "#cand-count" }
+    },
+
+    {
       "name": "label-pool",
       "needs": "live",
       "about": "Label tab: build a pool for a query and show the judging cards (leg + position hidden, by design).",

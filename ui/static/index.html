@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shaikh's Audiobooks Search</title>
-  <link rel="stylesheet" href="styles.css?v=62" />
+  <link rel="stylesheet" href="styles.css?v=64" />
 </head>
 <body>
   <header class="topbar">
@@ -168,6 +168,8 @@
             <select id="label-set" aria-label="test set being labeled"></select>
             <button id="label-newset" class="demo-shuffle" type="button"
                     aria-expanded="false" aria-controls="label-newset-form">+ New set</button>
+            <button id="label-gen" class="demo-shuffle" type="button"
+                    aria-expanded="false" aria-controls="label-gen-form">Generate topics</button>
           </div>
           <div id="label-newset-form" class="newset-form" hidden>
             <input id="label-newset-name" type="text" placeholder="my-test-set"
@@ -181,12 +183,54 @@
             </div>
             <p id="label-newset-err" class="newset-err" aria-live="polite"></p>
           </div>
+          <!-- Topic generation. The model is shown the library's SUBJECT AREAS only —
+               never a book's text — and no retrieval is run, so a query is never
+               dropped for being hard to find. Both rules are why these candidates are
+               usable as a test collection at all: see hybrid_search/topicgen.py. -->
+          <div id="label-gen-form" class="newset-form" hidden>
+            <div class="gen-row">
+              <label for="label-gen-n">How many</label>
+              <input id="label-gen-n" type="number" min="1" max="40" value="10"
+                     aria-label="how many topics to generate" />
+            </div>
+            <p class="newset-hint">Subject areas to draw on (none = all):</p>
+            <div id="label-gen-themes" class="gen-themes" role="group"
+                 aria-label="subject areas"></div>
+            <textarea id="label-gen-backstory" class="gen-backstory" rows="3"
+                      placeholder="Optional: describe one person's situation, and get variations on their need."
+                      aria-label="optional backstory"></textarea>
+            <div class="newset-actions">
+              <button id="label-gen-run" class="demo-shuffle" type="button">Generate</button>
+              <button id="label-gen-cancel" class="demo-shuffle" type="button">Cancel</button>
+            </div>
+            <p id="label-gen-err" class="newset-err" aria-live="polite"></p>
+          </div>
         </div>
         <p id="label-setmeta" class="label-setmeta" aria-live="polite"></p>
         <div id="label-members" class="demo-chips" role="group"
              aria-label="queries in this test set"></div>
       </aside>
       <div class="demo-main">
+        <!-- Curation step. Candidates live here, unsaved, until you click Add: the model
+             proposes, a person disposes. Discards are recorded rather than dropped —
+             silently deleting the queries you dislike is the same bias as keeping only
+             the ones your retriever already answers. -->
+        <section id="label-candidates" class="label-candidates" hidden
+                 aria-label="generated topic candidates">
+          <div class="cand-head">
+            <b>Review generated topics</b>
+            <span id="cand-count" class="cand-count" aria-live="polite"></span>
+          </div>
+          <p class="cand-hint">Edit the wording, or <kbd>×</kbd> to discard. What remains is
+            added to <b id="cand-set"></b>, ready to judge. <b>Nothing is saved until you
+            click Add.</b></p>
+          <div id="cand-list" class="cand-list"></div>
+          <div class="cand-actions">
+            <button id="cand-add" class="run" type="button">Add to test set</button>
+            <button id="cand-cancel" class="demo-shuffle" type="button">Cancel</button>
+            <span id="cand-msg" class="label-addmsg" aria-live="polite"></span>
+          </div>
+        </section>
         <div class="label-controls">
           <input id="label-query" type="text" placeholder="Type a test query, then press Enter…"
                  autocomplete="off" spellcheck="false" aria-label="query to label" />
@@ -211,11 +255,11 @@
     </div>
   </section>
 
-  <script src="app.js?v=62"></script>
-  <script src="demo.js?v=62"></script>
-  <script src="arch.js?v=62"></script>
-  <script src="start.js?v=62"></script>
-  <script src="evaluate.js?v=62"></script>
-  <script src="label.js?v=62"></script>
+  <script src="app.js?v=64"></script>
+  <script src="demo.js?v=64"></script>
+  <script src="arch.js?v=64"></script>
+  <script src="start.js?v=64"></script>
+  <script src="evaluate.js?v=64"></script>
+  <script src="label.js?v=64"></script>
 </body>
 </html>

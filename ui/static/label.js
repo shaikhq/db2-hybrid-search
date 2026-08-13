@@ -20,6 +20,9 @@ const LAB = {
   active: 0,       // index of the card the keyboard acts on
   terms: [],
   busy: false,
+  // Generated candidates awaiting curation: [{text, original, theme, dropped}].
+  // Deliberately client-only — nothing here exists in the store until "Add to test set".
+  cands: [],
 };
 
 // Graded relevance, 3-point (see ui/api.py GRADES). The key IS the grade: press 2 for a
@@ -66,6 +69,24 @@ function labelBoot() {
     if (e.key === "Enter") createSet();
     if (e.key === "Escape") toggleNewSet(false);
   });
+  $("#label-gen").addEventListener("click", () => toggleGen());
+  $("#label-gen-cancel").addEventListener("click", () => toggleGen(false));
+  $("#label-gen-run").addEventListener("click", runGenerate);
+  // Delegated: the candidate rows are re-rendered on every edit/discard.
+  $("#cand-list").addEventListener("click", (e) => {
+    const x = e.target.closest(".cand-x"); if (!x) return;
+    const c = LAB.cands[Number(x.dataset.i)];
+    if (c) { c.dropped = !c.dropped; renderCandidates(); }
+  });
+  // 'input', not 'change': re-rendering on every keystroke would steal focus mid-word,
+  // so the model is updated live and the DOM is left alone until something else redraws.
+  $("#cand-list").addEventListener("input", (e) => {
+    const box = e.target.closest(".cand-text"); if (!box) return;
+    const c = LAB.cands[Number(box.dataset.i)];
+    if (c) c.text = box.value;
+  });
+  $("#cand-add").addEventListener("click", addCandidates);
+  $("#cand-cancel").addEventListener("click", () => { LAB.cands = []; renderCandidates(); });
   $("#label-addset").addEventListener("change", refreshAddTo);
   $("#label-add").addEventListener("click", addToSet);
   $("#label-members").addEventListener("click", (e) => {
@@ -116,10 +137,19 @@ function renderSets() {
        data-qid="${esc(qid)}" data-text="${esc(m.text || "")}">
       <span class="dchip-q">${esc(m.text || qid)}</span>
       <span class="dchip-t">${qid} · ${m.decided || 0}/${m.pool_size || 0} decided ·
-        ${m.gold || 0} gold${m.complete ? " · ✓" : ""}</span>
+        ${m.gold || 0} gold${m.complete ? " · ✓" : ""}${originTag(m.origin)}</span>
     </button>`;
   }).join("") || `<p class="placeholder">Nothing filed here yet.</p>`;
   refreshAddTo();
+}
+
+// Provenance, shown per topic. Hand-typed topics carry no badge — they are the baseline
+// and the default. Only LLM-proposed ones are marked, so a mixed set is legible at a
+// glance and "did the generated topics behave differently?" stays an answerable question.
+function originTag(origin) {
+  if (origin === "llm") return ` · <span class="otag">llm</span>`;
+  if (origin === "llm_edited") return ` · <span class="otag">llm·edited</span>`;
+  return "";
 }
 
 function refreshAddTo() {
@@ -131,6 +161,132 @@ function refreshAddTo() {
   $("#label-addmsg").textContent = LAB.qid && already ? `already in ${target}` : "";
 }
 
+/* ---------- topic generation (authoring aid) ----------
+   The model proposes; a person disposes. Candidates are held in LAB.cands and are NOT
+   in the store — only "Add to test set" writes anything. See hybrid_search/topicgen.py
+   for why generation is conditioned on subject areas rather than on book text. */
+
+function toggleGen(open) {
+  const form = $("#label-gen-form");
+  const show = open === undefined ? form.hidden : open;
+  form.hidden = !show;
+  $("#label-gen").setAttribute("aria-expanded", String(show));
+  $("#label-gen-err").textContent = "";
+  if (show) {
+    toggleNewSet(false);              // the two forms share the sidebar; never both open
+    loadThemes();
+  }
+}
+
+async function loadThemes() {
+  const host = $("#label-gen-themes");
+  if (!host || host.dataset.loaded) return;
+  try {
+    const j = await (await fetch("/api/topics/themes", { cache: "no-store" })).json();
+    host.innerHTML = (j.themes || []).map((t) =>
+      `<label class="gen-theme"><input type="checkbox" value="${esc(t)}" />${esc(t)}</label>`
+    ).join("") || `<span class="newset-hint">no subject areas found</span>`;
+    host.dataset.loaded = "1";
+  } catch (_) {
+    host.innerHTML = `<span class="newset-hint">could not load subject areas</span>`;
+  }
+}
+
+async function runGenerate() {
+  if (!LIVE) { $("#label-gen-err").textContent =
+      "Generating topics needs the live backend (./ui/run.sh --live)."; return; }
+  const n = Math.max(1, Math.min(40, parseInt($("#label-gen-n").value, 10) || 10));
+  const themes = [...document.querySelectorAll("#label-gen-themes input:checked")]
+    .map((c) => c.value);
+  const backstory = $("#label-gen-backstory").value.trim();
+  const btn = $("#label-gen-run");
+  btn.disabled = true;
+  $("#label-gen-err").textContent = "generating…";
+  try {
+    const r = await fetch("/api/topics/generate", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n, themes, backstory }),
+    });
+    if (!r.ok) {
+      // 503 carries the operator-facing reason (server down, and where). Show it verbatim
+      // rather than "generation failed", which sends you looking in the wrong place.
+      let detail = "Generation failed.";
+      try { detail = (await r.json()).detail || detail; } catch (_) {}
+      $("#label-gen-err").textContent = detail;
+      return;
+    }
+    const j = await r.json();
+    LAB.cands = (j.candidates || []).map((c) => ({
+      text: c.text, original: c.text, theme: c.theme || "", dropped: false }));
+    $("#label-gen-err").textContent = "";
+    toggleGen(false);
+    renderCandidates();
+  } catch (_) {
+    $("#label-gen-err").textContent = "Generation failed — is the backend still running?";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderCandidates() {
+  const box = $("#label-candidates");
+  if (!box) return;
+  const cands = LAB.cands || [];
+  box.hidden = cands.length === 0;
+  if (!cands.length) return;
+  const kept = cands.filter((c) => !c.dropped).length;
+  $("#cand-count").textContent = `${kept} of ${cands.length} kept`;
+  $("#cand-set").textContent = LAB.set || "(no set)";
+  $("#cand-add").disabled = kept === 0;
+  $("#cand-list").innerHTML = cands.map((c, i) => `
+    <div class="cand${c.dropped ? " dropped" : ""}">
+      <input class="cand-text" type="text" data-i="${i}" value="${esc(c.text)}"
+             ${c.dropped ? "disabled" : ""} aria-label="topic ${i + 1}" />
+      <button type="button" class="cand-x" data-i="${i}"
+              title="${c.dropped ? "Restore" : "Discard"}"
+              aria-label="${c.dropped ? "restore" : "discard"} topic ${i + 1}"
+        >${c.dropped ? "undo" : "×"}</button>
+    </div>`).join("");
+}
+
+async function addCandidates() {
+  const cands = LAB.cands || [];
+  if (!LAB.set) { $("#cand-msg").textContent = "Pick a test set first."; return; }
+  const accepted = cands.filter((c) => !c.dropped).map((c) => ({
+    text: c.text, theme: c.theme,
+    // Flag the edit AND keep the original, so a later reader can see what the model
+    // actually proposed versus what a person decided it should say.
+    edited: c.text.trim() !== c.original.trim(),
+    original_text: c.original,
+  }));
+  const discarded = cands.filter((c) => c.dropped)
+    .map((c) => ({ text: c.original, theme: c.theme, reason: "" }));
+  $("#cand-add").disabled = true;
+  $("#cand-msg").textContent = "saving…";
+  try {
+    const r = await fetch(`/api/sets/${encodeURIComponent(LAB.set)}/topics`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accepted, discarded }),
+    });
+    if (!r.ok) {
+      let detail = "Could not add the topics.";
+      try { detail = (await r.json()).detail || detail; } catch (_) {}
+      $("#cand-msg").textContent = detail;
+      return;
+    }
+    const j = await r.json();
+    LAB.cands = [];
+    renderCandidates();
+    const reused = (j.reused || []).length;
+    $("#cand-msg").textContent = "";
+    $("#label-addmsg").textContent =
+      `added ${(j.added || []).length}` + (reused ? `, ${reused} already existed` : "");
+    await loadSets();
+  } finally {
+    $("#cand-add").disabled = false;
+  }
+}
+
 // An inline form rather than prompt(): a native modal cannot show the naming rule the
 // server enforces, cannot render its error next to the field, and is suppressed outright
 // in some embedded contexts.
@@ -140,7 +296,10 @@ function toggleNewSet(open) {
   form.hidden = !show;
   $("#label-newset").setAttribute("aria-expanded", String(show));
   $("#label-newset-err").textContent = "";
-  if (show) { $("#label-newset-name").value = ""; $("#label-newset-name").focus(); }
+  if (show) {
+    toggleGen(false);                 // the two forms share the sidebar; never both open
+    $("#label-newset-name").value = ""; $("#label-newset-name").focus();
+  }
 }
 
 async function createSet() {

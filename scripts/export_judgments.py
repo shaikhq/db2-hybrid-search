@@ -234,6 +234,21 @@ def write_set_file(path, keep, set_name, extras):
     atomic_write(path, render)
 
 
+def origin_counts(keep):
+    """How the TOPICS were authored — distinct from how they were judged, which is always
+    by hand. A set mixing hand-typed and LLM-proposed topics has to say so: they are
+    different populations, and anyone comparing two sets needs to know whether the
+    difference is in the retriever or in where the queries came from.
+
+    Topics predating provenance tracking have no `origin` and are counted as human, which
+    is what they are — the field was added with LLM proposals, not before them."""
+    counts = {}
+    for _, entry in keep:
+        origin = entry.get("origin") or "human"
+        counts[origin] = counts.get(origin, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def write_manifest(path, set_name, meta, keep, files):
     """Provenance per set. Which retrievers built the pool and how deep is what tells a
     later reader how reusable these judgments are: a depth-10, 2-leg pool cannot fairly
@@ -253,6 +268,7 @@ def write_manifest(path, set_name, meta, keep, files):
                      "skips omitted — a skip is a gap, not a 0)",
         "binarization": f"gold_ids = grade >= {GOLD_THRESHOLD}",
         "method": "pooled human judgment, rank discarded",
+        "topic_origins": origin_counts(keep),
         **{k: v for k, v in (meta or {}).items()},
         "files": {k: os.path.relpath(v, REPO) for k, v in files.items()},
     }

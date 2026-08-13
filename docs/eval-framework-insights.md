@@ -75,6 +75,56 @@ The cost is real: this is slow, and after a full day of work there are five of t
 so out loud when you present it. The value is that nothing about the query was chosen to
 be findable.
 
+### 2b. Let a model PROPOSE topics — but only from the subject areas, and never filter by what retrieves
+
+A day per five topics does not reach the ~50 the evaluation literature wants. The Label
+tab's **Generate topics** control closes that gap without giving up what §1 and §2 argue
+for, by keeping the two properties that actually mattered:
+
+- **Generation sees the collection's subject areas, never a book's text.** The prompt is
+  built from the `genres`/`pillar` columns only. No target document exists before the
+  query, so the query cannot inherit one document's vocabulary — which is what made
+  `golden_set` 103/118 known-item.
+- **Retrieval is never run during generation.** No candidate is dropped for being hard to
+  find. That rule is what separates this from the consistency filtering in §1, and it is
+  enforced by a test that makes `core.lexical`/`vector`/`hybrid` raise and requires
+  generation to succeed anyway (`tests/test_topicgen.py`).
+
+Everything after generation is unchanged: a person edits or discards every candidate, and
+every relevance judgment is still made by hand against a pooled, rank-discarded list.
+**The model proposes topics; it never judges them.** That distinction is the whole reason
+this is safe to adopt — the reported risk in synthetic collections is concentrated in LLM
+*judges*, which inflate scores and favour systems resembling themselves.
+
+What it costs, stated plainly:
+
+- Generated queries are **longer and more uniform** than real ones. The prompt explicitly
+  asks for a length mix including 2-4 word fragments, and the review step lets you shorten
+  them, but this is mitigation, not elimination.
+- LLM-written query variants **do not cover the full spread** a group of humans produces.
+
+Two habits keep this honest. **Provenance is recorded per topic** (`origin`:
+`human`/`llm`/`llm_edited`, with the model's original wording kept when you edit it), and
+the exporter reports the mix in `manifest.json` — so a set that blends both says so.
+**Discards are logged on the set**, because the ✕ is itself a filter: quietly deleting the
+candidates you dislike is the same failure as keeping only the ones your retriever already
+answers, just performed by hand.
+
+And the check that settles it for *this* corpus rather than in general: once ~15 generated
+topics are judged, score the legs on the LLM-origin subset and the hand-typed subset
+separately. If they disagree about which leg wins — as `golden_set` and the human sets
+already do above — that belongs in this document, not smoothed away.
+
+> Evidence: [Alaofi et al., *Can Generative LLMs Create Query Variants for Test
+> Collections?*, SIGIR 2023](https://dl.acm.org/doi/10.1145/3539618.3591960) — LLM queries
+> written from information-need backstories reach 71.1% pool overlap with human queries at
+> depth 100, while not capturing their full variety. [Rahmani et al., *Synthetic Test
+> Collections for Retrieval Evaluation*](https://arxiv.org/abs/2405.07767) and [*Towards
+> Understanding Bias in Synthetic Data for Evaluation*, CIKM
+> 2025](https://arxiv.org/pdf/2506.10301) — synthetic collections rank systems in
+> moderate-to-high agreement with human-based evaluation; the leniency and self-preference
+> problems they document are properties of LLM *judging*, which this design does not use.
+
 ---
 
 ## Stage 2 — Building the candidate pool
